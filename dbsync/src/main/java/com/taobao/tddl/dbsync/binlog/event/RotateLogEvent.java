@@ -40,7 +40,14 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  */
 public final class RotateLogEvent extends LogEvent {
 
-    /**
+    /* Rotate event post-header */
+    public static final int       R_POS_OFFSET   = 0;
+	public static final int       R_IDENT_OFFSET = 8;
+	/* Max length of full path-name */
+    public static final int       FN_REFLEN      = 512;
+	// Rotate header with all empty fields.
+    public static final LogHeader ROTATE_HEADER  = new LogHeader(ROTATE_EVENT);
+	/**
      * Fixed data part:
      * <ul>
      * <li>8 bytes. The position of the first event in the next log file. Always
@@ -57,19 +64,9 @@ public final class RotateLogEvent extends LogEvent {
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log
      */
     private final String          filename;
-    private final long            position;
+	private final long            position;
 
-    /* Rotate event post-header */
-    public static final int       R_POS_OFFSET   = 0;
-    public static final int       R_IDENT_OFFSET = 8;
-
-    /* Max length of full path-name */
-    public static final int       FN_REFLEN      = 512;
-
-    // Rotate header with all empty fields.
-    public static final LogHeader ROTATE_HEADER  = new LogHeader(ROTATE_EVENT);
-
-    /**
+	/**
      * Creates a new <code>Rotate_log_event</code> object read normally from
      * log.
      * 
@@ -88,13 +85,15 @@ public final class RotateLogEvent extends LogEvent {
 
         final int filenameOffset = headerSize + postHeaderLen;
         int filenameLen = buffer.limit() - filenameOffset;
-        if (filenameLen > FN_REFLEN - 1) filenameLen = FN_REFLEN - 1;
+        if (filenameLen > FN_REFLEN - 1) {
+			filenameLen = FN_REFLEN - 1;
+		}
         buffer.position(filenameOffset);
 
         filename = buffer.getFixString(filenameLen);
     }
 
-    /**
+	/**
      * Creates a new <code>Rotate_log_event</code> without log information. This
      * is used to generate missing log rotation events.
      */
@@ -105,7 +104,7 @@ public final class RotateLogEvent extends LogEvent {
         this.position = 4;
     }
 
-    /**
+	/**
      * Creates a new <code>Rotate_log_event</code> without log information.
      */
     public RotateLogEvent(String filename, final long position){
@@ -115,11 +114,11 @@ public final class RotateLogEvent extends LogEvent {
         this.position = position;
     }
 
-    public final String getFilename() {
+	public final String getFilename() {
         return filename;
     }
 
-    public final long getPosition() {
+	public final long getPosition() {
         return position;
     }
 }

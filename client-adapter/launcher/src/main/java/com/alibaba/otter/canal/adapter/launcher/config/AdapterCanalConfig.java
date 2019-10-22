@@ -34,11 +34,7 @@ public class AdapterCanalConfig extends CanalClientConfig {
         if (canalAdapters != null) {
             synchronized (DESTINATIONS) {
                 DESTINATIONS.clear();
-                for (CanalAdapter canalAdapter : canalAdapters) {
-                    if (canalAdapter.getInstance() != null) {
-                        DESTINATIONS.add(canalAdapter.getInstance());
-                    }
-                }
+                canalAdapters.stream().filter(canalAdapter -> canalAdapter.getInstance() != null).forEach(canalAdapter -> DESTINATIONS.add(canalAdapter.getInstance()));
             }
         }
     }

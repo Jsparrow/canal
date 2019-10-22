@@ -5,6 +5,8 @@ import org.springframework.util.Assert;
 
 import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 测试基类
@@ -14,7 +16,9 @@ import com.alibaba.otter.canal.protocol.Message;
  */
 public class AbstractCanalClientTest extends BaseCanalClientTest {
 
-    public AbstractCanalClientTest(String destination){
+    private static final Logger logger = LoggerFactory.getLogger(AbstractCanalClientTest.class);
+
+	public AbstractCanalClientTest(String destination){
         this(destination, null);
     }
 
@@ -25,12 +29,7 @@ public class AbstractCanalClientTest extends BaseCanalClientTest {
 
     protected void start() {
         Assert.notNull(connector, "connector is null");
-        thread = new Thread(new Runnable() {
-
-            public void run() {
-                process();
-            }
-        });
+        thread = new Thread(() -> process());
 
         thread.setUncaughtExceptionHandler(handler);
         running = true;
@@ -46,6 +45,7 @@ public class AbstractCanalClientTest extends BaseCanalClientTest {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
@@ -84,6 +84,7 @@ public class AbstractCanalClientTest extends BaseCanalClientTest {
                 try {
                     Thread.sleep(1000L);
                 } catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
                     // ignore
                 }
             } finally {

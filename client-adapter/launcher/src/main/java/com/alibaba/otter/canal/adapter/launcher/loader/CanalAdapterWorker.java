@@ -12,6 +12,8 @@ import com.alibaba.otter.canal.client.adapter.support.CanalClientConfig;
 import com.alibaba.otter.canal.client.impl.ClusterCanalConnector;
 import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 原生canal-server对应的client适配器工作线程
@@ -21,7 +23,8 @@ import com.alibaba.otter.canal.protocol.Message;
  */
 public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
 
-    private static final int BATCH_SIZE = 50;
+    private static final Logger logger = LoggerFactory.getLogger(CanalAdapterWorker.class);
+	private static final int BATCH_SIZE = 50;
     private static final int SO_TIMEOUT = 0;
 
     private CanalConnector   connector;
@@ -64,6 +67,7 @@ public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
         }
@@ -93,7 +97,8 @@ public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
                     try {
                         syncSwitch.get(canalDestination, 1L, TimeUnit.MINUTES);
                     } catch (TimeoutException e) {
-                        break;
+                        logger.error(e.getMessage(), e);
+						break;
                     }
                     if (!running) {
                         break;
@@ -130,7 +135,7 @@ public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
                         } catch (Exception e) {
                             if (i != retry - 1) {
                                 connector.rollback(batchId); // 处理失败, 回滚数据
-                                logger.error(e.getMessage() + " Error sync and rollback, execute times: " + (i + 1));
+                                logger.error(new StringBuilder().append(e.getMessage()).append(" Error sync and rollback, execute times: ").append(i + 1).toString());
                             } else {
                                 connector.ack(batchId);
                                 logger.error(e.getMessage() + " Error sync but ACK!");
@@ -151,6 +156,7 @@ public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }
@@ -179,12 +185,13 @@ public class CanalAdapterWorker extends AbstractCanalAdapterWorker {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }
             groupInnerExecutorService.shutdown();
             logger.info("destination {} adapters worker thread dead!", canalDestination);
-            canalOuterAdapters.forEach(outerAdapters -> outerAdapters.forEach(OuterAdapter::destroy));
+            canalOuterAdapters.stream().flatMap(List::stream).forEach(OuterAdapter::destroy);
             logger.info("destination {} all adapters destroyed!", canalDestination);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

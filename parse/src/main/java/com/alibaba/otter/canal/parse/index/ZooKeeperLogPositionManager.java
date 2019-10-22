@@ -7,13 +7,16 @@ import com.alibaba.otter.canal.common.zookeeper.ZkClientx;
 import com.alibaba.otter.canal.common.zookeeper.ZookeeperPathUtils;
 import com.alibaba.otter.canal.parse.exception.CanalParseException;
 import com.alibaba.otter.canal.protocol.position.LogPosition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by yinxiu on 17/3/17. Email: marklin.hz@gmail.com
  */
 public class ZooKeeperLogPositionManager extends AbstractLogPositionManager {
 
-    private final ZkClientx zkClientx;
+    private static final Logger logger = LoggerFactory.getLogger(ZooKeeperLogPositionManager.class);
+	private final ZkClientx zkClientx;
 
     public ZooKeeperLogPositionManager(ZkClientx zkClient){
         if (zkClient == null) {
@@ -35,13 +38,14 @@ public class ZooKeeperLogPositionManager extends AbstractLogPositionManager {
     }
 
     @Override
-    public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+    public void persistLogPosition(String destination, LogPosition logPosition) {
         String path = ZookeeperPathUtils.getParsePath(destination);
         byte[] data = JsonUtils.marshalToByte(logPosition);
         try {
             zkClientx.writeData(path, data);
         } catch (ZkNoNodeException e) {
-            zkClientx.createPersistent(path, data, true);
+            logger.error(e.getMessage(), e);
+			zkClientx.createPersistent(path, data, true);
         }
     }
 

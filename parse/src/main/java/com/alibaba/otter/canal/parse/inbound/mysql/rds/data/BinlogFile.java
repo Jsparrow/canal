@@ -10,7 +10,7 @@ public class BinlogFile {
     private String LogBeginTime;
     private String LogEndTime;
     private String DownloadLink;
-    private String HostInstanceID;
+    private String hostInstanceId;
     private String LinkExpiredTime;
     private String fileName;
 
@@ -47,11 +47,11 @@ public class BinlogFile {
     }
 
     public String getHostInstanceID() {
-        return HostInstanceID;
+        return hostInstanceId;
     }
 
     public void setHostInstanceID(String hostInstanceID) {
-        HostInstanceID = hostInstanceID;
+        hostInstanceId = hostInstanceID;
     }
 
     public String getLinkExpiredTime() {
@@ -72,9 +72,9 @@ public class BinlogFile {
 
     @Override
     public String toString() {
-        return "BinlogFile [FileSize=" + FileSize + ", LogBeginTime=" + LogBeginTime + ", LogEndTime=" + LogEndTime
-               + ", DownloadLink=" + DownloadLink + ", HostInstanceID=" + HostInstanceID + ", LinkExpiredTime="
-               + LinkExpiredTime + ", fileName=" + fileName + "]";
+        return new StringBuilder().append("BinlogFile [FileSize=").append(FileSize).append(", LogBeginTime=").append(LogBeginTime).append(", LogEndTime=").append(LogEndTime).append(", DownloadLink=")
+				.append(DownloadLink).append(", HostInstanceID=").append(hostInstanceId).append(", LinkExpiredTime=").append(LinkExpiredTime).append(", fileName=").append(fileName)
+				.append("]").toString();
     }
 
 }

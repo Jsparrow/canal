@@ -24,25 +24,25 @@ public class CanalMQStarter {
 
     private static final Logger          logger         = LoggerFactory.getLogger(CanalMQStarter.class);
 
-    private volatile boolean             running        = false;
+	private static Thread                shutdownThread = null;
 
-    private ExecutorService              executorService;
+	private volatile boolean             running        = false;
 
-    private CanalMQProducer              canalMQProducer;
+	private ExecutorService              executorService;
 
-    private MQProperties                 properties;
+	private CanalMQProducer              canalMQProducer;
 
-    private CanalServerWithEmbedded      canalServer;
+	private MQProperties                 properties;
 
-    private Map<String, CanalMQRunnable> canalMQWorks   = new ConcurrentHashMap<>();
+	private CanalServerWithEmbedded      canalServer;
 
-    private static Thread                shutdownThread = null;
+	private Map<String, CanalMQRunnable> canalMQWorks   = new ConcurrentHashMap<>();
 
-    public CanalMQStarter(CanalMQProducer canalMQProducer){
+	public CanalMQStarter(CanalMQProducer canalMQProducer){
         this.canalMQProducer = canalMQProducer;
     }
 
-    public synchronized void start(MQProperties properties, String destinations) {
+	public synchronized void start(MQProperties properties, String destinations) {
         try {
             if (running) {
                 return;
@@ -73,7 +73,8 @@ public class CanalMQStarter {
 
             shutdownThread = new Thread() {
 
-                public void run() {
+                @Override
+				public void run() {
                     try {
                         logger.info("## stop the MQ workers");
                         running = false;
@@ -94,7 +95,7 @@ public class CanalMQStarter {
         }
     }
 
-    public synchronized void destroy() {
+	public synchronized void destroy() {
         running = false;
         if (executorService != null) {
             executorService.shutdown();
@@ -102,37 +103,41 @@ public class CanalMQStarter {
         if (canalMQProducer != null) {
             canalMQProducer.stop();
         }
-        if (shutdownThread != null) {
-            Runtime.getRuntime().removeShutdownHook(shutdownThread);
-            shutdownThread = null;
-        }
+        if (shutdownThread == null) {
+			return;
+		}
+		Runtime.getRuntime().removeShutdownHook(shutdownThread);
+		shutdownThread = null;
     }
 
-    public synchronized void startDestination(String destination) {
+	public synchronized void startDestination(String destination) {
         CanalInstance canalInstance = canalServer.getCanalInstances().get(destination);
-        if (canalInstance != null) {
-            stopDestination(destination);
-            CanalMQRunnable canalMQRunnable = new CanalMQRunnable(destination);
-            canalMQWorks.put(canalInstance.getDestination(), canalMQRunnable);
-            executorService.execute(canalMQRunnable);
-            logger.info("## Start the MQ work of destination:" + destination);
-        }
+        if (canalInstance == null) {
+			return;
+		}
+		stopDestination(destination);
+		CanalMQRunnable canalMQRunnable = new CanalMQRunnable(destination);
+		canalMQWorks.put(canalInstance.getDestination(), canalMQRunnable);
+		executorService.execute(canalMQRunnable);
+		logger.info("## Start the MQ work of destination:" + destination);
     }
 
-    public synchronized void stopDestination(String destination) {
+	public synchronized void stopDestination(String destination) {
         CanalMQRunnable canalMQRunable = canalMQWorks.get(destination);
-        if (canalMQRunable != null) {
-            canalMQRunable.stop();
-            canalMQWorks.remove(destination);
-            logger.info("## Stop the MQ work of destination:" + destination);
-        }
+        if (canalMQRunable == null) {
+			return;
+		}
+		canalMQRunable.stop();
+		canalMQWorks.remove(destination);
+		logger.info("## Stop the MQ work of destination:" + destination);
     }
 
-    private void worker(String destination, AtomicBoolean destinationRunning) {
+	private void worker(String destination, AtomicBoolean destinationRunning) {
         while (!running || !destinationRunning.get()) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
@@ -147,6 +152,7 @@ public class CanalMQStarter {
                     try {
                         Thread.sleep(3000);
                     } catch (InterruptedException e) {
+						logger.error(e.getMessage(), e);
                         // ignore
                     }
                     continue;
@@ -196,6 +202,7 @@ public class CanalMQStarter {
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
+								logger.error(e.getMessage(), e);
                                 // ignore
                             }
                         }
@@ -213,19 +220,18 @@ public class CanalMQStarter {
     private class CanalMQRunnable implements Runnable {
 
         private String destination;
+		private AtomicBoolean running = new AtomicBoolean(true);
 
-        CanalMQRunnable(String destination){
+		CanalMQRunnable(String destination){
             this.destination = destination;
         }
 
-        private AtomicBoolean running = new AtomicBoolean(true);
-
-        @Override
+		@Override
         public void run() {
             worker(destination, running);
         }
 
-        public void stop() {
+		public void stop() {
             running.set(false);
         }
     }

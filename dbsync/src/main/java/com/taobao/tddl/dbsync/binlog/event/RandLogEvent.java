@@ -34,7 +34,10 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  */
 public final class RandLogEvent extends LogEvent {
 
-    /**
+    /* Rand event data */
+    public static final int RAND_SEED1_OFFSET = 0;
+	public static final int RAND_SEED2_OFFSET = 8;
+	/**
      * Fixed data part: Empty
      * <p>
      * Variable data part:
@@ -45,13 +48,9 @@ public final class RandLogEvent extends LogEvent {
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log
      */
     private final long      seed1;
-    private final long      seed2;
+	private final long      seed2;
 
-    /* Rand event data */
-    public static final int RAND_SEED1_OFFSET = 0;
-    public static final int RAND_SEED2_OFFSET = 8;
-
-    public RandLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	public RandLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         super(header);
 
         /* The Post-Header is empty. The Variable Data part begins immediately. */
@@ -61,7 +60,7 @@ public final class RandLogEvent extends LogEvent {
         seed2 = buffer.getLong64(); // !uint8korr(buf+RAND_SEED2_OFFSET);
     }
 
-    public final String getQuery() {
-        return "SET SESSION rand_seed1 = " + seed1 + " , rand_seed2 = " + seed2;
+	public final String getQuery() {
+        return new StringBuilder().append("SET SESSION rand_seed1 = ").append(seed1).append(" , rand_seed2 = ").append(seed2).toString();
     }
 }

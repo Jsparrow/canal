@@ -56,7 +56,8 @@ public class ESEtlService extends AbstractEtlService {
         return importData(sql, params);
     }
 
-    protected boolean executeSqlImport(DataSource ds, String sql, List<Object> values,
+    @Override
+	protected boolean executeSqlImport(DataSource ds, String sql, List<Object> values,
                                        AdapterConfig.AdapterMapping adapterMapping, AtomicLong impCount,
                                        List<String> errMsg) {
         try {
@@ -187,7 +188,7 @@ public class ESEtlService extends AbstractEtlService {
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    errMsg.add(mapping.get_index() + " etl failed! ==>" + e.getMessage());
+                    errMsg.add(new StringBuilder().append(mapping.get_index()).append(" etl failed! ==>").append(e.getMessage()).toString());
                     throw new RuntimeException(e);
                 }
                 return count;

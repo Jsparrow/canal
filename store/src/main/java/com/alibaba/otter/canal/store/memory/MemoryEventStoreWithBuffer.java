@@ -1,6 +1,5 @@
 package com.alibaba.otter.canal.store.memory;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,6 +21,7 @@ import com.alibaba.otter.canal.store.helper.CanalEventUtils;
 import com.alibaba.otter.canal.store.model.BatchMode;
 import com.alibaba.otter.canal.store.model.Event;
 import com.alibaba.otter.canal.store.model.Events;
+import java.util.Collections;
 
 /**
  * 基于内存buffer构建内存memory store
@@ -35,7 +35,7 @@ import com.alibaba.otter.canal.store.model.Events;
  * @author jianghang 2012-6-20 上午09:46:31
  * @version 1.0.0
  */
-public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge implements CanalEventStore<Event>, CanalStoreScavenge {
+public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge implements CanalEventStore<Event> {
 
     private static final long INIT_SEQUENCE = -1;
     private int               bufferSize    = 16 * 1024;
@@ -80,7 +80,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         this.batchMode = batchMode;
     }
 
-    public void start() throws CanalStoreException {
+    @Override
+	public void start() {
         super.start();
         if (Integer.bitCount(bufferSize) != 1) {
             throw new IllegalArgumentException("bufferSize must be a power of 2");
@@ -90,13 +91,15 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         entries = new Event[bufferSize];
     }
 
-    public void stop() throws CanalStoreException {
+    @Override
+	public void stop() {
         super.stop();
 
         cleanAll();
     }
 
-    public void put(List<Event> data) throws InterruptedException, CanalStoreException {
+    @Override
+	public void put(List<Event> data) throws InterruptedException {
         if (data == null || data.isEmpty()) {
             return;
         }
@@ -121,7 +124,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public boolean put(List<Event> data, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
+    @Override
+	public boolean put(List<Event> data, long timeout, TimeUnit unit) throws InterruptedException {
         if (data == null || data.isEmpty()) {
             return true;
         }
@@ -151,7 +155,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public boolean tryPut(List<Event> data) throws CanalStoreException {
+    @Override
+	public boolean tryPut(List<Event> data) {
         if (data == null || data.isEmpty()) {
             return true;
         }
@@ -170,16 +175,19 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public void put(Event data) throws InterruptedException, CanalStoreException {
-        put(Arrays.asList(data));
+    @Override
+	public void put(Event data) throws InterruptedException {
+        put(Collections.singletonList(data));
     }
 
-    public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
-        return put(Arrays.asList(data), timeout, unit);
+    @Override
+	public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException {
+        return put(Collections.singletonList(data), timeout, unit);
     }
 
-    public boolean tryPut(Event data) throws CanalStoreException {
-        return tryPut(Arrays.asList(data));
+    @Override
+	public boolean tryPut(Event data) {
+        return tryPut(Collections.singletonList(data));
     }
 
     /**
@@ -210,13 +218,15 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         notEmpty.signal();
     }
 
-    public Events<Event> get(Position start, int batchSize) throws InterruptedException, CanalStoreException {
+    @Override
+	public Events<Event> get(Position start, int batchSize) throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
         try {
             try {
-                while (!checkUnGetSlotAt((LogPosition) start, batchSize))
-                    notEmpty.await();
+                while (!checkUnGetSlotAt((LogPosition) start, batchSize)) {
+					notEmpty.await();
+				}
             } catch (InterruptedException ie) {
                 notEmpty.signal(); // propagate to non-interrupted thread
                 throw ie;
@@ -228,8 +238,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public Events<Event> get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException,
-                                                                                        CanalStoreException {
+    @Override
+	public Events<Event> get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
         lock.lockInterruptibly();
@@ -257,7 +267,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public Events<Event> tryGet(Position start, int batchSize) throws CanalStoreException {
+    @Override
+	public Events<Event> tryGet(Position start, int batchSize) {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -267,7 +278,7 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    private Events<Event> doGet(Position start, int batchSize) throws CanalStoreException {
+    private Events<Event> doGet(Position start, int batchSize) {
         LogPosition startPosition = (LogPosition) start;
 
         long current = getSequence.get();
@@ -276,14 +287,14 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         long end = current;
         // 如果startPosition为null，说明是第一次，默认+1处理
         if (startPosition == null || !startPosition.getPostion().isIncluded()) { // 第一次订阅之后，需要包含一下start位置，防止丢失第一条记录
-            next = next + 1;
+            next += 1;
         }
 
         if (current >= maxAbleSequence) {
-            return new Events<Event>();
+            return new Events<>();
         }
 
-        Events<Event> result = new Events<Event>();
+        Events<Event> result = new Events<>();
         List<Event> entrys = result.getEvents();
         long memsize = 0;
         if (batchMode.isItemSize()) {
@@ -329,7 +340,7 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
 
         }
 
-        PositionRange<LogPosition> range = new PositionRange<LogPosition>();
+        PositionRange<LogPosition> range = new PositionRange<>();
         result.setPositionRange(range);
 
         range.setStart(CanalEventUtils.createPosition(entrys.get(0)));
@@ -348,17 +359,17 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
             }
         }
 
-        if (getSequence.compareAndSet(current, end)) {
-            getMemSize.addAndGet(memsize);
-            notFull.signal();
-            profiling(result.getEvents(), OP.GET);
-            return result;
-        } else {
-            return new Events<Event>();
-        }
+        if (!getSequence.compareAndSet(current, end)) {
+			return new Events<>();
+		}
+		getMemSize.addAndGet(memsize);
+		notFull.signal();
+		profiling(result.getEvents(), OP.GET);
+		return result;
     }
 
-    public LogPosition getFirstPosition() throws CanalStoreException {
+    @Override
+	public LogPosition getFirstPosition() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -387,7 +398,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public LogPosition getLatestPosition() throws CanalStoreException {
+    @Override
+	public LogPosition getLatestPosition() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -410,20 +422,22 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public void ack(Position position) throws CanalStoreException {
+    @Override
+	public void ack(Position position) {
         cleanUntil(position, -1L);
     }
 
-    public void ack(Position position, Long seqId) throws CanalStoreException {
+    @Override
+	public void ack(Position position, Long seqId) {
         cleanUntil(position, seqId);
     }
 
     @Override
-    public void cleanUntil(Position position) throws CanalStoreException {
+    public void cleanUntil(Position position) {
         cleanUntil(position, -1L);
     }
 
-    public void cleanUntil(Position position, Long seqId) throws CanalStoreException {
+    public void cleanUntil(Position position, Long seqId) {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -481,7 +495,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public void rollback() throws CanalStoreException {
+    @Override
+	public void rollback() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -492,7 +507,8 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    public void cleanAll() throws CanalStoreException {
+    @Override
+	public void cleanAll() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -552,7 +568,7 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
             long maxAbleSequence = putSequence.get();
             long next = current;
             if (startPosition == null || !startPosition.getPostion().isIncluded()) { // 第一次订阅之后，需要包含一下start位置，防止丢失第一条记录
-                next = next + 1;// 少一条数据
+                next += 1;// 少一条数据
             }
 
             if (current < maxAbleSequence && next + batchSize - 1 <= maxAbleSequence) {
@@ -623,81 +639,81 @@ public class MemoryEventStoreWithBuffer extends AbstractCanalStoreScavenge imple
         }
     }
 
-    private enum OP {
-        PUT, GET, ACK
-    }
-
     // ================ setter / getter ==================
     public int getBufferSize() {
         return this.bufferSize;
     }
 
-    public void setBufferSize(int bufferSize) {
+	public void setBufferSize(int bufferSize) {
         this.bufferSize = bufferSize;
     }
 
-    public void setBufferMemUnit(int bufferMemUnit) {
+	public void setBufferMemUnit(int bufferMemUnit) {
         this.bufferMemUnit = bufferMemUnit;
     }
 
-    public void setBatchMode(BatchMode batchMode) {
+	public void setBatchMode(BatchMode batchMode) {
         this.batchMode = batchMode;
     }
 
-    public void setDdlIsolation(boolean ddlIsolation) {
+	public void setDdlIsolation(boolean ddlIsolation) {
         this.ddlIsolation = ddlIsolation;
     }
 
-    public boolean isRaw() {
+	public boolean isRaw() {
         return raw;
     }
 
-    public void setRaw(boolean raw) {
+	public void setRaw(boolean raw) {
         this.raw = raw;
     }
 
-    public AtomicLong getPutSequence() {
+	public AtomicLong getPutSequence() {
         return putSequence;
     }
 
-    public AtomicLong getAckSequence() {
+	public AtomicLong getAckSequence() {
         return ackSequence;
     }
 
-    public AtomicLong getPutMemSize() {
+	public AtomicLong getPutMemSize() {
         return putMemSize;
     }
 
-    public AtomicLong getAckMemSize() {
+	public AtomicLong getAckMemSize() {
         return ackMemSize;
     }
 
-    public BatchMode getBatchMode() {
+	public BatchMode getBatchMode() {
         return batchMode;
     }
 
-    public AtomicLong getPutExecTime() {
+	public AtomicLong getPutExecTime() {
         return putExecTime;
     }
 
-    public AtomicLong getGetExecTime() {
+	public AtomicLong getGetExecTime() {
         return getExecTime;
     }
 
-    public AtomicLong getAckExecTime() {
+	public AtomicLong getAckExecTime() {
         return ackExecTime;
     }
 
-    public AtomicLong getPutTableRows() {
+	public AtomicLong getPutTableRows() {
         return putTableRows;
     }
 
-    public AtomicLong getGetTableRows() {
+	public AtomicLong getGetTableRows() {
         return getTableRows;
     }
 
-    public AtomicLong getAckTableRows() {
+	public AtomicLong getAckTableRows() {
         return ackTableRows;
+    }
+
+	private enum OP {
+        PUT, GET, ACK
     }
 
 }

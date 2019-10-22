@@ -17,7 +17,8 @@ public class PatternUtils {
     private static Map<String, Pattern> patterns = MigrateMap.makeComputingMap(new MapMaker().softValues(),
                                                      new Function<String, Pattern>() {
 
-                                                         public Pattern apply(String pattern) {
+                                                         @Override
+														public Pattern apply(String pattern) {
                                                              try {
                                                                  PatternCompiler pc = new Perl5Compiler();
                                                                  return pc.compile(pattern,

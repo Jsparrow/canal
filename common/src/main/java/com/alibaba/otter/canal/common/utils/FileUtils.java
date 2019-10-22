@@ -79,6 +79,7 @@ public class FileUtils {
                 try {
                     rf.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
                 rf = null;
@@ -90,6 +91,6 @@ public class FileUtils {
 
     public static void main(String[] args) {
         String res = readFileFromOffset("test2.txt", 2, "UTF-8");
-        System.out.println(res);
+        logger.info(res);
     }
 }

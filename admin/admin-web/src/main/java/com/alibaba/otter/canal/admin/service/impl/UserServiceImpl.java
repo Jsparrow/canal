@@ -9,6 +9,8 @@ import com.alibaba.otter.canal.admin.common.exception.ServiceException;
 import com.alibaba.otter.canal.admin.model.User;
 import com.alibaba.otter.canal.admin.service.UserService;
 import com.alibaba.otter.canal.protocol.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 用户信息业务层
@@ -19,30 +21,34 @@ import com.alibaba.otter.canal.protocol.SecurityUtil;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static byte[] seeds = "canal is best!".getBytes();
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	private static byte[] seeds = "canal is best!".getBytes();
 
-    public User find4Login(String username, String password) {
+    @Override
+	public User find4Login(String username, String password) {
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             return null;
         }
         User user = User.find.query().where().eq("username", username).findOne();
         if (user == null) {
-            throw new ServiceException("user:" + username + " auth failed!");
+            throw new ServiceException(new StringBuilder().append("user:").append(username).append(" auth failed!").toString());
         }
         try {
             byte[] pass = SecurityUtil.scramble411(password.getBytes(), seeds);
             if (!SecurityUtil.scrambleServerAuth(pass, SecurityUtil.hexStr2Bytes(user.getPassword()), seeds)) {
-                throw new ServiceException("user:" + user.getName() + " passwd incorrect!");
+                throw new ServiceException(new StringBuilder().append("user:").append(user.getName()).append(" passwd incorrect!").toString());
             }
         } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException("user:" + user.getName() + " auth failed!");
+            logger.error(e.getMessage(), e);
+			throw new ServiceException(new StringBuilder().append("user:").append(user.getName()).append(" auth failed!").toString());
         }
 
         user.setPassword("");
         return user;
     }
 
-    public void update(User user) {
+    @Override
+	public void update(User user) {
         User userTmp = User.find.query().where().eq("username", user.getUsername()).findOne();
         if (userTmp == null) {
             throw new ServiceException();
@@ -57,7 +63,8 @@ public class UserServiceImpl implements UserService {
             user.setId(userTmp.getId());
             user.setPassword(SecurityUtil.scrambleGenPass(user.getPassword().getBytes()));
         } catch (NoSuchAlgorithmException e) {
-            throw new ServiceException("passwd process failed");
+            logger.error(e.getMessage(), e);
+			throw new ServiceException("passwd process failed");
         }
 
         user.update("username", "nn:password");

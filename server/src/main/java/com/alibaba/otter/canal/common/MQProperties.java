@@ -51,7 +51,260 @@ public class MQProperties {
     // 是否取消根据database进行hash
     private boolean    databaseHash           = true;
 
-    public static class CanalDestination {
+    public String getServers() {
+        return servers;
+    }
+
+	public void setServers(String servers) {
+        this.servers = servers;
+    }
+
+	public int getRetries() {
+        return retries;
+    }
+
+	public void setRetries(int retries) {
+        this.retries = retries;
+    }
+
+	public int getBatchSize() {
+        return batchSize;
+    }
+
+	public void setBatchSize(int batchSize) {
+        this.batchSize = batchSize;
+    }
+
+	public int getLingerMs() {
+        return lingerMs;
+    }
+
+	public void setLingerMs(int lingerMs) {
+        this.lingerMs = lingerMs;
+    }
+
+	public long getBufferMemory() {
+        return bufferMemory;
+    }
+
+	public void setBufferMemory(long bufferMemory) {
+        this.bufferMemory = bufferMemory;
+    }
+
+	public int getCanalBatchSize() {
+        return canalBatchSize;
+    }
+
+	public void setCanalBatchSize(int canalBatchSize) {
+        this.canalBatchSize = canalBatchSize;
+    }
+
+	public Long getCanalGetTimeout() {
+        return canalGetTimeout;
+    }
+
+	public void setCanalGetTimeout(Long canalGetTimeout) {
+        this.canalGetTimeout = canalGetTimeout;
+    }
+
+	public boolean getFlatMessage() {
+        return flatMessage;
+    }
+
+	public void setFlatMessage(boolean flatMessage) {
+        this.flatMessage = flatMessage;
+    }
+
+	public boolean isFilterTransactionEntry() {
+        return filterTransactionEntry;
+    }
+
+	public void setFilterTransactionEntry(boolean filterTransactionEntry) {
+        this.filterTransactionEntry = filterTransactionEntry;
+    }
+
+	public String getProducerGroup() {
+        return producerGroup;
+    }
+
+	public void setProducerGroup(String producerGroup) {
+        this.producerGroup = producerGroup;
+    }
+
+	public String getCompressionType() {
+        return compressionType;
+    }
+
+	public void setCompressionType(String compressionType) {
+        this.compressionType = compressionType;
+    }
+
+	public String getAcks() {
+        return acks;
+    }
+
+	public void setAcks(String acks) {
+        this.acks = acks;
+    }
+
+	public String getAliyunAccessKey() {
+        return aliyunAccessKey;
+    }
+
+	public void setAliyunAccessKey(String aliyunAccessKey) {
+        this.aliyunAccessKey = aliyunAccessKey;
+    }
+
+	public String getAliyunSecretKey() {
+        return aliyunSecretKey;
+    }
+
+	public void setAliyunSecretKey(String aliyunSecretKey) {
+        this.aliyunSecretKey = aliyunSecretKey;
+    }
+
+	public int getMaxRequestSize() {
+        return maxRequestSize;
+    }
+
+	public void setMaxRequestSize(int maxRequestSize) {
+        this.maxRequestSize = maxRequestSize;
+    }
+
+	public Properties getProperties() {
+        return properties;
+    }
+
+	public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+	public boolean isEnableMessageTrace() {
+        return enableMessageTrace;
+    }
+
+	public void setEnableMessageTrace(boolean enableMessageTrace) {
+        this.enableMessageTrace = enableMessageTrace;
+    }
+
+	public String getAccessChannel() {
+        return accessChannel;
+    }
+
+	public void setAccessChannel(String accessChannel) {
+        this.accessChannel = accessChannel;
+    }
+
+	public String getCustomizedTraceTopic() {
+        return customizedTraceTopic;
+    }
+
+	public void setCustomizedTraceTopic(String customizedTraceTopic) {
+        this.customizedTraceTopic = customizedTraceTopic;
+    }
+
+	public String getNamespace() {
+        return namespace;
+    }
+
+	public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+	public boolean isKerberosEnable() {
+        return kerberosEnable;
+    }
+
+	public void setKerberosEnable(boolean kerberosEnable) {
+        this.kerberosEnable = kerberosEnable;
+    }
+
+	public String getKerberosKrb5FilePath() {
+        return kerberosKrb5FilePath;
+    }
+
+	public void setKerberosKrb5FilePath(String kerberosKrb5FilePath) {
+        this.kerberosKrb5FilePath = kerberosKrb5FilePath;
+    }
+
+	public String getKerberosJaasFilePath() {
+        return kerberosJaasFilePath;
+    }
+
+	public void setKerberosJaasFilePath(String kerberosJaasFilePath) {
+        this.kerberosJaasFilePath = kerberosJaasFilePath;
+    }
+
+	public void setPassword(String password) {
+        this.password = password;
+    }
+
+	public String getPassword() {
+        return password;
+    }
+
+	public void setUsername(String username) {
+        this.username = username;
+    }
+
+	public String getUsername() {
+        return username;
+    }
+
+	public void setVhost(String vhost) {
+        this.vhost = vhost;
+    }
+
+	public String getVhost() {
+        return vhost;
+    }
+
+	public long getAliyunUID() {
+        return aliyunUID;
+    }
+
+	public void setAliyunUID(long aliyunUID) {
+        this.aliyunUID = aliyunUID;
+    }
+
+	public String getExchange() {
+        return exchange;
+    }
+
+	public void setExchange(String exchange) {
+        this.exchange = exchange;
+    }
+
+	public int getParallelThreadSize() {
+        return parallelThreadSize;
+    }
+
+	public void setParallelThreadSize(int parallelThreadSize) {
+        this.parallelThreadSize = parallelThreadSize;
+    }
+
+	public boolean getDatabaseHash() {
+        return databaseHash;
+    }
+
+	public void setDatabaseHash(boolean databaseHash) {
+        this.databaseHash = databaseHash;
+    }
+
+	@Override
+    public String toString() {
+        return new StringBuilder().append("MQProperties [servers=").append(servers).append(", retries=").append(retries).append(", batchSize=").append(batchSize).append(", lingerMs=")
+				.append(lingerMs).append(", maxRequestSize=").append(maxRequestSize).append(", bufferMemory=").append(bufferMemory).append(", filterTransactionEntry=").append(filterTransactionEntry)
+				.append(", producerGroup=").append(producerGroup).append(", canalBatchSize=").append(canalBatchSize).append(", canalGetTimeout=").append(canalGetTimeout).append(", flatMessage=")
+				.append(flatMessage).append(", compressionType=").append(compressionType).append(", acks=").append(acks).append(", aliyunAccessKey=").append(aliyunAccessKey)
+				.append(", aliyunSecretKey=").append(aliyunSecretKey).append(", properties=").append(properties).append(", enableMessageTrace=").append(enableMessageTrace).append(", accessChannel=")
+				.append(accessChannel).append(", customizedTraceTopic=").append(customizedTraceTopic).append(", namespace=").append(namespace).append(", kerberosEnable=").append(kerberosEnable)
+				.append(", kerberosKrb5FilePath=").append(kerberosKrb5FilePath).append(", kerberosJaasFilePath=").append(kerberosJaasFilePath).append(", username=").append(username).append(", password=")
+				.append(password).append(", vhost=").append(vhost).append(", aliyunUID=").append(aliyunUID).append(", exchange=").append(exchange)
+				.append(", parallelThreadSize=").append(parallelThreadSize).append(",databaseHash=").append(databaseHash).append("]").toString();
+    }
+
+	public static class CanalDestination {
 
         private String  canalDestination;
         private String  topic;
@@ -107,262 +360,6 @@ public class MQProperties {
         public void setDynamicTopic(String dynamicTopic) {
             this.dynamicTopic = dynamicTopic;
         }
-    }
-
-    public String getServers() {
-        return servers;
-    }
-
-    public void setServers(String servers) {
-        this.servers = servers;
-    }
-
-    public int getRetries() {
-        return retries;
-    }
-
-    public void setRetries(int retries) {
-        this.retries = retries;
-    }
-
-    public int getBatchSize() {
-        return batchSize;
-    }
-
-    public void setBatchSize(int batchSize) {
-        this.batchSize = batchSize;
-    }
-
-    public int getLingerMs() {
-        return lingerMs;
-    }
-
-    public void setLingerMs(int lingerMs) {
-        this.lingerMs = lingerMs;
-    }
-
-    public long getBufferMemory() {
-        return bufferMemory;
-    }
-
-    public void setBufferMemory(long bufferMemory) {
-        this.bufferMemory = bufferMemory;
-    }
-
-    public int getCanalBatchSize() {
-        return canalBatchSize;
-    }
-
-    public void setCanalBatchSize(int canalBatchSize) {
-        this.canalBatchSize = canalBatchSize;
-    }
-
-    public Long getCanalGetTimeout() {
-        return canalGetTimeout;
-    }
-
-    public void setCanalGetTimeout(Long canalGetTimeout) {
-        this.canalGetTimeout = canalGetTimeout;
-    }
-
-    public boolean getFlatMessage() {
-        return flatMessage;
-    }
-
-    public void setFlatMessage(boolean flatMessage) {
-        this.flatMessage = flatMessage;
-    }
-
-    public boolean isFilterTransactionEntry() {
-        return filterTransactionEntry;
-    }
-
-    public void setFilterTransactionEntry(boolean filterTransactionEntry) {
-        this.filterTransactionEntry = filterTransactionEntry;
-    }
-
-    public String getProducerGroup() {
-        return producerGroup;
-    }
-
-    public void setProducerGroup(String producerGroup) {
-        this.producerGroup = producerGroup;
-    }
-
-    public String getCompressionType() {
-        return compressionType;
-    }
-
-    public void setCompressionType(String compressionType) {
-        this.compressionType = compressionType;
-    }
-
-    public String getAcks() {
-        return acks;
-    }
-
-    public void setAcks(String acks) {
-        this.acks = acks;
-    }
-
-    public String getAliyunAccessKey() {
-        return aliyunAccessKey;
-    }
-
-    public void setAliyunAccessKey(String aliyunAccessKey) {
-        this.aliyunAccessKey = aliyunAccessKey;
-    }
-
-    public String getAliyunSecretKey() {
-        return aliyunSecretKey;
-    }
-
-    public void setAliyunSecretKey(String aliyunSecretKey) {
-        this.aliyunSecretKey = aliyunSecretKey;
-    }
-
-    public int getMaxRequestSize() {
-        return maxRequestSize;
-    }
-
-    public void setMaxRequestSize(int maxRequestSize) {
-        this.maxRequestSize = maxRequestSize;
-    }
-
-    public Properties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Properties properties) {
-        this.properties = properties;
-    }
-
-    public boolean isEnableMessageTrace() {
-        return enableMessageTrace;
-    }
-
-    public void setEnableMessageTrace(boolean enableMessageTrace) {
-        this.enableMessageTrace = enableMessageTrace;
-    }
-
-    public String getAccessChannel() {
-        return accessChannel;
-    }
-
-    public void setAccessChannel(String accessChannel) {
-        this.accessChannel = accessChannel;
-    }
-
-    public String getCustomizedTraceTopic() {
-        return customizedTraceTopic;
-    }
-
-    public void setCustomizedTraceTopic(String customizedTraceTopic) {
-        this.customizedTraceTopic = customizedTraceTopic;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-
-    public boolean isKerberosEnable() {
-        return kerberosEnable;
-    }
-
-    public void setKerberosEnable(boolean kerberosEnable) {
-        this.kerberosEnable = kerberosEnable;
-    }
-
-    public String getKerberosKrb5FilePath() {
-        return kerberosKrb5FilePath;
-    }
-
-    public void setKerberosKrb5FilePath(String kerberosKrb5FilePath) {
-        this.kerberosKrb5FilePath = kerberosKrb5FilePath;
-    }
-
-    public String getKerberosJaasFilePath() {
-        return kerberosJaasFilePath;
-    }
-
-    public void setKerberosJaasFilePath(String kerberosJaasFilePath) {
-        this.kerberosJaasFilePath = kerberosJaasFilePath;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setVhost(String vhost) {
-        this.vhost = vhost;
-    }
-
-    public String getVhost() {
-        return vhost;
-    }
-
-    public long getAliyunUID() {
-        return aliyunUID;
-    }
-
-    public void setAliyunUID(long aliyunUID) {
-        this.aliyunUID = aliyunUID;
-    }
-
-    public String getExchange() {
-        return exchange;
-    }
-
-    public void setExchange(String exchange) {
-        this.exchange = exchange;
-    }
-
-    public int getParallelThreadSize() {
-        return parallelThreadSize;
-    }
-
-    public void setParallelThreadSize(int parallelThreadSize) {
-        this.parallelThreadSize = parallelThreadSize;
-    }
-
-    public boolean getDatabaseHash() {
-        return databaseHash;
-    }
-
-    public void setDatabaseHash(boolean databaseHash) {
-        this.databaseHash = databaseHash;
-    }
-
-    @Override
-    public String toString() {
-        return "MQProperties [servers=" + servers + ", retries=" + retries + ", batchSize=" + batchSize + ", lingerMs="
-               + lingerMs + ", maxRequestSize=" + maxRequestSize + ", bufferMemory=" + bufferMemory
-               + ", filterTransactionEntry=" + filterTransactionEntry + ", producerGroup=" + producerGroup
-               + ", canalBatchSize=" + canalBatchSize + ", canalGetTimeout=" + canalGetTimeout + ", flatMessage="
-               + flatMessage + ", compressionType=" + compressionType + ", acks=" + acks + ", aliyunAccessKey="
-               + aliyunAccessKey + ", aliyunSecretKey=" + aliyunSecretKey + ", properties=" + properties
-               + ", enableMessageTrace=" + enableMessageTrace + ", accessChannel=" + accessChannel
-               + ", customizedTraceTopic=" + customizedTraceTopic + ", namespace=" + namespace + ", kerberosEnable="
-               + kerberosEnable + ", kerberosKrb5FilePath=" + kerberosKrb5FilePath + ", kerberosJaasFilePath="
-               + kerberosJaasFilePath + ", username=" + username + ", password=" + password + ", vhost=" + vhost
-               + ", aliyunUID=" + aliyunUID + ", exchange=" + exchange + ", parallelThreadSize=" + parallelThreadSize
-               + ",databaseHash=" + databaseHash + "]";
     }
 
 }

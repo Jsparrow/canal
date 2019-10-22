@@ -23,81 +23,80 @@ public class AuthenticationInfo {
     private String            pwdPublicKey;       //公钥
     private boolean           enableDruid;        //是否使用druid加密解密数据库密码
 
-    public void initPwd() throws Exception{
+    public AuthenticationInfo(){
+    }
+
+	public AuthenticationInfo(InetSocketAddress address, String username, String password){
+        this(address, username, password, "");
+    }
+
+	public AuthenticationInfo(InetSocketAddress address, String username, String password, String defaultDatabaseName){
+        this.address = address;
+        this.username = username;
+        this.password = password;
+        this.defaultDatabaseName = defaultDatabaseName;
+    }
+
+	public void initPwd() throws Exception{
         if (enableDruid) {
             this.password = ConfigTools.decrypt(pwdPublicKey, password);
         }
     }
 
-    public AuthenticationInfo(){
-        super();
-    }
-
-    public AuthenticationInfo(InetSocketAddress address, String username, String password){
-        this(address, username, password, "");
-    }
-
-    public AuthenticationInfo(InetSocketAddress address, String username, String password, String defaultDatabaseName){
-        this.address = address;
-        this.username = username;
-        this.password = password;
-        this.defaultDatabaseName = defaultDatabaseName;
-    }
-
-    public InetSocketAddress getAddress() {
+	public InetSocketAddress getAddress() {
         return address;
     }
 
-    public void setAddress(InetSocketAddress address) {
+	public void setAddress(InetSocketAddress address) {
         this.address = address;
     }
 
-    public String getUsername() {
+	public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+	public void setUsername(String username) {
         this.username = username;
     }
 
-    public String getPassword() {
+	public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+	public void setPassword(String password) {
         this.password = password;
     }
 
-    public String getDefaultDatabaseName() {
+	public String getDefaultDatabaseName() {
         return defaultDatabaseName;
     }
 
-    public void setDefaultDatabaseName(String defaultDatabaseName) {
+	public void setDefaultDatabaseName(String defaultDatabaseName) {
         this.defaultDatabaseName = defaultDatabaseName;
     }
 
-    public String getPwdPublicKey() {
+	public String getPwdPublicKey() {
         return pwdPublicKey;
     }
 
-    public void setPwdPublicKey(String pwdPublicKey) {
+	public void setPwdPublicKey(String pwdPublicKey) {
         this.pwdPublicKey = pwdPublicKey;
     }
 
-    public boolean isEnableDruid() {
+	public boolean isEnableDruid() {
         return enableDruid;
     }
 
-    public void setEnableDruid(boolean enableDruid) {
+	public void setEnableDruid(boolean enableDruid) {
         this.enableDruid = enableDruid;
     }
 
-    @Override
+	@Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.DEFAULT_STYLE);
     }
 
-    @Override
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -108,7 +107,7 @@ public class AuthenticationInfo {
         return result;
     }
 
-    @Override
+	@Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

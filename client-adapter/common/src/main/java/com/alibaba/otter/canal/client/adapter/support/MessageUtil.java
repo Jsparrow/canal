@@ -19,7 +19,7 @@ public class MessageUtil {
             return null;
         }
         List<CanalEntry.Entry> entries = message.getEntries();
-        List<Dml> dmls = new ArrayList<Dml>(entries.size());
+        List<Dml> dmls = new ArrayList<>(entries.size());
         for (CanalEntry.Entry entry : entries) {
             if (entry.getEntryType() == CanalEntry.EntryType.TRANSACTIONBEGIN
                 || entry.getEntryType() == CanalEntry.EntryType.TRANSACTIONEND) {
@@ -71,11 +71,10 @@ public class MessageUtil {
                     }
 
                     for (CanalEntry.Column column : columns) {
-                        if (i == 0) {
-                            if (column.getIsKey()) {
-                                dml.getPkNames().add(column.getName());
-                            }
-                        }
+                        boolean condition = i == 0 && column.getIsKey();
+						if (condition) {
+						    dml.getPkNames().add(column.getName());
+						}
                         if (column.getIsNull()) {
                             row.put(column.getName(), null);
                         } else {
@@ -97,20 +96,18 @@ public class MessageUtil {
 
                     if (eventType == CanalEntry.EventType.UPDATE) {
                         Map<String, Object> rowOld = new LinkedHashMap<>();
-                        for (CanalEntry.Column column : rowData.getBeforeColumnsList()) {
-                            if (updateSet.contains(column.getName())) {
-                                if (column.getIsNull()) {
-                                    rowOld.put(column.getName(), null);
-                                } else {
-                                    rowOld.put(column.getName(),
-                                        JdbcTypeUtil.typeConvert(dml.getTable(),
-                                            column.getName(),
-                                            column.getValue(),
-                                            column.getSqlType(),
-                                            column.getMysqlType()));
-                                }
-                            }
-                        }
+                        rowData.getBeforeColumnsList().stream().filter(column -> updateSet.contains(column.getName())).forEach(column -> {
+						    if (column.getIsNull()) {
+						        rowOld.put(column.getName(), null);
+						    } else {
+						        rowOld.put(column.getName(),
+						            JdbcTypeUtil.typeConvert(dml.getTable(),
+						                column.getName(),
+						                column.getValue(),
+						                column.getSqlType(),
+						                column.getMysqlType()));
+						    }
+						});
                         // update操作将记录修改前的值
                         if (!rowOld.isEmpty()) {
                             old.add(rowOld);
@@ -132,13 +129,12 @@ public class MessageUtil {
     }
 
     public static List<Dml> flatMessage2Dml(String destination, String groupId, List<FlatMessage> flatMessages) {
-        List<Dml> dmls = new ArrayList<Dml>(flatMessages.size());
-        for (FlatMessage flatMessage : flatMessages) {
-            Dml dml = flatMessage2Dml(destination, groupId, flatMessage);
-            if (dml != null) {
+        List<Dml> dmls = new ArrayList<>(flatMessages.size());
+        flatMessages.stream().map(flatMessage -> flatMessage2Dml(destination, groupId, flatMessage)).forEach(dml -> {
+			if (dml != null) {
                 dmls.add(dml);
             }
-        }
+		});
 
         return dmls;
     }

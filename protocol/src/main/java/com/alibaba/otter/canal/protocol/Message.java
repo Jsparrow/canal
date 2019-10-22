@@ -18,11 +18,11 @@ public class Message implements Serializable {
 
     private static final long      serialVersionUID = 1234034768477580009L;
     private long                   id;
-    private List<CanalEntry.Entry> entries          = new ArrayList<CanalEntry.Entry>();
+    private List<CanalEntry.Entry> entries          = new ArrayList<>();
     // row data for performance, see:
     // https://github.com/alibaba/canal/issues/726
     private boolean                raw              = true;
-    private List<ByteString>       rawEntries       = new ArrayList<ByteString>();
+    private List<ByteString>       rawEntries       = new ArrayList<>();
 
     public Message(long id, List<Entry> entries){
         this.id = id;
@@ -84,7 +84,8 @@ public class Message implements Serializable {
         this.raw = raw;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 

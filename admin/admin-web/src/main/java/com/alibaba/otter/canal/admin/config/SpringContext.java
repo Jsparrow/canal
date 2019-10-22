@@ -19,7 +19,8 @@ public class SpringContext implements ApplicationContextAware {
     /*
      * 注入ApplicationContext
      */
-    public void setApplicationContext(final ApplicationContext context) throws BeansException {
+    @Override
+	public void setApplicationContext(final ApplicationContext context) {
         // 在加载Spring时自动获得context
         SpringContext.context = context;
     }

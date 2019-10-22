@@ -28,27 +28,23 @@ public class ClusterNodeAccessStrategy implements CanalNodeAccessStrategy {
     private IZkChildListener                 childListener;                                      // 监听所有的服务器列表
     private IZkDataListener                  dataListener;                                       // 监听当前的工作节点
     private ZkClientx                        zkClient;
-    private volatile List<InetSocketAddress> currentAddress = new ArrayList<InetSocketAddress>();
+    private volatile List<InetSocketAddress> currentAddress = new ArrayList<>();
     private volatile InetSocketAddress       runningAddress = null;
 
     public ClusterNodeAccessStrategy(String destination, ZkClientx zkClient){
         this.destination = destination;
         this.zkClient = zkClient;
-        childListener = new IZkChildListener() {
-
-            public void handleChildChange(String parentPath, List<String> currentChilds) throws Exception {
-                initClusters(currentChilds);
-            }
-
-        };
+        childListener = (String parentPath, List<String> currentChilds) -> initClusters(currentChilds);
 
         dataListener = new IZkDataListener() {
 
-            public void handleDataDeleted(String dataPath) throws Exception {
+            @Override
+			public void handleDataDeleted(String dataPath) throws Exception {
                 runningAddress = null;
             }
 
-            public void handleDataChange(String dataPath, Object data) throws Exception {
+            @Override
+			public void handleDataChange(String dataPath, Object data) throws Exception {
                 initRunning(data);
             }
 
@@ -68,7 +64,8 @@ public class ClusterNodeAccessStrategy implements CanalNodeAccessStrategy {
         return nextNode();
     }
 
-    public SocketAddress nextNode() {
+    @Override
+	public SocketAddress nextNode() {
         if (runningAddress != null) {// 如果服务已经启动，直接选择当前正在工作的节点
             return runningAddress;
         } else if (!currentAddress.isEmpty()) { // 如果不存在已经启动的服务，可能服务是一种lazy启动，随机选择一台触发服务器进行启动
@@ -80,9 +77,9 @@ public class ClusterNodeAccessStrategy implements CanalNodeAccessStrategy {
 
     private void initClusters(List<String> currentChilds) {
         if (currentChilds == null || currentChilds.isEmpty()) {
-            currentAddress = new ArrayList<InetSocketAddress>();
+            currentAddress = new ArrayList<>();
         } else {
-            List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
+            List<InetSocketAddress> addresses = new ArrayList<>();
             for (String address : currentChilds) {
                 String[] strs = StringUtils.split(address, ":");
                 if (strs != null && strs.length == 2) {

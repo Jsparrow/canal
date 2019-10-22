@@ -13,41 +13,44 @@ import com.taobao.tddl.dbsync.binlog.event.TableMapLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.TableMapLogEvent.ColumnInfo;
 import com.taobao.tddl.dbsync.binlog.event.XidLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.mariadb.AnnotateRowsEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BaseLogFetcherTest {
 
-    protected String  binlogFileName = "mysql-bin.000001";
+    private static final Logger logger = LoggerFactory.getLogger(BaseLogFetcherTest.class);
+	protected String  binlogFileName = "mysql-bin.000001";
     protected Charset charset        = Charset.forName("utf-8");
 
     protected void parseQueryEvent(QueryLogEvent event) {
-        System.out.println(String.format("================> binlog[%s:%s] , name[%s]",
+        logger.info(String.format("================> binlog[%s:%s] , name[%s]",
             binlogFileName,
             event.getHeader().getLogPos() - event.getHeader().getEventLen(),
             event.getCatalog()));
-        System.out.println("sql : " + event.getQuery());
+        logger.info("sql : " + event.getQuery());
     }
 
     protected void parseRowsQueryEvent(RowsQueryLogEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
+        logger.info("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
     }
 
     protected void parseAnnotateRowsEvent(AnnotateRowsEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
+        logger.info("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
     }
 
     protected void parseXidEvent(XidLogEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("xid : " + event.getXid());
+        logger.info("xid : " + event.getXid());
     }
 
     protected void parseRowsEvent(RowsLogEvent event) {
         try {
-            System.out.println(String.format("================> binlog[%s:%s] , name[%s,%s]",
+            logger.info(String.format("================> binlog[%s:%s] , name[%s,%s]",
                 binlogFileName,
                 event.getHeader().getLogPos() - event.getHeader().getEventLen(),
                 event.getTable().getDbName(),
@@ -66,12 +69,12 @@ public class BaseLogFetcherTest {
                     parseOneRow(event, buffer, columns, false);
                 } else {
                     // update需要处理before/after
-                    System.out.println("-------> before");
+                    logger.info("-------> before");
                     parseOneRow(event, buffer, columns, false);
                     if (!buffer.nextOneRow(changeColumns, true)) {
                         break;
                     }
-                    System.out.println("-------> after");
+                    logger.info("-------> after");
                     parseOneRow(event, buffer, changeColumns, true);
                 }
 
@@ -104,9 +107,9 @@ public class BaseLogFetcherTest {
             } else {
                 final Serializable value = buffer.getValue();
                 if (value instanceof byte[]) {
-                    System.out.println(new String((byte[]) value));
+                    logger.info(new String((byte[]) value));
                 } else {
-                    System.out.println(value);
+                    logger.info(String.valueOf(value));
                 }
             }
         }

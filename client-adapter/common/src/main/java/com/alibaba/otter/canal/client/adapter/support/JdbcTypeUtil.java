@@ -78,7 +78,7 @@ public class JdbcTypeUtil {
 
     public static Object typeConvert(String tableName ,String columnName, String value, int sqlType, String mysqlType) {
         if (value == null
-            || (value.equals("") && !(isText(mysqlType) || sqlType == Types.CHAR || sqlType == Types.VARCHAR || sqlType == Types.LONGVARCHAR))) {
+            || ("".equals(value) && !(isText(mysqlType) || sqlType == Types.CHAR || sqlType == Types.VARCHAR || sqlType == Types.LONGVARCHAR))) {
             return null;
         }
 
@@ -163,7 +163,8 @@ public class JdbcTypeUtil {
             }
             return res;
         } catch (Exception e) {
-            logger.error("table: {} column: {}, failed convert type {} to {}", tableName, columnName, value, sqlType);
+            logger.error(e.getMessage(), e);
+			logger.error("table: {} column: {}, failed convert type {} to {}", tableName, columnName, value, sqlType);
             return value;
         }
     }

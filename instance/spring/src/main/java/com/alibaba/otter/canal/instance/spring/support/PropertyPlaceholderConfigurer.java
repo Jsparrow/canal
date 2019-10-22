@@ -9,6 +9,8 @@ import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 扩展Spring的
@@ -21,7 +23,8 @@ import org.springframework.util.Assert;
  */
 public class PropertyPlaceholderConfigurer extends org.springframework.beans.factory.config.PropertyPlaceholderConfigurer implements ResourceLoaderAware, InitializingBean {
 
-    private static final String           PLACEHOLDER_PREFIX = "${";
+    private static final Logger logger = LoggerFactory.getLogger(PropertyPlaceholderConfigurer.class);
+	private static final String           PLACEHOLDER_PREFIX = "${";
     private static final String           PLACEHOLDER_SUFFIX = "}";
     public static ThreadLocal<Properties> propertiesLocal    = new ThreadLocal<Properties>() {
 
@@ -39,7 +42,8 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
         setIgnoreUnresolvablePlaceholders(true);
     }
 
-    public void setResourceLoader(ResourceLoader loader) {
+    @Override
+	public void setResourceLoader(ResourceLoader loader) {
         this.loader = loader;
     }
 
@@ -47,7 +51,8 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
         this.locationNames = locations;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    @Override
+	public void afterPropertiesSet() throws Exception {
         Assert.notNull(loader, "no resourceLoader");
 
         if (locationNames != null) {
@@ -56,19 +61,18 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
             }
         }
 
-        if (locationNames != null) {
-            List<Resource> resources = new ArrayList<Resource>(locationNames.length);
+        if (locationNames == null) {
+			return;
+		}
+		List<Resource> resources = new ArrayList<>(locationNames.length);
+		for (String location : locationNames) {
+		    location = trimToNull(location);
 
-            for (String location : locationNames) {
-                location = trimToNull(location);
-
-                if (location != null) {
-                    resources.add(loader.getResource(location));
-                }
-            }
-
-            super.setLocations(resources.toArray(new Resource[resources.size()]));
-        }
+		    if (location != null) {
+		        resources.add(loader.getResource(location));
+		    }
+		}
+		super.setLocations(resources.toArray(new Resource[resources.size()]));
     }
 
     private String resolveSystemPropertyPlaceholders(String text) {
@@ -88,15 +92,11 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
                         buf.replace(startIndex, endIndex + PLACEHOLDER_SUFFIX.length(), value);
                         nextIndex = startIndex + value.length();
                     } else {
-                        System.err.println("Could not resolve placeholder '"
-                                           + placeholder
-                                           + "' in ["
-                                           + text
-                                           + "] as system property: neither system property nor environment variable found");
+                        logger.error(new StringBuilder().append("Could not resolve placeholder '").append(placeholder).append("' in [").append(text).append("] as system property: neither system property nor environment variable found").toString());
                     }
                 } catch (Throwable ex) {
-                    System.err.println("Could not resolve placeholder '" + placeholder + "' in [" + text
-                                       + "] as system property: " + ex);
+                    logger.error(new StringBuilder().append("Could not resolve placeholder '").append(placeholder).append("' in [").append(text).append("] as system property: ").append(ex)
+							.toString());
                 }
 
                 startIndex = buf.indexOf(PLACEHOLDER_PREFIX, nextIndex);
@@ -153,7 +153,29 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
         return trimToEmpty(propVal);
     }
 
-    private static class DefaultablePlaceholder {
+    private String trimToNull(String str) {
+        if (str == null) {
+            return null;
+        }
+
+        String result = str.trim();
+
+        if (result == null || result.isEmpty()) {
+            return null;
+        }
+
+        return result;
+    }
+
+	public static String trimToEmpty(String str) {
+        if (str == null) {
+            return "";
+        }
+
+        return str.trim();
+    }
+
+	private static class DefaultablePlaceholder {
 
         private final String defaultValue;
         private final String placeholder;
@@ -170,27 +192,5 @@ public class PropertyPlaceholderConfigurer extends org.springframework.beans.fac
             this.placeholder = placeholder;
             this.defaultValue = defaultValue;
         }
-    }
-
-    private String trimToNull(String str) {
-        if (str == null) {
-            return null;
-        }
-
-        String result = str.trim();
-
-        if (result == null || result.length() == 0) {
-            return null;
-        }
-
-        return result;
-    }
-
-    public static String trimToEmpty(String str) {
-        if (str == null) {
-            return "";
-        }
-
-        return str.trim();
     }
 }

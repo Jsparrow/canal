@@ -9,9 +9,10 @@ import com.alibaba.otter.canal.parse.driver.mysql.utils.LengthCodedStringReader;
 
 public class RowDataPacket extends PacketWithHeaderPacket {
 
-    private List<String> columns = new ArrayList<String>();
+    private List<String> columns = new ArrayList<>();
 
-    public void fromBytes(byte[] data) throws IOException {
+    @Override
+	public void fromBytes(byte[] data) throws IOException {
         int index = 0;
         LengthCodedStringReader reader = new LengthCodedStringReader(null, index);
         do {
@@ -19,7 +20,8 @@ public class RowDataPacket extends PacketWithHeaderPacket {
         } while (reader.getIndex() < data.length);
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 
@@ -31,8 +33,9 @@ public class RowDataPacket extends PacketWithHeaderPacket {
         return columns;
     }
 
-    public String toString() {
-        return "RowDataPacket [columns=" + columns + "]";
+    @Override
+	public String toString() {
+        return new StringBuilder().append("RowDataPacket [columns=").append(columns).append("]").toString();
     }
 
 }

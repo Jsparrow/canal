@@ -10,10 +10,14 @@ import org.junit.Test;
 
 import com.alibaba.otter.canal.parse.driver.mysql.packets.server.ResultSetPacket;
 import com.alibaba.otter.canal.parse.inbound.mysql.MysqlConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class TableMetaCacheTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(TableMetaCacheTest.class);
+
+	@Test
     public void testSimple() throws IOException {
         MysqlConnection connection = new MysqlConnection(new InetSocketAddress("127.0.0.1", 3306), "root", "hello");
         try {
@@ -28,7 +32,7 @@ public class TableMetaCacheTest {
             createDDL = packets.get(0).getFieldValues().get(1);
         }
 
-        System.out.println(createDDL);
+        logger.info(createDDL);
 
         // TableMetaCache cache = new TableMetaCache(connection);
         // TableMeta meta = cache.getTableMeta("otter1", "otter_stability1");

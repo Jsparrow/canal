@@ -95,7 +95,8 @@ public class RocketMQCanalConnector implements CanalMQConnector {
         this.secretKey = secretKey;
     }
 
-    public void connect() throws CanalClientException {
+    @Override
+	public void connect() {
         RPCHook rpcHook = null;
         if (null != accessKey && accessKey.length() > 0 && null != secretKey && secretKey.length() > 0) {
             SessionCredentials sessionCredentials = new SessionCredentials();
@@ -122,16 +123,19 @@ public class RocketMQCanalConnector implements CanalMQConnector {
         }
     }
 
-    public void disconnect() throws CanalClientException {
+    @Override
+	public void disconnect() {
         rocketMQConsumer.shutdown();
         connected = false;
     }
 
-    public boolean checkValid() throws CanalClientException {
+    @Override
+	public boolean checkValid() {
         return connected;
     }
 
-    public synchronized void subscribe(String filter) throws CanalClientException {
+    @Override
+	public synchronized void subscribe(String filter) {
         if (connected) {
             return;
         }
@@ -140,19 +144,15 @@ public class RocketMQCanalConnector implements CanalMQConnector {
                 this.connect();
             }
             rocketMQConsumer.subscribe(this.topic, "*");
-            rocketMQConsumer.registerMessageListener(new MessageListenerOrderly() {
-
-                @Override
-                public ConsumeOrderlyStatus consumeMessage(List<MessageExt> messageExts, ConsumeOrderlyContext context) {
-                    context.setAutoCommit(true);
-                    boolean isSuccess = process(messageExts);
-                    if (isSuccess) {
-                        return ConsumeOrderlyStatus.SUCCESS;
-                    } else {
-                        return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
-                    }
-                }
-            });
+            rocketMQConsumer.registerMessageListener((List<MessageExt> messageExts, ConsumeOrderlyContext context) -> {
+			    context.setAutoCommit(true);
+			    boolean isSuccess = process(messageExts);
+			    if (isSuccess) {
+			        return ConsumeOrderlyStatus.SUCCESS;
+			    } else {
+			        return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
+			    }
+			});
             rocketMQConsumer.start();
         } catch (MQClientException ex) {
             connected = false;
@@ -208,16 +208,18 @@ public class RocketMQCanalConnector implements CanalMQConnector {
         return isCompleted && isSuccess;
     }
 
-    public void subscribe() throws CanalClientException {
+    @Override
+	public void subscribe() {
         this.subscribe(null);
     }
 
-    public void unsubscribe() throws CanalClientException {
+    @Override
+	public void unsubscribe() {
         this.rocketMQConsumer.unsubscribe(this.topic);
     }
 
     @Override
-    public List<Message> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getList(Long timeout, TimeUnit unit) {
         List<Message> messages = getListWithoutAck(timeout, unit);
         if (messages != null && !messages.isEmpty()) {
             ack();
@@ -226,7 +228,7 @@ public class RocketMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) {
         try {
             if (this.lastGetBatchMessage != null) {
                 throw new CanalClientException("mq get/ack not support concurrent & async ack");
@@ -245,7 +247,7 @@ public class RocketMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) {
         List<FlatMessage> messages = getFlatListWithoutAck(timeout, unit);
         if (messages != null && !messages.isEmpty()) {
             ack();
@@ -254,7 +256,7 @@ public class RocketMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) {
         try {
             if (this.lastGetBatchMessage != null) {
                 throw new CanalClientException("mq get/ack not support concurrent & async ack");
@@ -273,13 +275,14 @@ public class RocketMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void ack() throws CanalClientException {
+    public void ack() {
         try {
             if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.ack();
             }
         } catch (Throwable e) {
-            if (this.lastGetBatchMessage != null) {
+            logger.error(e.getMessage(), e);
+			if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.fail();
             }
         } finally {
@@ -288,7 +291,7 @@ public class RocketMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void rollback() throws CanalClientException {
+    public void rollback() {
         try {
             if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.fail();
@@ -298,32 +301,33 @@ public class RocketMQCanalConnector implements CanalMQConnector {
         }
     }
 
-    public Message get(int batchSize) throws CanalClientException {
+    @Override
+	public Message get(int batchSize) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message get(int batchSize, Long timeout, TimeUnit unit) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message getWithoutAck(int batchSize) throws CanalClientException {
+    public Message getWithoutAck(int batchSize) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void ack(long batchId) throws CanalClientException {
+    public void ack(long batchId) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void rollback(long batchId) throws CanalClientException {
+    public void rollback(long batchId) {
         throw new CanalClientException("mq not support this method");
     }
 

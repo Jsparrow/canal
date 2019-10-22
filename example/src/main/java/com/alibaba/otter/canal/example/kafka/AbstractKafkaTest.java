@@ -1,6 +1,8 @@
 package com.alibaba.otter.canal.example.kafka;
 
 import com.alibaba.otter.canal.example.BaseCanalClientTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Kafka 测试基类
@@ -10,7 +12,8 @@ import com.alibaba.otter.canal.example.BaseCanalClientTest;
  */
 public abstract class AbstractKafkaTest extends BaseCanalClientTest {
 
-    public static String  topic     = "example";
+    private static final Logger logger = LoggerFactory.getLogger(AbstractKafkaTest.class);
+	public static String  topic     = "example";
     public static Integer partition = null;
     public static String  groupId   = "g4";
     public static String  servers   = "slave1:6667,slave2:6667,slave3:6667";
@@ -20,6 +23,7 @@ public abstract class AbstractKafkaTest extends BaseCanalClientTest {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
     }
 }

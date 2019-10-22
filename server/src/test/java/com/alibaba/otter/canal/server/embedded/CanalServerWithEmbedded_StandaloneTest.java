@@ -11,11 +11,13 @@ import com.alibaba.otter.canal.instance.manager.model.CanalParameter.MetaMode;
 import com.alibaba.otter.canal.instance.manager.model.CanalParameter.SourcingType;
 import com.alibaba.otter.canal.instance.manager.model.CanalParameter.StorageMode;
 import org.junit.Ignore;
+import java.util.Collections;
 
 @Ignore
 public class CanalServerWithEmbedded_StandaloneTest extends BaseCanalServerWithEmbededTest {
 
-    protected Canal buildCanal() {
+    @Override
+	protected Canal buildCanal() {
         Canal canal = new Canal();
         canal.setId(1L);
         canal.setName(DESTINATION);
@@ -23,7 +25,7 @@ public class CanalServerWithEmbedded_StandaloneTest extends BaseCanalServerWithE
 
         CanalParameter parameter = new CanalParameter();
 
-        parameter.setZkClusters(Arrays.asList("127.0.0.1:2188"));
+        parameter.setZkClusters(Collections.singletonList("127.0.0.1:2188"));
         parameter.setMetaMode(MetaMode.MEMORY);
         parameter.setHaMode(HAMode.HEARTBEAT);
         parameter.setIndexMode(IndexMode.MEMORY);

@@ -50,6 +50,7 @@ public class PlainCanal {
 
     @Override
     public String toString() {
-        return "PlainCanal [properties=" + properties + ", md5=" + md5 + ", status=" + status + "]";
+        return new StringBuilder().append("PlainCanal [properties=").append(properties).append(", md5=").append(md5).append(", status=").append(status).append("]")
+				.toString();
     }
 }

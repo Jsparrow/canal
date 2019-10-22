@@ -277,12 +277,12 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>, Applic
     }
 
     private Set<String> getNames(Iterable<String> prefixes) {
-        Set<String> names = new LinkedHashSet<String>();
+        Set<String> names = new LinkedHashSet<>();
         if (this.target != null) {
             PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(this.target.getClass());
             for (PropertyDescriptor descriptor : descriptors) {
                 String name = descriptor.getName();
-                if (!name.equals("class")) {
+                if (!"class".equals(name)) {
                     RelaxedNames relaxedNames = RelaxedNames.forCamelCase(name);
                     if (prefixes == null) {
                         for (String relaxedName : relaxedNames) {
@@ -291,8 +291,8 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>, Applic
                     } else {
                         for (String prefix : prefixes) {
                             for (String relaxedName : relaxedNames) {
-                                names.add(prefix + "." + relaxedName);
-                                names.add(prefix + "_" + relaxedName);
+                                names.add(new StringBuilder().append(prefix).append(".").append(relaxedName).toString());
+                                names.add(new StringBuilder().append(prefix).append("_").append(relaxedName).toString());
                             }
                         }
                     }
@@ -314,18 +314,18 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>, Applic
             // unnecessary calls to the PropertySource.
             return new DefaultPropertyNamePatternsMatcher(EXACT_DELIMITERS, true, names);
         }
-        if (relaxedTargetNames != null) {
-            // We can filter properties to those starting with the target name, but
-            // we can't do a complete filter since we need to trigger the
-            // unknown fields check
-            Set<String> relaxedNames = new HashSet<String>();
-            for (String relaxedTargetName : relaxedTargetNames) {
-                relaxedNames.add(relaxedTargetName);
-            }
-            return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true, relaxedNames);
-        }
-        // Not ideal, we basically can't filter anything
-        return PropertyNamePatternsMatcher.ALL;
+        if (relaxedTargetNames == null) {
+			// Not ideal, we basically can't filter anything
+			return PropertyNamePatternsMatcher.ALL;
+		}
+		// We can filter properties to those starting with the target name, but
+		// we can't do a complete filter since we need to trigger the
+		// unknown fields check
+		Set<String> relaxedNames = new HashSet<>();
+		for (String relaxedTargetName : relaxedTargetNames) {
+		    relaxedNames.add(relaxedTargetName);
+		}
+		return new DefaultPropertyNamePatternsMatcher(TARGET_NAME_DELIMITERS, true, relaxedNames);
     }
 
     private boolean isMapTarget() {
@@ -334,16 +334,16 @@ public class PropertiesConfigurationFactory<T> implements FactoryBean<T>, Applic
 
     private void checkForBindingErrors(RelaxedDataBinder dataBinder) throws BindException {
         BindingResult errors = dataBinder.getBindingResult();
-        if (errors.hasErrors()) {
-            logger.error("Properties configuration failed validation");
-            for (ObjectError error : errors.getAllErrors()) {
-                logger.error(this.messageSource != null ? this.messageSource.getMessage(error, Locale.getDefault())
-                                                          + " (" + error + ")" : error);
-            }
-            if (this.exceptionIfInvalid) {
-                throw new BindException(errors);
-            }
-        }
+        if (!errors.hasErrors()) {
+			return;
+		}
+		logger.error("Properties configuration failed validation");
+		for (ObjectError error : errors.getAllErrors()) {
+		    logger.error(this.messageSource != null ? new StringBuilder().append(this.messageSource.getMessage(error, Locale.getDefault())).append(" (").append(error).append(")").toString() : error);
+		}
+		if (this.exceptionIfInvalid) {
+		    throw new BindException(errors);
+		}
     }
 
     /**

@@ -6,18 +6,20 @@ import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 
 public abstract class AbstractBinlogParser<T> extends AbstractCanalLifeCycle implements BinlogParser<T> {
 
-    public void reset() {
+    @Override
+	public void reset() {
     }
 
-    public Entry parse(T event, TableMeta tableMeta) throws CanalParseException {
+    public Entry parse(T event, TableMeta tableMeta) {
         return null;
     }
 
-    public Entry parse(T event) throws CanalParseException {
+    public Entry parse(T event) {
         return null;
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         reset();
         super.stop();
     }

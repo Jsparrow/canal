@@ -79,7 +79,7 @@ public class HbaseEtlService extends AbstractEtlService {
             createTable();
 
             // 拼接sql
-            String sql = "SELECT * FROM `" + config.getHbaseMapping().getDatabase() + "`.`" + hbaseMapping.getTable() + "`";
+            String sql = new StringBuilder().append("SELECT * FROM `").append(config.getHbaseMapping().getDatabase()).append("`.`").append(hbaseMapping.getTable()).append("`").toString();
 
             return super.importData(sql, params);
         } catch (Exception e) {
@@ -93,7 +93,8 @@ public class HbaseEtlService extends AbstractEtlService {
     /**
      * 执行导入
      */
-    protected boolean executeSqlImport(DataSource ds, String sql, List<Object> values,
+    @Override
+	protected boolean executeSqlImport(DataSource ds, String sql, List<Object> values,
                                        AdapterConfig.AdapterMapping mapping, AtomicLong impCount, List<String> errMsg) {
         MappingConfig.HbaseMapping hbaseMapping = (MappingConfig.HbaseMapping) mapping;
         try {
@@ -233,7 +234,9 @@ public class HbaseEtlService extends AbstractEtlService {
                             }
                         }
 
-                        if (row.getRowKey() == null) throw new RuntimeException("RowKey 值为空");
+                        if (row.getRowKey() == null) {
+							throw new RuntimeException("RowKey 值为空");
+						}
 
                         rows.add(row);
                         complete = false;
@@ -254,8 +257,8 @@ public class HbaseEtlService extends AbstractEtlService {
                     }
 
                 } catch (Exception e) {
-                    logger.error(hbaseMapping.getHbaseTable() + " etl failed! ==>" + e.getMessage(), e);
-                    errMsg.add(hbaseMapping.getHbaseTable() + " etl failed! ==>" + e.getMessage());
+                    logger.error(new StringBuilder().append(hbaseMapping.getHbaseTable()).append(" etl failed! ==>").append(e.getMessage()).toString(), e);
+                    errMsg.add(new StringBuilder().append(hbaseMapping.getHbaseTable()).append(" etl failed! ==>").append(e.getMessage()).toString());
                     // throw new RuntimeException(e);
                 }
                 return i;
@@ -272,9 +275,9 @@ public class HbaseEtlService extends AbstractEtlService {
             return null;
         }
         if (val instanceof Number) {
-            return String.format("%0" + len + "d", (Number) ((Number) val).longValue());
+            return String.format(new StringBuilder().append("%0").append(len).append("d").toString(), (Number) ((Number) val).longValue());
         } else if (val instanceof String) {
-            return String.format("%0" + len + "d", Long.parseLong((String) val));
+            return String.format(new StringBuilder().append("%0").append(len).append("d").toString(), Long.parseLong((String) val));
         }
         return null;
     }

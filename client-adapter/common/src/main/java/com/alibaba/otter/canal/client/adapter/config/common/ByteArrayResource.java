@@ -92,7 +92,7 @@ public class ByteArrayResource extends AbstractResource {
      */
     @Override
     public String getDescription() {
-        return "Byte array resource [" + this.description + "]";
+        return new StringBuilder().append("Byte array resource [").append(this.description).append("]").toString();
     }
 
     /**

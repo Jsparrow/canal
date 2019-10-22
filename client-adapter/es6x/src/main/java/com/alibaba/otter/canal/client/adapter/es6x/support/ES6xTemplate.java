@@ -40,27 +40,27 @@ public class ES6xTemplate implements ESTemplate {
 
     private static final int                                  MAX_BATCH_SIZE = 1000;
 
-    private ESConnection                                      esConnection;
-
-    private ESBulkRequest                                     esBulkRequest;
-
-    // es 字段类型本地缓存
+	// es 字段类型本地缓存
     private static ConcurrentMap<String, Map<String, String>> esFieldTypes   = new ConcurrentHashMap<>();
 
-    public ES6xTemplate(ESConnection esConnection){
+	private ESConnection                                      esConnection;
+
+	private ESBulkRequest                                     esBulkRequest;
+
+	public ES6xTemplate(ESConnection esConnection){
         this.esConnection = esConnection;
         this.esBulkRequest = this.esConnection.new ES6xBulkRequest();
     }
 
-    public ESBulkRequest getBulk() {
+	public ESBulkRequest getBulk() {
         return esBulkRequest;
     }
 
-    public void resetBulkRequestBuilder() {
+	public void resetBulkRequestBuilder() {
         this.esBulkRequest.resetBulk();
     }
 
-    @Override
+	@Override
     public void insert(ESSyncConfig.ESMapping mapping, Object pkVal, Map<String, Object> esFieldData) {
         if (mapping.get_id() != null) {
             String parentVal = (String) esFieldData.remove("$parent_routing");
@@ -97,7 +97,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    @Override
+	@Override
     public void update(ESSyncConfig.ESMapping mapping, Object pkVal, Map<String, Object> esFieldData) {
         Map<String, Object> esFieldDataTmp = new LinkedHashMap<>(esFieldData.size());
         esFieldData.forEach((k, v) -> esFieldDataTmp.put(Util.cleanColumn(k), v));
@@ -105,7 +105,7 @@ public class ES6xTemplate implements ESTemplate {
         commitBulk();
     }
 
-    @Override
+	@Override
     public void updateByQuery(ESSyncConfig config, Map<String, Object> paramsTmp, Map<String, Object> esFieldData) {
         if (paramsTmp.isEmpty()) {
             return;
@@ -116,7 +116,7 @@ public class ES6xTemplate implements ESTemplate {
 
         // 查询sql批量更新
         DataSource ds = DatasourceConfig.DATA_SOURCES.get(config.getDataSourceKey());
-        StringBuilder sql = new StringBuilder("SELECT * FROM (" + mapping.getSql() + ") _v WHERE ");
+        StringBuilder sql = new StringBuilder(new StringBuilder().append("SELECT * FROM (").append(mapping.getSql()).append(") _v WHERE ").toString());
         List<Object> values = new ArrayList<>();
         paramsTmp.forEach((fieldName, value) -> {
             sql.append("_v.").append(fieldName).append("=? AND ");
@@ -144,7 +144,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    @Override
+	@Override
     public void delete(ESSyncConfig.ESMapping mapping, Object pkVal, Map<String, Object> esFieldData) {
         if (mapping.get_id() != null) {
             ESDeleteRequest esDeleteRequest = this.esConnection.new ES6xDeleteRequest(mapping.get_index(),
@@ -166,18 +166,19 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    @Override
+	@Override
     public void commit() {
-        if (getBulk().numberOfActions() > 0) {
-            ESBulkResponse response = getBulk().bulk();
-            if (response.hasFailures()) {
-                response.processFailBulkResponse("ES sync commit error ");
-            }
-            resetBulkRequestBuilder();
-        }
+        if (getBulk().numberOfActions() <= 0) {
+			return;
+		}
+		ESBulkResponse response = getBulk().bulk();
+		if (response.hasFailures()) {
+		    response.processFailBulkResponse("ES sync commit error ");
+		}
+		resetBulkRequestBuilder();
     }
 
-    @Override
+	@Override
     public Object getValFromRS(ESSyncConfig.ESMapping mapping, ResultSet resultSet, String fieldName,
                                String columnName) throws SQLException {
         fieldName = Util.cleanColumn(fieldName);
@@ -185,11 +186,10 @@ public class ES6xTemplate implements ESTemplate {
         String esType = getEsType(mapping, fieldName);
 
         Object value = resultSet.getObject(columnName);
-        if (value instanceof Boolean) {
-            if (!"boolean".equals(esType)) {
-                value = resultSet.getByte(columnName);
-            }
-        }
+        boolean condition = value instanceof Boolean && !"boolean".equals(esType);
+		if (condition) {
+		    value = resultSet.getByte(columnName);
+		}
 
         // 如果是对象类型
         if (mapping.getObjFields().containsKey(fieldName)) {
@@ -199,7 +199,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    @Override
+	@Override
     public Object getESDataFromRS(ESSyncConfig.ESMapping mapping, ResultSet resultSet,
                                   Map<String, Object> esFieldData) throws SQLException {
         SchemaItem schemaItem = mapping.getSchemaItem();
@@ -224,7 +224,7 @@ public class ES6xTemplate implements ESTemplate {
         return resultIdVal;
     }
 
-    @Override
+	@Override
     public Object getIdValFromRS(ESSyncConfig.ESMapping mapping, ResultSet resultSet) throws SQLException {
         SchemaItem schemaItem = mapping.getSchemaItem();
         String idFieldName = mapping.get_id() == null ? mapping.getPk() : mapping.get_id();
@@ -240,7 +240,7 @@ public class ES6xTemplate implements ESTemplate {
         return resultIdVal;
     }
 
-    @Override
+	@Override
     public Object getESDataFromRS(ESSyncConfig.ESMapping mapping, ResultSet resultSet, Map<String, Object> dmlOld,
                                   Map<String, Object> esFieldData) throws SQLException {
         SchemaItem schemaItem = mapping.getSchemaItem();
@@ -267,16 +267,14 @@ public class ES6xTemplate implements ESTemplate {
         return resultIdVal;
     }
 
-    @Override
+	@Override
     public Object getValFromData(ESSyncConfig.ESMapping mapping, Map<String, Object> dmlData, String fieldName,
                                  String columnName) {
         String esType = getEsType(mapping, fieldName);
         Object value = dmlData.get(columnName);
-        if (value instanceof Byte) {
-            if ("boolean".equals(esType)) {
-                value = ((Byte) value).intValue() != 0;
-            }
-        }
+        if (value instanceof Byte && "boolean".equals(esType)) {
+		    value = ((Byte) value).intValue() != 0;
+		}
 
         // 如果是对象类型
         if (mapping.getObjFields().containsKey(fieldName)) {
@@ -286,7 +284,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    @Override
+	@Override
     public Object getESDataFromDmlData(ESSyncConfig.ESMapping mapping, Map<String, Object> dmlData,
                                        Map<String, Object> esFieldData) {
         SchemaItem schemaItem = mapping.getSchemaItem();
@@ -311,7 +309,7 @@ public class ES6xTemplate implements ESTemplate {
         return resultIdVal;
     }
 
-    @Override
+	@Override
     public Object getESDataFromDmlData(ESSyncConfig.ESMapping mapping, Map<String, Object> dmlData,
                                        Map<String, Object> dmlOld, Map<String, Object> esFieldData) {
         SchemaItem schemaItem = mapping.getSchemaItem();
@@ -335,7 +333,7 @@ public class ES6xTemplate implements ESTemplate {
         return resultIdVal;
     }
 
-    /**
+	/**
      * 如果大于批量数则提交批次
      */
     private void commitBulk() {
@@ -344,7 +342,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    private void append4Update(ESMapping mapping, Object pkVal, Map<String, Object> esFieldData) {
+	private void append4Update(ESMapping mapping, Object pkVal, Map<String, Object> esFieldData) {
         if (mapping.get_id() != null) {
             String parentVal = (String) esFieldData.remove("$parent_routing");
             if (mapping.isUpsert()) {
@@ -377,7 +375,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    /**
+	/**
      * 获取es mapping中的属性类型
      *
      * @param mapping mapping配置
@@ -386,7 +384,7 @@ public class ES6xTemplate implements ESTemplate {
      */
     @SuppressWarnings("unchecked")
     private String getEsType(ESMapping mapping, String fieldName) {
-        String key = mapping.get_index() + "-" + mapping.get_type();
+        String key = new StringBuilder().append(mapping.get_index()).append("-").append(mapping.get_type()).toString();
         Map<String, String> fieldType = esFieldTypes.get(key);
         if (fieldType != null) {
             return fieldType.get(fieldName);
@@ -415,7 +413,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    private void putRelationDataFromRS(ESMapping mapping, SchemaItem schemaItem, ResultSet resultSet,
+	private void putRelationDataFromRS(ESMapping mapping, SchemaItem schemaItem, ResultSet resultSet,
                                        Map<String, Object> esFieldData) {
         // 添加父子文档关联信息
         if (!mapping.getRelations().isEmpty()) {
@@ -444,7 +442,7 @@ public class ES6xTemplate implements ESTemplate {
         }
     }
 
-    private void putRelationData(ESMapping mapping, SchemaItem schemaItem, Map<String, Object> dmlData,
+	private void putRelationData(ESMapping mapping, SchemaItem schemaItem, Map<String, Object> dmlData,
                                  Map<String, Object> esFieldData) {
         // 添加父子文档关联信息
         if (!mapping.getRelations().isEmpty()) {

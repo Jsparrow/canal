@@ -35,11 +35,15 @@ import com.alibaba.otter.canal.protocol.CanalPacket.Unsub;
 import com.alibaba.otter.canal.server.embedded.CanalServerWithEmbedded;
 import com.alibaba.otter.canal.server.netty.CanalServerWithNetty;
 import com.alibaba.otter.canal.server.netty.NettyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 @Ignore
 public class CanalServerTest {
 
-    protected static final String cluster1      = "127.0.0.1:2188";
+    private static final Logger logger = LoggerFactory.getLogger(CanalServerTest.class);
+	protected static final String cluster1      = "127.0.0.1:2188";
     protected static final String DESTINATION   = "ljhtest1";
     protected static final String DETECTING_SQL = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
     protected static final String MYSQL_ADDRESS = "127.0.0.1";
@@ -53,13 +57,10 @@ public class CanalServerTest {
     @Before
     public void setUp() {
         CanalServerWithEmbedded embeddedServer = new CanalServerWithEmbedded();
-        embeddedServer.setCanalInstanceGenerator(new CanalInstanceGenerator() {
-
-            public CanalInstance generate(String destination) {
-                Canal canal = buildCanal();
-                return new CanalInstanceWithManager(canal, FILTER);
-            }
-        });
+        embeddedServer.setCanalInstanceGenerator((String destination) -> {
+		    Canal canal = buildCanal();
+		    return new CanalInstanceWithManager(canal, FILTER);
+		});
 
         nettyServer = CanalServerWithNetty.instance();
         nettyServer.setEmbeddedServer(embeddedServer);
@@ -84,7 +85,7 @@ public class CanalServerTest {
             }
             //
             Handshake handshake = Handshake.parseFrom(p.getBody());
-            System.out.println(handshake.getSupportedCompressions());
+            logger.info(String.valueOf(handshake.getSupportedCompressions()));
             //
             ClientAuth ca = ClientAuth.newBuilder()
                 .setUsername("")
@@ -156,7 +157,7 @@ public class CanalServerTest {
                     }
                 }
 
-                System.out.println("!!!!!!!!!!!!!!!!! " + batchId);
+                logger.info("!!!!!!!!!!!!!!!!! " + batchId);
                 Thread.sleep(1000L);
                 writeWithHeader(channel,
                     Packet.newBuilder()
@@ -193,7 +194,7 @@ public class CanalServerTest {
                     .toByteArray());
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -238,7 +239,7 @@ public class CanalServerTest {
 
         CanalParameter parameter = new CanalParameter();
 
-        parameter.setZkClusters(Arrays.asList("127.0.0.1:2188"));
+        parameter.setZkClusters(Collections.singletonList("127.0.0.1:2188"));
         parameter.setMetaMode(MetaMode.MEMORY);
         parameter.setHaMode(HAMode.HEARTBEAT);
         parameter.setIndexMode(IndexMode.MEMORY);

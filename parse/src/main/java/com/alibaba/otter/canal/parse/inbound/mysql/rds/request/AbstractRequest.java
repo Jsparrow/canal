@@ -65,39 +65,37 @@ public abstract class AbstractRequest<T> {
     private String              endPoint = "rds.aliyuncs.com";
 
     private String              protocol = "http";
+	private int                 timeout = (int) TimeUnit.MINUTES.toMillis(1);
+	private Map<String, String> treeMap = new TreeMap();
 
-    public void setProtocol(String protocol) {
+	public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
-    private int                 timeout = (int) TimeUnit.MINUTES.toMillis(1);
-
-    private Map<String, String> treeMap = new TreeMap();
-
-    public void putQueryString(String name, String value) {
+	public void putQueryString(String name, String value) {
         if (StringUtils.isBlank(name) || StringUtils.isBlank(value)) {
             return;
         }
         treeMap.put(name, value);
     }
 
-    public void setVersion(String version) {
+	public void setVersion(String version) {
         this.version = version;
     }
 
-    public void setEndPoint(String endPoint) {
+	public void setEndPoint(String endPoint) {
         this.endPoint = endPoint;
     }
 
-    public void setAccessKeyId(String accessKeyId) {
+	public void setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
     }
 
-    public void setAccessKeySecret(String accessKeySecret) {
+	public void setAccessKeySecret(String accessKeySecret) {
         this.accessKeySecret = accessKeySecret;
     }
 
-    /**
+	/**
      * 使用 HMAC-SHA1 签名方法对对encryptText进行签名
      *
      * @param encryptText 被签名的字符串
@@ -119,11 +117,11 @@ public abstract class AbstractRequest<T> {
         return mac.doFinal(text);
     }
 
-    private String base64(byte input[]) throws UnsupportedEncodingException {
+	private String base64(byte input[]) throws UnsupportedEncodingException {
         return new String(Base64.encodeBase64(input), ENCODING);
     }
 
-    private String concatQueryString(Map<String, String> parameters) throws UnsupportedEncodingException {
+	private String concatQueryString(Map<String, String> parameters) throws UnsupportedEncodingException {
         if (null == parameters) {
             return null;
         }
@@ -144,11 +142,11 @@ public abstract class AbstractRequest<T> {
         return urlBuilder.toString();
     }
 
-    private String encode(String value) throws UnsupportedEncodingException {
+	private String encode(String value) throws UnsupportedEncodingException {
         return URLEncoder.encode(value, "UTF-8");
     }
 
-    private String makeSignature(TreeMap<String, String> paramMap) throws Exception {
+	private String makeSignature(TreeMap<String, String> paramMap) throws Exception {
         String cqs = concatQueryString(paramMap);
         cqs = encode(cqs);
         cqs = cqs.replaceAll("\\+", "%20");
@@ -159,13 +157,13 @@ public abstract class AbstractRequest<T> {
         return base64(HmacSHA1Encrypt(stringBuilder.toString(), accessKeySecret + "&"));
     }
 
-    public final String formatUTCTZ(Date date) {
+	public final String formatUTCTZ(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
     }
 
-    private void fillCommonParam(Map<String, String> p) {
+	private void fillCommonParam(Map<String, String> p) {
         p.put("Format", "JSON");
         p.put("Version", version);
         p.put("AccessKeyId", accessKeyId);
@@ -175,9 +173,9 @@ public abstract class AbstractRequest<T> {
         p.put("SignatureNonce", UUID.randomUUID().toString());
     }
 
-    private String makeRequestString(Map<String, String> param) throws Exception {
+	private String makeRequestString(Map<String, String> param) throws Exception {
         fillCommonParam(param);
-        String sign = makeSignature(new TreeMap<String, String>(param));
+        String sign = makeSignature(new TreeMap<>(param));
         StringBuilder builder = new StringBuilder();
         for (Map.Entry<String, String> entry : param.entrySet()) {
             builder.append(encode(entry.getKey())).append("=").append(encode(entry.getValue())).append("&");
@@ -186,7 +184,7 @@ public abstract class AbstractRequest<T> {
         return builder.toString();
     }
 
-    /**
+	/**
      * 执行http请求
      *
      * @param getMethod
@@ -194,7 +192,7 @@ public abstract class AbstractRequest<T> {
      * @throws IOException
      */
     @SuppressWarnings("deprecation")
-    private final HttpResponse executeHttpRequest(HttpGet getMethod, String host) throws Exception {
+    private final HttpResponse executeHttpRequest(HttpGet getMethod) throws Exception {
         SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(null, new TrustStrategy() {
 
             @Override
@@ -226,22 +224,22 @@ public abstract class AbstractRequest<T> {
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != HttpResponseStatus.OK.code() && statusCode != HttpResponseStatus.PARTIAL_CONTENT.code()) {
             String result = EntityUtils.toString(response.getEntity());
-            throw new RuntimeException("return error !" + response.getStatusLine().getReasonPhrase() + ", " + result);
+            throw new RuntimeException(new StringBuilder().append("return error !").append(response.getStatusLine().getReasonPhrase()).append(", ").append(result).toString());
         }
         return response;
     }
 
-    protected abstract T processResult(HttpResponse response) throws Exception;
+	protected abstract T processResult(HttpResponse response) throws Exception;
 
-    protected void processBefore() {
+	protected void processBefore() {
 
     }
 
-    public final T doAction() throws Exception {
+	public final T doAction() throws Exception {
         processBefore();
         String requestStr = makeRequestString(treeMap);
-        HttpGet httpGet = new HttpGet(protocol + "://" + endPoint + "?" + requestStr);
-        HttpResponse response = executeHttpRequest(httpGet, endPoint);
+        HttpGet httpGet = new HttpGet(new StringBuilder().append(protocol).append("://").append(endPoint).append("?").append(requestStr).toString());
+        HttpResponse response = executeHttpRequest(httpGet);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             String result = EntityUtils.toString(response.getEntity());
             throw new RuntimeException("http request failed! " + result);

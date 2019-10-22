@@ -34,7 +34,7 @@ import com.alibaba.otter.canal.server.netty.NettyUtils;
 public class ClientAuthenticationHandler extends SimpleChannelHandler {
 
     private static final Logger     logger                                  = LoggerFactory.getLogger(ClientAuthenticationHandler.class);
-    private final int               SUPPORTED_VERSION                       = 3;
+    private final int               supportedVersion                       = 3;
     private final int               defaultSubscriptorDisconnectIdleTimeout = 60 * 60 * 1000;
     private CanalServerWithEmbedded embeddedServer;
     private byte[]                  seed;
@@ -47,11 +47,12 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
         this.embeddedServer = embeddedServer;
     }
 
-    public void messageReceived(final ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+    @Override
+	public void messageReceived(final ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         ChannelBuffer buffer = (ChannelBuffer) e.getMessage();
         final Packet packet = Packet.parseFrom(buffer.readBytes(buffer.readableBytes()).array());
         switch (packet.getVersion()) {
-            case SUPPORTED_VERSION:
+            case supportedVersion:
             default:
                 final ClientAuth clientAuth = ClientAuth.parseFrom(packet.getBody());
                 if (seed == null) {
@@ -87,47 +88,44 @@ public class ClientAuthenticationHandler extends SimpleChannelHandler {
                     }
                 }
                 // 鉴权一次性，暂不统计
-                NettyUtils.ack(ctx.getChannel(), new ChannelFutureListener() {
+                NettyUtils.ack(ctx.getChannel(), (ChannelFuture future) -> {
+				    logger.info("remove unused channel handlers after authentication is done successfully.");
+				    ctx.getPipeline().remove(HandshakeInitializationHandler.class.getName());
+				    ctx.getPipeline().remove(ClientAuthenticationHandler.class.getName());
 
-                    public void operationComplete(ChannelFuture future) throws Exception {
-                        logger.info("remove unused channel handlers after authentication is done successfully.");
-                        ctx.getPipeline().remove(HandshakeInitializationHandler.class.getName());
-                        ctx.getPipeline().remove(ClientAuthenticationHandler.class.getName());
+				    int readTimeout = defaultSubscriptorDisconnectIdleTimeout;
+				    int writeTimeout = defaultSubscriptorDisconnectIdleTimeout;
+				    if (clientAuth.getNetReadTimeout() > 0) {
+				        readTimeout = clientAuth.getNetReadTimeout();
+				    }
+				    if (clientAuth.getNetWriteTimeout() > 0) {
+				        writeTimeout = clientAuth.getNetWriteTimeout();
+				    }
+				    // fix bug: soTimeout parameter's unit from connector is
+				    // millseconds.
+				    IdleStateHandler idleStateHandler = new IdleStateHandler(NettyUtils.hashedWheelTimer,
+				        readTimeout,
+				        writeTimeout,
+				        0,
+				        TimeUnit.MILLISECONDS);
+				    ctx.getPipeline().addBefore(SessionHandler.class.getName(),
+				        IdleStateHandler.class.getName(),
+				        idleStateHandler);
 
-                        int readTimeout = defaultSubscriptorDisconnectIdleTimeout;
-                        int writeTimeout = defaultSubscriptorDisconnectIdleTimeout;
-                        if (clientAuth.getNetReadTimeout() > 0) {
-                            readTimeout = clientAuth.getNetReadTimeout();
-                        }
-                        if (clientAuth.getNetWriteTimeout() > 0) {
-                            writeTimeout = clientAuth.getNetWriteTimeout();
-                        }
-                        // fix bug: soTimeout parameter's unit from connector is
-                        // millseconds.
-                        IdleStateHandler idleStateHandler = new IdleStateHandler(NettyUtils.hashedWheelTimer,
-                            readTimeout,
-                            writeTimeout,
-                            0,
-                            TimeUnit.MILLISECONDS);
-                        ctx.getPipeline().addBefore(SessionHandler.class.getName(),
-                            IdleStateHandler.class.getName(),
-                            idleStateHandler);
+				    IdleStateAwareChannelHandler idleStateAwareChannelHandler = new IdleStateAwareChannelHandler() {
 
-                        IdleStateAwareChannelHandler idleStateAwareChannelHandler = new IdleStateAwareChannelHandler() {
+				        @Override
+						public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) throws Exception {
+				            logger.warn("channel:{} idle timeout exceeds, close channel to save server resources...",
+				                ctx.getChannel());
+				            ctx.getChannel().close();
+				        }
 
-                            public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e) throws Exception {
-                                logger.warn("channel:{} idle timeout exceeds, close channel to save server resources...",
-                                    ctx.getChannel());
-                                ctx.getChannel().close();
-                            }
-
-                        };
-                        ctx.getPipeline().addBefore(SessionHandler.class.getName(),
-                            IdleStateAwareChannelHandler.class.getName(),
-                            idleStateAwareChannelHandler);
-                    }
-
-                });
+				    };
+				    ctx.getPipeline().addBefore(SessionHandler.class.getName(),
+				        IdleStateAwareChannelHandler.class.getName(),
+				        idleStateAwareChannelHandler);
+				});
                 break;
         }
     }

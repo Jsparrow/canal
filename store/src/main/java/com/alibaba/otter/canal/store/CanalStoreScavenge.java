@@ -13,10 +13,10 @@ public interface CanalStoreScavenge {
     /**
      * 清理position之前的数据
      */
-    void cleanUntil(Position position) throws CanalStoreException;
+    void cleanUntil(Position position);
 
     /**
      * 删除所有的数据
      */
-    void cleanAll() throws CanalStoreException;
+    void cleanAll();
 }

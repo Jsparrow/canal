@@ -11,24 +11,24 @@ public class CanalServerWithNettyProfiler {
     public static final ClientInstanceProfiler NOP               = new DefaultClientInstanceProfiler();
     private ClientInstanceProfiler             instanceProfiler;
 
-    private static class SingletonHolder {
-        private static CanalServerWithNettyProfiler SINGLETON = new CanalServerWithNettyProfiler();
-    }
-
     private CanalServerWithNettyProfiler() {
         this.instanceProfiler = NOP;
     }
 
-    public static CanalServerWithNettyProfiler profiler() {
-        return SingletonHolder.SINGLETON;
+	public static CanalServerWithNettyProfiler profiler() {
+        return SingletonHolder.singleton;
     }
 
-    public void profiling(ClientRequestResult result) {
+	public void profiling(ClientRequestResult result) {
         instanceProfiler.profiling(result);
     }
 
-    public void setInstanceProfiler(ClientInstanceProfiler instanceProfiler) {
+	public void setInstanceProfiler(ClientInstanceProfiler instanceProfiler) {
         this.instanceProfiler = instanceProfiler;
+    }
+
+	private static class SingletonHolder {
+        private static CanalServerWithNettyProfiler singleton = new CanalServerWithNettyProfiler();
     }
 
     private static class DefaultClientInstanceProfiler extends AbstractCanalLifeCycle implements ClientInstanceProfiler {

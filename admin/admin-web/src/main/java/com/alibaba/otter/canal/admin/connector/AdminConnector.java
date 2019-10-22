@@ -16,14 +16,14 @@ public interface AdminConnector {
      * 
      * @throws CanalClientException
      */
-    void connect() throws ServiceException;
+    void connect();
 
     /**
      * 释放链接
      * 
      * @throws CanalClientException
      */
-    void disconnect() throws ServiceException;
+    void disconnect();
 
     /**
      * 获取Canal Server状态

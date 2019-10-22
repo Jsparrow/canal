@@ -4,454 +4,567 @@
 package com.alibaba.otter.canal.protocol;
 
 public final class CanalEntry {
-  private CanalEntry() {}
-  public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
-  }
-  /**
-   * Protobuf enum {@code com.alibaba.otter.canal.protocol.EntryType}
-   *
-   * <pre>
-   **打散后的事件类型，主要用于标识事务的开始，变更数据，结束*
-   * </pre>
-   */
-  public enum EntryType
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>TRANSACTIONBEGIN = 1;</code>
-     */
-    TRANSACTIONBEGIN(0, 1),
-    /**
-     * <code>ROWDATA = 2;</code>
-     */
-    ROWDATA(1, 2),
-    /**
-     * <code>TRANSACTIONEND = 3;</code>
-     */
-    TRANSACTIONEND(2, 3),
-    /**
-     * <code>HEARTBEAT = 4;</code>
-     *
-     * <pre>
-     ** 心跳类型，内部使用，外部暂不可见，可忽略 *
-     * </pre>
-     */
-    HEARTBEAT(3, 4),
-    /**
-     * <code>GTIDLOG = 5;</code>
-     */
-    GTIDLOG(4, 5),
-    ;
+  private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolEntryFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolHeaderFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolColumnFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolRowDataFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolRowChangeFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolTransactionBeginFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolTransactionEndFieldAccessorTable;
+	private static final com.google.protobuf.Descriptors.Descriptor
+	    internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
+	private static
+	    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+	      internalStaticComAlibabaOtterCanalProtocolPairFieldAccessorTable;
+	private static com.google.protobuf.Descriptors.FileDescriptor
+	      descriptor;
+	static {
+	    String[] descriptorData = {
+	      new StringBuilder().append("\n\023EntryProtocol.proto\022 com.alibaba.otter").append(".canal.protocol\"\236\001\n\005Entry\0228\n\006header\030\001 \001(").append("\0132(.com.alibaba.otter.canal.protocol.Hea").append("der\022G\n\tentryType\030\002 \001(\0162+.com.alibaba.ott").append("er.canal.protocol.EntryType:\007ROWDATA\022\022\n\n").append("storeValue\030\003 \001(\014\"\221\003\n\006Header\022\022\n\007version\030\001").append(" \001(\005:\0011\022\023\n\013logfileName\030\002 \001(\t\022\025\n\rlogfileO").append("ffset\030\003 \001(\003\022\020\n\010serverId\030\004 \001(\003\022\024\n\014servere")
+				.append("nCode\030\005 \001(\t\022\023\n\013executeTime\030\006 \001(\003\022A\n\nsour").append("ceType\030\007 \001(\0162&.com.alibaba.otter.canal.p").toString(),
+	      new StringBuilder().append("rotocol.Type:\005MYSQL\022\022\n\nschemaName\030\010 \001(\t\022").append("\021\n\ttableName\030\t \001(\t\022\023\n\013eventLength\030\n \001(\003\022").append("F\n\teventType\030\013 \001(\0162+.com.alibaba.otter.c").append("anal.protocol.EventType:\006UPDATE\0225\n\005props").append("\030\014 \003(\0132&.com.alibaba.otter.canal.protoco").append("l.Pair\022\014\n\004gtid\030\r \001(\t\"\326\001\n\006Column\022\r\n\005index").append("\030\001 \001(\005\022\017\n\007sqlType\030\002 \001(\005\022\014\n\004name\030\003 \001(\t\022\r\n").append("\005isKey\030\004 \001(\010\022\017\n\007updated\030\005 \001(\010\022\025\n\006isNull\030")
+				.append("\006 \001(\010:\005false\0225\n\005props\030\007 \003(\0132&.com.alibab").append("a.otter.canal.protocol.Pair\022\r\n\005value\030\010 \001").toString(),
+	      new StringBuilder().append("(\t\022\016\n\006length\030\t \001(\005\022\021\n\tmysqlType\030\n \001(\t\"\301\001").append("\n\007RowData\022?\n\rbeforeColumns\030\001 \003(\0132(.com.a").append("libaba.otter.canal.protocol.Column\022>\n\014af").append("terColumns\030\002 \003(\0132(.com.alibaba.otter.can").append("al.protocol.Column\0225\n\005props\030\003 \003(\0132&.com.").append("alibaba.otter.canal.protocol.Pair\"\222\002\n\tRo").append("wChange\022\017\n\007tableId\030\001 \001(\003\022F\n\teventType\030\002 ").append("\001(\0162+.com.alibaba.otter.canal.protocol.E")
+				.append("ventType:\006UPDATE\022\024\n\005isDdl\030\n \001(\010:\005false\022\013").append("\n\003sql\030\013 \001(\t\022;\n\010rowDatas\030\014 \003(\0132).com.alib").toString(),
+	      new StringBuilder().append("aba.otter.canal.protocol.RowData\0225\n\005prop").append("s\030\r \003(\0132&.com.alibaba.otter.canal.protoc").append("ol.Pair\022\025\n\rddlSchemaName\030\016 \001(\t\"\207\001\n\020Trans").append("actionBegin\022\023\n\013executeTime\030\001 \001(\003\022\025\n\rtran").append("sactionId\030\002 \001(\t\0225\n\005props\030\003 \003(\0132&.com.ali").append("baba.otter.canal.protocol.Pair\022\020\n\010thread").append("Id\030\004 \001(\003\"s\n\016TransactionEnd\022\023\n\013executeTim").append("e\030\001 \001(\003\022\025\n\rtransactionId\030\002 \001(\t\0225\n\005props\030")
+				.append("\003 \003(\0132&.com.alibaba.otter.canal.protocol").append(".Pair\"\"\n\004Pair\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(").toString(),
+	      new StringBuilder().append("\t*^\n\tEntryType\022\024\n\020TRANSACTIONBEGIN\020\001\022\013\n\007").append("ROWDATA\020\002\022\022\n\016TRANSACTIONEND\020\003\022\r\n\tHEARTBE").append("AT\020\004\022\013\n\007GTIDLOG\020\005*\306\001\n\tEventType\022\n\n\006INSER").append("T\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006CREATE\020\004\022").append("\t\n\005ALTER\020\005\022\t\n\005ERASE\020\006\022\t\n\005QUERY\020\007\022\014\n\010TRUN").append("CATE\020\010\022\n\n\006RENAME\020\t\022\n\n\006CINDEX\020\n\022\n\n\006DINDEX").append("\020\013\022\010\n\004GTID\020\014\022\014\n\010XACOMMIT\020\r\022\016\n\nXAROLLBACK").append("\020\016\022\016\n\nMHEARTBEAT\020\017*(\n\004Type\022\n\n\006ORACLE\020\001\022\t")
+				.append("\n\005MYSQL\020\002\022\t\n\005PGSQL\020\003B0\n com.alibaba.otte").append("r.canal.protocolB\nCanalEntryH\001").toString()
+	    };
+	    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+	        (com.google.protobuf.Descriptors.FileDescriptor root) -> {
+		descriptor = root;
+		return null;
+	        };
+	    com.google.protobuf.Descriptors.FileDescriptor
+	      .internalBuildGeneratedFileFrom(descriptorData,
+	        new com.google.protobuf.Descriptors.FileDescriptor[] {
+	        }, assigner);
+	    internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor =
+	      getDescriptor().getMessageTypes().get(0);
+	    internalStaticComAlibabaOtterCanalProtocolEntryFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor,
+	        new String[] { "Header", "EntryType", "StoreValue", });
+	    internal_static_com_alibaba_otter_canal_protocol_Header_descriptor =
+	      getDescriptor().getMessageTypes().get(1);
+	    internalStaticComAlibabaOtterCanalProtocolHeaderFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_Header_descriptor,
+	        new String[] { "Version", "LogfileName", "LogfileOffset", "ServerId", "ServerenCode", "ExecuteTime", "SourceType", "SchemaName", "TableName", "EventLength", "EventType", "Props", "Gtid", });
+	    internal_static_com_alibaba_otter_canal_protocol_Column_descriptor =
+	      getDescriptor().getMessageTypes().get(2);
+	    internalStaticComAlibabaOtterCanalProtocolColumnFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_Column_descriptor,
+	        new String[] { "Index", "SqlType", "Name", "IsKey", "Updated", "IsNull", "Props", "Value", "Length", "MysqlType", });
+	    internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor =
+	      getDescriptor().getMessageTypes().get(3);
+	    internalStaticComAlibabaOtterCanalProtocolRowDataFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor,
+	        new String[] { "BeforeColumns", "AfterColumns", "Props", });
+	    internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor =
+	      getDescriptor().getMessageTypes().get(4);
+	    internalStaticComAlibabaOtterCanalProtocolRowChangeFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor,
+	        new String[] { "TableId", "EventType", "IsDdl", "Sql", "RowDatas", "Props", "DdlSchemaName", });
+	    internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor =
+	      getDescriptor().getMessageTypes().get(5);
+	    internalStaticComAlibabaOtterCanalProtocolTransactionBeginFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor,
+	        new String[] { "ExecuteTime", "TransactionId", "Props", "ThreadId", });
+	    internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor =
+	      getDescriptor().getMessageTypes().get(6);
+	    internalStaticComAlibabaOtterCanalProtocolTransactionEndFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor,
+	        new String[] { "ExecuteTime", "TransactionId", "Props", });
+	    internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor =
+	      getDescriptor().getMessageTypes().get(7);
+	    internalStaticComAlibabaOtterCanalProtocolPairFieldAccessorTable = new
+	      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+	        internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor,
+	        new String[] { "Key", "Value", });
+	  }
+	private CanalEntry() {}
+	public static void registerAllExtensions(
+	      com.google.protobuf.ExtensionRegistry registry) {
+	  }
+	public static com.google.protobuf.Descriptors.FileDescriptor
+	      getDescriptor() {
+	    return descriptor;
+	  }
+	/**
+	   * Protobuf enum {@code com.alibaba.otter.canal.protocol.EntryType}
+	   *
+	   * <pre>
+	   **打散后的事件类型，主要用于标识事务的开始，变更数据，结束*
+	   * </pre>
+	   */
+	  public enum EntryType
+	      implements com.google.protobuf.ProtocolMessageEnum {
+	    /**
+	     * <code>TRANSACTIONBEGIN = 1;</code>
+	     */
+	    TRANSACTIONBEGIN(0, 1),
+	    /**
+	     * <code>ROWDATA = 2;</code>
+	     */
+	    ROWDATA(1, 2),
+	    /**
+	     * <code>TRANSACTIONEND = 3;</code>
+	     */
+	    TRANSACTIONEND(2, 3),
+	    /**
+	     * <code>HEARTBEAT = 4;</code>
+	     *
+	     * <pre>
+	     ** 心跳类型，内部使用，外部暂不可见，可忽略 *
+	     * </pre>
+	     */
+	    HEARTBEAT(3, 4),
+	    /**
+	     * <code>GTIDLOG = 5;</code>
+	     */
+	    GTIDLOG(4, 5),
+	    ;
+	
+	    /**
+	     * <code>TRANSACTIONBEGIN = 1;</code>
+	     */
+	    public static final int TRANSACTIONBEGIN_VALUE = 1;
+	    /**
+	     * <code>ROWDATA = 2;</code>
+	     */
+	    public static final int ROWDATA_VALUE = 2;
+	    /**
+	     * <code>TRANSACTIONEND = 3;</code>
+	     */
+	    public static final int TRANSACTIONEND_VALUE = 3;
+	    /**
+	     * <code>HEARTBEAT = 4;</code>
+	     *
+	     * <pre>
+	     ** 心跳类型，内部使用，外部暂不可见，可忽略 *
+	     * </pre>
+	     */
+	    public static final int HEARTBEAT_VALUE = 4;
+	    /**
+	     * <code>GTIDLOG = 5;</code>
+	     */
+	    public static final int GTIDLOG_VALUE = 5;
+	
+	
+	    @Override
+		public final int getNumber() { return value; }
+	
+	    public static EntryType valueOf(int value) {
+	      switch (value) {
+	        case 1: return TRANSACTIONBEGIN;
+	        case 2: return ROWDATA;
+	        case 3: return TRANSACTIONEND;
+	        case 4: return HEARTBEAT;
+	        case 5: return GTIDLOG;
+	        default: return null;
+	      }
+	    }
+	
+	    public static com.google.protobuf.Internal.EnumLiteMap<EntryType>
+	        internalGetValueMap() {
+	      return internalValueMap;
+	    }
+	    private static com.google.protobuf.Internal.EnumLiteMap<EntryType>
+	        internalValueMap =
+	          EntryType::valueOf;
+	
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumValueDescriptor
+	        getValueDescriptor() {
+	      return getDescriptor().getValues().get(index);
+	    }
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptorForType() {
+	      return getDescriptor();
+	    }
+	    public static final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptor() {
+	      return CanalEntry.getDescriptor().getEnumTypes().get(0);
+	    }
+	
+	    private static final EntryType[] VALUES = values();
+	
+	    public static EntryType valueOf(
+	        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+	      if (desc.getType() != getDescriptor()) {
+	        throw new IllegalArgumentException(
+	          "EnumValueDescriptor is not for this type.");
+	      }
+	      return VALUES[desc.getIndex()];
+	    }
+	
+	    private final int index;
+	    private final int value;
+	
+	    private EntryType(int index, int value) {
+	      this.index = index;
+	      this.value = value;
+	    }
+	
+	    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.EntryType)
+	  }
 
-    /**
-     * <code>TRANSACTIONBEGIN = 1;</code>
-     */
-    public static final int TRANSACTIONBEGIN_VALUE = 1;
-    /**
-     * <code>ROWDATA = 2;</code>
-     */
-    public static final int ROWDATA_VALUE = 2;
-    /**
-     * <code>TRANSACTIONEND = 3;</code>
-     */
-    public static final int TRANSACTIONEND_VALUE = 3;
-    /**
-     * <code>HEARTBEAT = 4;</code>
-     *
-     * <pre>
-     ** 心跳类型，内部使用，外部暂不可见，可忽略 *
-     * </pre>
-     */
-    public static final int HEARTBEAT_VALUE = 4;
-    /**
-     * <code>GTIDLOG = 5;</code>
-     */
-    public static final int GTIDLOG_VALUE = 5;
+	/**
+	   * Protobuf enum {@code com.alibaba.otter.canal.protocol.EventType}
+	   *
+	   * <pre>
+	   ** 事件类型 *
+	   * </pre>
+	   */
+	  public enum EventType
+	      implements com.google.protobuf.ProtocolMessageEnum {
+	    /**
+	     * <code>INSERT = 1;</code>
+	     */
+	    INSERT(0, 1),
+	    /**
+	     * <code>UPDATE = 2;</code>
+	     */
+	    UPDATE(1, 2),
+	    /**
+	     * <code>DELETE = 3;</code>
+	     */
+	    DELETE(2, 3),
+	    /**
+	     * <code>CREATE = 4;</code>
+	     */
+	    CREATE(3, 4),
+	    /**
+	     * <code>ALTER = 5;</code>
+	     */
+	    ALTER(4, 5),
+	    /**
+	     * <code>ERASE = 6;</code>
+	     */
+	    ERASE(5, 6),
+	    /**
+	     * <code>QUERY = 7;</code>
+	     */
+	    QUERY(6, 7),
+	    /**
+	     * <code>TRUNCATE = 8;</code>
+	     */
+	    TRUNCATE(7, 8),
+	    /**
+	     * <code>RENAME = 9;</code>
+	     */
+	    RENAME(8, 9),
+	    /**
+	     * <code>CINDEX = 10;</code>
+	     *
+	     * <pre>
+	     **CREATE INDEX*
+	     * </pre>
+	     */
+	    CINDEX(9, 10),
+	    /**
+	     * <code>DINDEX = 11;</code>
+	     */
+	    DINDEX(10, 11),
+	    /**
+	     * <code>GTID = 12;</code>
+	     */
+	    GTID(11, 12),
+	    /**
+	     * <code>XACOMMIT = 13;</code>
+	     *
+	     * <pre>
+	     ** XA *
+	     * </pre>
+	     */
+	    XACOMMIT(12, 13),
+	    /**
+	     * <code>XAROLLBACK = 14;</code>
+	     */
+	    XAROLLBACK(13, 14),
+	    /**
+	     * <code>MHEARTBEAT = 15;</code>
+	     *
+	     * <pre>
+	     ** MASTER HEARTBEAT *
+	     * </pre>
+	     */
+	    MHEARTBEAT(14, 15),
+	    ;
+	
+	    /**
+	     * <code>INSERT = 1;</code>
+	     */
+	    public static final int INSERT_VALUE = 1;
+	    /**
+	     * <code>UPDATE = 2;</code>
+	     */
+	    public static final int UPDATE_VALUE = 2;
+	    /**
+	     * <code>DELETE = 3;</code>
+	     */
+	    public static final int DELETE_VALUE = 3;
+	    /**
+	     * <code>CREATE = 4;</code>
+	     */
+	    public static final int CREATE_VALUE = 4;
+	    /**
+	     * <code>ALTER = 5;</code>
+	     */
+	    public static final int ALTER_VALUE = 5;
+	    /**
+	     * <code>ERASE = 6;</code>
+	     */
+	    public static final int ERASE_VALUE = 6;
+	    /**
+	     * <code>QUERY = 7;</code>
+	     */
+	    public static final int QUERY_VALUE = 7;
+	    /**
+	     * <code>TRUNCATE = 8;</code>
+	     */
+	    public static final int TRUNCATE_VALUE = 8;
+	    /**
+	     * <code>RENAME = 9;</code>
+	     */
+	    public static final int RENAME_VALUE = 9;
+	    /**
+	     * <code>CINDEX = 10;</code>
+	     *
+	     * <pre>
+	     **CREATE INDEX*
+	     * </pre>
+	     */
+	    public static final int CINDEX_VALUE = 10;
+	    /**
+	     * <code>DINDEX = 11;</code>
+	     */
+	    public static final int DINDEX_VALUE = 11;
+	    /**
+	     * <code>GTID = 12;</code>
+	     */
+	    public static final int GTID_VALUE = 12;
+	    /**
+	     * <code>XACOMMIT = 13;</code>
+	     *
+	     * <pre>
+	     ** XA *
+	     * </pre>
+	     */
+	    public static final int XACOMMIT_VALUE = 13;
+	    /**
+	     * <code>XAROLLBACK = 14;</code>
+	     */
+	    public static final int XAROLLBACK_VALUE = 14;
+	    /**
+	     * <code>MHEARTBEAT = 15;</code>
+	     *
+	     * <pre>
+	     ** MASTER HEARTBEAT *
+	     * </pre>
+	     */
+	    public static final int MHEARTBEAT_VALUE = 15;
+	
+	
+	    @Override
+		public final int getNumber() { return value; }
+	
+	    public static EventType valueOf(int value) {
+	      switch (value) {
+	        case 1: return INSERT;
+	        case 2: return UPDATE;
+	        case 3: return DELETE;
+	        case 4: return CREATE;
+	        case 5: return ALTER;
+	        case 6: return ERASE;
+	        case 7: return QUERY;
+	        case 8: return TRUNCATE;
+	        case 9: return RENAME;
+	        case 10: return CINDEX;
+	        case 11: return DINDEX;
+	        case 12: return GTID;
+	        case 13: return XACOMMIT;
+	        case 14: return XAROLLBACK;
+	        case 15: return MHEARTBEAT;
+	        default: return null;
+	      }
+	    }
+	
+	    public static com.google.protobuf.Internal.EnumLiteMap<EventType>
+	        internalGetValueMap() {
+	      return internalValueMap;
+	    }
+	    private static com.google.protobuf.Internal.EnumLiteMap<EventType>
+	        internalValueMap =
+	          EventType::valueOf;
+	
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumValueDescriptor
+	        getValueDescriptor() {
+	      return getDescriptor().getValues().get(index);
+	    }
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptorForType() {
+	      return getDescriptor();
+	    }
+	    public static final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptor() {
+	      return CanalEntry.getDescriptor().getEnumTypes().get(1);
+	    }
+	
+	    private static final EventType[] VALUES = values();
+	
+	    public static EventType valueOf(
+	        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+	      if (desc.getType() != getDescriptor()) {
+	        throw new IllegalArgumentException(
+	          "EnumValueDescriptor is not for this type.");
+	      }
+	      return VALUES[desc.getIndex()];
+	    }
+	
+	    private final int index;
+	    private final int value;
+	
+	    private EventType(int index, int value) {
+	      this.index = index;
+	      this.value = value;
+	    }
+	
+	    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.EventType)
+	  }
 
-
-    public final int getNumber() { return value; }
-
-    public static EntryType valueOf(int value) {
-      switch (value) {
-        case 1: return TRANSACTIONBEGIN;
-        case 2: return ROWDATA;
-        case 3: return TRANSACTIONEND;
-        case 4: return HEARTBEAT;
-        case 5: return GTIDLOG;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<EntryType>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static com.google.protobuf.Internal.EnumLiteMap<EntryType>
-        internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<EntryType>() {
-            public EntryType findValueByNumber(int number) {
-              return EntryType.valueOf(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return CanalEntry.getDescriptor().getEnumTypes().get(0);
-    }
-
-    private static final EntryType[] VALUES = values();
-
-    public static EntryType valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int index;
-    private final int value;
-
-    private EntryType(int index, int value) {
-      this.index = index;
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.EntryType)
-  }
-
-  /**
-   * Protobuf enum {@code com.alibaba.otter.canal.protocol.EventType}
-   *
-   * <pre>
-   ** 事件类型 *
-   * </pre>
-   */
-  public enum EventType
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>INSERT = 1;</code>
-     */
-    INSERT(0, 1),
-    /**
-     * <code>UPDATE = 2;</code>
-     */
-    UPDATE(1, 2),
-    /**
-     * <code>DELETE = 3;</code>
-     */
-    DELETE(2, 3),
-    /**
-     * <code>CREATE = 4;</code>
-     */
-    CREATE(3, 4),
-    /**
-     * <code>ALTER = 5;</code>
-     */
-    ALTER(4, 5),
-    /**
-     * <code>ERASE = 6;</code>
-     */
-    ERASE(5, 6),
-    /**
-     * <code>QUERY = 7;</code>
-     */
-    QUERY(6, 7),
-    /**
-     * <code>TRUNCATE = 8;</code>
-     */
-    TRUNCATE(7, 8),
-    /**
-     * <code>RENAME = 9;</code>
-     */
-    RENAME(8, 9),
-    /**
-     * <code>CINDEX = 10;</code>
-     *
-     * <pre>
-     **CREATE INDEX*
-     * </pre>
-     */
-    CINDEX(9, 10),
-    /**
-     * <code>DINDEX = 11;</code>
-     */
-    DINDEX(10, 11),
-    /**
-     * <code>GTID = 12;</code>
-     */
-    GTID(11, 12),
-    /**
-     * <code>XACOMMIT = 13;</code>
-     *
-     * <pre>
-     ** XA *
-     * </pre>
-     */
-    XACOMMIT(12, 13),
-    /**
-     * <code>XAROLLBACK = 14;</code>
-     */
-    XAROLLBACK(13, 14),
-    /**
-     * <code>MHEARTBEAT = 15;</code>
-     *
-     * <pre>
-     ** MASTER HEARTBEAT *
-     * </pre>
-     */
-    MHEARTBEAT(14, 15),
-    ;
-
-    /**
-     * <code>INSERT = 1;</code>
-     */
-    public static final int INSERT_VALUE = 1;
-    /**
-     * <code>UPDATE = 2;</code>
-     */
-    public static final int UPDATE_VALUE = 2;
-    /**
-     * <code>DELETE = 3;</code>
-     */
-    public static final int DELETE_VALUE = 3;
-    /**
-     * <code>CREATE = 4;</code>
-     */
-    public static final int CREATE_VALUE = 4;
-    /**
-     * <code>ALTER = 5;</code>
-     */
-    public static final int ALTER_VALUE = 5;
-    /**
-     * <code>ERASE = 6;</code>
-     */
-    public static final int ERASE_VALUE = 6;
-    /**
-     * <code>QUERY = 7;</code>
-     */
-    public static final int QUERY_VALUE = 7;
-    /**
-     * <code>TRUNCATE = 8;</code>
-     */
-    public static final int TRUNCATE_VALUE = 8;
-    /**
-     * <code>RENAME = 9;</code>
-     */
-    public static final int RENAME_VALUE = 9;
-    /**
-     * <code>CINDEX = 10;</code>
-     *
-     * <pre>
-     **CREATE INDEX*
-     * </pre>
-     */
-    public static final int CINDEX_VALUE = 10;
-    /**
-     * <code>DINDEX = 11;</code>
-     */
-    public static final int DINDEX_VALUE = 11;
-    /**
-     * <code>GTID = 12;</code>
-     */
-    public static final int GTID_VALUE = 12;
-    /**
-     * <code>XACOMMIT = 13;</code>
-     *
-     * <pre>
-     ** XA *
-     * </pre>
-     */
-    public static final int XACOMMIT_VALUE = 13;
-    /**
-     * <code>XAROLLBACK = 14;</code>
-     */
-    public static final int XAROLLBACK_VALUE = 14;
-    /**
-     * <code>MHEARTBEAT = 15;</code>
-     *
-     * <pre>
-     ** MASTER HEARTBEAT *
-     * </pre>
-     */
-    public static final int MHEARTBEAT_VALUE = 15;
-
-
-    public final int getNumber() { return value; }
-
-    public static EventType valueOf(int value) {
-      switch (value) {
-        case 1: return INSERT;
-        case 2: return UPDATE;
-        case 3: return DELETE;
-        case 4: return CREATE;
-        case 5: return ALTER;
-        case 6: return ERASE;
-        case 7: return QUERY;
-        case 8: return TRUNCATE;
-        case 9: return RENAME;
-        case 10: return CINDEX;
-        case 11: return DINDEX;
-        case 12: return GTID;
-        case 13: return XACOMMIT;
-        case 14: return XAROLLBACK;
-        case 15: return MHEARTBEAT;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<EventType>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static com.google.protobuf.Internal.EnumLiteMap<EventType>
-        internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<EventType>() {
-            public EventType findValueByNumber(int number) {
-              return EventType.valueOf(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return CanalEntry.getDescriptor().getEnumTypes().get(1);
-    }
-
-    private static final EventType[] VALUES = values();
-
-    public static EventType valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int index;
-    private final int value;
-
-    private EventType(int index, int value) {
-      this.index = index;
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.EventType)
-  }
-
-  /**
-   * Protobuf enum {@code com.alibaba.otter.canal.protocol.Type}
-   *
-   * <pre>
-   **数据库类型*
-   * </pre>
-   */
-  public enum Type
-      implements com.google.protobuf.ProtocolMessageEnum {
-    /**
-     * <code>ORACLE = 1;</code>
-     */
-    ORACLE(0, 1),
-    /**
-     * <code>MYSQL = 2;</code>
-     */
-    MYSQL(1, 2),
-    /**
-     * <code>PGSQL = 3;</code>
-     */
-    PGSQL(2, 3),
-    ;
-
-    /**
-     * <code>ORACLE = 1;</code>
-     */
-    public static final int ORACLE_VALUE = 1;
-    /**
-     * <code>MYSQL = 2;</code>
-     */
-    public static final int MYSQL_VALUE = 2;
-    /**
-     * <code>PGSQL = 3;</code>
-     */
-    public static final int PGSQL_VALUE = 3;
-
-
-    public final int getNumber() { return value; }
-
-    public static Type valueOf(int value) {
-      switch (value) {
-        case 1: return ORACLE;
-        case 2: return MYSQL;
-        case 3: return PGSQL;
-        default: return null;
-      }
-    }
-
-    public static com.google.protobuf.Internal.EnumLiteMap<Type>
-        internalGetValueMap() {
-      return internalValueMap;
-    }
-    private static com.google.protobuf.Internal.EnumLiteMap<Type>
-        internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<Type>() {
-            public Type findValueByNumber(int number) {
-              return Type.valueOf(number);
-            }
-          };
-
-    public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
-      return getDescriptor().getValues().get(index);
-    }
-    public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
-      return getDescriptor();
-    }
-    public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
-      return CanalEntry.getDescriptor().getEnumTypes().get(2);
-    }
-
-    private static final Type[] VALUES = values();
-
-    public static Type valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
-      if (desc.getType() != getDescriptor()) {
-        throw new IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
-      }
-      return VALUES[desc.getIndex()];
-    }
-
-    private final int index;
-    private final int value;
-
-    private Type(int index, int value) {
-      this.index = index;
-      this.value = value;
-    }
-
-    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.Type)
-  }
-
-  public interface EntryOrBuilder extends
+	/**
+	   * Protobuf enum {@code com.alibaba.otter.canal.protocol.Type}
+	   *
+	   * <pre>
+	   **数据库类型*
+	   * </pre>
+	   */
+	  public enum Type
+	      implements com.google.protobuf.ProtocolMessageEnum {
+	    /**
+	     * <code>ORACLE = 1;</code>
+	     */
+	    ORACLE(0, 1),
+	    /**
+	     * <code>MYSQL = 2;</code>
+	     */
+	    MYSQL(1, 2),
+	    /**
+	     * <code>PGSQL = 3;</code>
+	     */
+	    PGSQL(2, 3),
+	    ;
+	
+	    /**
+	     * <code>ORACLE = 1;</code>
+	     */
+	    public static final int ORACLE_VALUE = 1;
+	    /**
+	     * <code>MYSQL = 2;</code>
+	     */
+	    public static final int MYSQL_VALUE = 2;
+	    /**
+	     * <code>PGSQL = 3;</code>
+	     */
+	    public static final int PGSQL_VALUE = 3;
+	
+	
+	    @Override
+		public final int getNumber() { return value; }
+	
+	    public static Type valueOf(int value) {
+	      switch (value) {
+	        case 1: return ORACLE;
+	        case 2: return MYSQL;
+	        case 3: return PGSQL;
+	        default: return null;
+	      }
+	    }
+	
+	    public static com.google.protobuf.Internal.EnumLiteMap<Type>
+	        internalGetValueMap() {
+	      return internalValueMap;
+	    }
+	    private static com.google.protobuf.Internal.EnumLiteMap<Type>
+	        internalValueMap =
+	          Type::valueOf;
+	
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumValueDescriptor
+	        getValueDescriptor() {
+	      return getDescriptor().getValues().get(index);
+	    }
+	    @Override
+		public final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptorForType() {
+	      return getDescriptor();
+	    }
+	    public static final com.google.protobuf.Descriptors.EnumDescriptor
+	        getDescriptor() {
+	      return CanalEntry.getDescriptor().getEnumTypes().get(2);
+	    }
+	
+	    private static final Type[] VALUES = values();
+	
+	    public static Type valueOf(
+	        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+	      if (desc.getType() != getDescriptor()) {
+	        throw new IllegalArgumentException(
+	          "EnumValueDescriptor is not for this type.");
+	      }
+	      return VALUES[desc.getIndex()];
+	    }
+	
+	    private final int index;
+	    private final int value;
+	
+	    private Type(int index, int value) {
+	      this.index = index;
+	      this.value = value;
+	    }
+	
+	    // @@protoc_insertion_point(enum_scope:com.alibaba.otter.canal.protocol.Type)
+	  }
+public interface EntryOrBuilder extends
       // @@protoc_insertion_point(interface_extends:com.alibaba.otter.canal.protocol.Entry)
       com.google.protobuf.MessageOrBuilder {
 
@@ -528,29 +641,41 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.Entry)
       EntryOrBuilder {
-    // Use Entry.newBuilder() to construct.
+    private static final Entry defaultInstance;
+	public static com.google.protobuf.Parser<Entry> PARSER =
+        new com.google.protobuf.AbstractParser<Entry>() {
+      @Override
+	public Entry parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Entry(input, extensionRegistry);
+      }
+    };
+	public static final int HEADER_FIELD_NUMBER = 1;
+	public static final int ENTRYTYPE_FIELD_NUMBER = 2;
+	public static final int STOREVALUE_FIELD_NUMBER = 3;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new Entry(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0;
+	private Header header;
+	private EntryType entryType;
+	private com.google.protobuf.ByteString storeValue;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use Entry.newBuilder() to construct.
     private Entry(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Entry(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Entry defaultInstance;
-    public static Entry getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Entry getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Entry(
+	private Entry(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private Entry(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -575,15 +700,15 @@ public final class CanalEntry {
             }
             case 10: {
               Header.Builder subBuilder = null;
-              if (((bitField0_ & 0x00000001) == 0x00000001)) {
-                subBuilder = header_.toBuilder();
+              if (((bitField0 & 0x00000001) == 0x00000001)) {
+                subBuilder = header.toBuilder();
               }
-              header_ = input.readMessage(Header.PARSER, extensionRegistry);
+              header = input.readMessage(Header.PARSER, extensionRegistry);
               if (subBuilder != null) {
-                subBuilder.mergeFrom(header_);
-                header_ = subBuilder.buildPartial();
+                subBuilder.mergeFrom(header);
+                header = subBuilder.buildPartial();
               }
-              bitField0_ |= 0x00000001;
+              bitField0 |= 0x00000001;
               break;
             }
             case 16: {
@@ -592,14 +717,14 @@ public final class CanalEntry {
               if (value == null) {
                 unknownFields.mergeVarintField(2, rawValue);
               } else {
-                bitField0_ |= 0x00000002;
-                entryType_ = value;
+                bitField0 |= 0x00000002;
+                entryType = value;
               }
               break;
             }
             case 26: {
-              bitField0_ |= 0x00000004;
-              storeValue_ = input.readBytes();
+              bitField0 |= 0x00000004;
+              storeValue = input.readBytes();
               break;
             }
           }
@@ -614,240 +739,239 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static Entry getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public Entry getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolEntryFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               Entry.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<Entry> PARSER =
-        new com.google.protobuf.AbstractParser<Entry>() {
-      public Entry parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Entry(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<Entry> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int HEADER_FIELD_NUMBER = 1;
-    private Header header_;
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
      *
      * <pre>
      **协议头部信息*
      * </pre>
      */
-    public boolean hasHeader() {
-      return ((bitField0_ & 0x00000001) == 0x00000001);
+    @Override
+	public boolean hasHeader() {
+      return ((bitField0 & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
      *
      * <pre>
      **协议头部信息*
      * </pre>
      */
-    public Header getHeader() {
-      return header_;
+    @Override
+	public Header getHeader() {
+      return header;
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
      *
      * <pre>
      **协议头部信息*
      * </pre>
      */
-    public HeaderOrBuilder getHeaderOrBuilder() {
-      return header_;
+    @Override
+	public HeaderOrBuilder getHeaderOrBuilder() {
+      return header;
     }
-
-    public static final int ENTRYTYPE_FIELD_NUMBER = 2;
-    private EntryType entryType_;
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
      *
      * <pre>
      **打散后的事件类型*
      * </pre>
      */
-    public boolean hasEntryType() {
-      return ((bitField0_ & 0x00000002) == 0x00000002);
+    @Override
+	public boolean hasEntryType() {
+      return ((bitField0 & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
      *
      * <pre>
      **打散后的事件类型*
      * </pre>
      */
-    public EntryType getEntryType() {
-      return entryType_;
+    @Override
+	public EntryType getEntryType() {
+      return entryType;
     }
-
-    public static final int STOREVALUE_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString storeValue_;
-    /**
+	/**
      * <code>optional bytes storeValue = 3;</code>
      *
      * <pre>
      **传输的二进制数组*
      * </pre>
      */
-    public boolean hasStoreValue() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
+    @Override
+	public boolean hasStoreValue() {
+      return ((bitField0 & 0x00000004) == 0x00000004);
     }
-    /**
+	/**
      * <code>optional bytes storeValue = 3;</code>
      *
      * <pre>
      **传输的二进制数组*
      * </pre>
      */
-    public com.google.protobuf.ByteString getStoreValue() {
-      return storeValue_;
+    @Override
+	public com.google.protobuf.ByteString getStoreValue() {
+      return storeValue;
     }
-
-    private void initFields() {
-      header_ = Header.getDefaultInstance();
-      entryType_ = EntryType.ROWDATA;
-      storeValue_ = com.google.protobuf.ByteString.EMPTY;
+	private void initFields() {
+      header = Header.getDefaultInstance();
+      entryType = EntryType.ROWDATA;
+      storeValue = com.google.protobuf.ByteString.EMPTY;
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeMessage(1, header_);
+      if (((bitField0 & 0x00000001) == 0x00000001)) {
+        output.writeMessage(1, header);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeEnum(2, entryType_.getNumber());
+      if (((bitField0 & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, entryType.getNumber());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, storeValue_);
+      if (((bitField0 & 0x00000004) == 0x00000004)) {
+        output.writeBytes(3, storeValue);
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
-      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+      if (((bitField0 & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, header_);
+          .computeMessageSize(1, header);
       }
-      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+      if (((bitField0 & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, entryType_.getNumber());
+          .computeEnumSize(2, entryType.getNumber());
       }
-      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+      if (((bitField0 & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, storeValue_);
+          .computeBytesSize(3, storeValue);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Entry parseFrom(byte[] data)
+	public static Entry parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Entry parseFrom(java.io.InputStream input)
+	public static Entry parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static Entry parseDelimitedFrom(java.io.InputStream input)
+	public static Entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static Entry parseDelimitedFrom(
+	public static Entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Entry parseFrom(
+	public static Entry parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Entry prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(Entry prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.Entry}
      *
      * <pre>
@@ -861,405 +985,438 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.Entry)
         EntryOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                Entry.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.Entry.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getHeaderFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        if (headerBuilder_ == null) {
-          header_ = Header.getDefaultInstance();
-        } else {
-          headerBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        entryType_ = EntryType.ROWDATA;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        storeValue_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
-      }
-
-      public Entry getDefaultInstanceForType() {
-        return Entry.getDefaultInstance();
-      }
-
-      public Entry build() {
-        Entry result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public Entry buildPartial() {
-        Entry result = new Entry(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        if (headerBuilder_ == null) {
-          result.header_ = header_;
-        } else {
-          result.header_ = headerBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.entryType_ = entryType_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.storeValue_ = storeValue_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Entry) {
-          return mergeFrom((Entry)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(Entry other) {
-        if (other == Entry.getDefaultInstance()) return this;
-        if (other.hasHeader()) {
-          mergeHeader(other.getHeader());
-        }
-        if (other.hasEntryType()) {
-          setEntryType(other.getEntryType());
-        }
-        if (other.hasStoreValue()) {
-          setStoreValue(other.getStoreValue());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        Entry parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Entry) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private Header header_ = Header.getDefaultInstance();
-      private com.google.protobuf.SingleFieldBuilder<
-          Header, Header.Builder, HeaderOrBuilder> headerBuilder_;
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public boolean hasHeader() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Header getHeader() {
-        if (headerBuilder_ == null) {
-          return header_;
-        } else {
-          return headerBuilder_.getMessage();
-        }
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Builder setHeader(Header value) {
-        if (headerBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          header_ = value;
-          onChanged();
-        } else {
-          headerBuilder_.setMessage(value);
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Builder setHeader(
-          Header.Builder builderForValue) {
-        if (headerBuilder_ == null) {
-          header_ = builderForValue.build();
-          onChanged();
-        } else {
-          headerBuilder_.setMessage(builderForValue.build());
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Builder mergeHeader(Header value) {
-        if (headerBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001) &&
-              header_ != Header.getDefaultInstance()) {
-            header_ =
-              Header.newBuilder(header_).mergeFrom(value).buildPartial();
-          } else {
-            header_ = value;
-          }
-          onChanged();
-        } else {
-          headerBuilder_.mergeFrom(value);
-        }
-        bitField0_ |= 0x00000001;
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Builder clearHeader() {
-        if (headerBuilder_ == null) {
-          header_ = Header.getDefaultInstance();
-          onChanged();
-        } else {
-          headerBuilder_.clear();
-        }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public Header.Builder getHeaderBuilder() {
-        bitField0_ |= 0x00000001;
-        onChanged();
-        return getHeaderFieldBuilder().getBuilder();
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      public HeaderOrBuilder getHeaderOrBuilder() {
-        if (headerBuilder_ != null) {
-          return headerBuilder_.getMessageOrBuilder();
-        } else {
-          return header_;
-        }
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
-       *
-       * <pre>
-       **协议头部信息*
-       * </pre>
-       */
-      private com.google.protobuf.SingleFieldBuilder<
-          Header, Header.Builder, HeaderOrBuilder>
-          getHeaderFieldBuilder() {
-        if (headerBuilder_ == null) {
-          headerBuilder_ = new com.google.protobuf.SingleFieldBuilder<
-              Header, Header.Builder, HeaderOrBuilder>(
-                  getHeader(),
-                  getParentForChildren(),
-                  isClean());
-          header_ = null;
-        }
-        return headerBuilder_;
-      }
+		private Header header_ = Header.getDefaultInstance();
 
-      private EntryType entryType_ = EntryType.ROWDATA;
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
-       *
-       * <pre>
-       **打散后的事件类型*
-       * </pre>
-       */
-      public boolean hasEntryType() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
-       *
-       * <pre>
-       **打散后的事件类型*
-       * </pre>
-       */
-      public EntryType getEntryType() {
-        return entryType_;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
-       *
-       * <pre>
-       **打散后的事件类型*
-       * </pre>
-       */
-      public Builder setEntryType(EntryType value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        bitField0_ |= 0x00000002;
-        entryType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
-       *
-       * <pre>
-       **打散后的事件类型*
-       * </pre>
-       */
-      public Builder clearEntryType() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        entryType_ = EntryType.ROWDATA;
-        onChanged();
-        return this;
-      }
+		private com.google.protobuf.SingleFieldBuilder<
+		      Header, Header.Builder, HeaderOrBuilder> headerBuilder;
 
-      private com.google.protobuf.ByteString storeValue_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>optional bytes storeValue = 3;</code>
-       *
-       * <pre>
-       **传输的二进制数组*
-       * </pre>
-       */
-      public boolean hasStoreValue() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional bytes storeValue = 3;</code>
-       *
-       * <pre>
-       **传输的二进制数组*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString getStoreValue() {
-        return storeValue_;
-      }
-      /**
-       * <code>optional bytes storeValue = 3;</code>
-       *
-       * <pre>
-       **传输的二进制数组*
-       * </pre>
-       */
-      public Builder setStoreValue(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private EntryType entryType_ = EntryType.ROWDATA;
+
+		private com.google.protobuf.ByteString storeValue_ = com.google.protobuf.ByteString.EMPTY;
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.Entry.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolEntryFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            Entry.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		      getHeaderFieldBuilder();
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    if (headerBuilder == null) {
+		      header_ = Header.getDefaultInstance();
+		    } else {
+		      headerBuilder.clear();
+		    }
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    entryType_ = EntryType.ROWDATA;
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    storeValue_ = com.google.protobuf.ByteString.EMPTY;
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
+		  }
+
+		@Override
+		public Entry getDefaultInstanceForType() {
+		    return Entry.getDefaultInstance();
+		  }
+
+		@Override
+		public Entry build() {
+		    Entry result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public Entry buildPartial() {
+		    Entry result = new Entry(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    if (headerBuilder == null) {
+		      result.header = header_;
+		    } else {
+		      result.header = headerBuilder.build();
+		    }
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.entryType = entryType_;
+		    if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+		      to_bitField0_ |= 0x00000004;
+		    }
+		    result.storeValue = storeValue_;
+		    result.bitField0 = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof Entry) {
+		      return mergeFrom((Entry)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(Entry other) {
+		    if (other == Entry.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasHeader()) {
+		      mergeHeader(other.getHeader());
+		    }
+		    if (other.hasEntryType()) {
+		      setEntryType(other.getEntryType());
+		    }
+		    if (other.hasStoreValue()) {
+		      setStoreValue(other.getStoreValue());
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    Entry parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (Entry) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasHeader() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  @Override
+		public Header getHeader() {
+		    if (headerBuilder == null) {
+		      return header_;
+		    } else {
+		      return headerBuilder.getMessage();
+		    }
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  public Builder setHeader(Header value) {
+		    if (headerBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      header_ = value;
+		      onChanged();
+		    } else {
+		      headerBuilder.setMessage(value);
+		    }
+		    bitField0_ |= 0x00000001;
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  public Builder setHeader(
+		      Header.Builder builderForValue) {
+		    if (headerBuilder == null) {
+		      header_ = builderForValue.build();
+		      onChanged();
+		    } else {
+		      headerBuilder.setMessage(builderForValue.build());
+		    }
+		    bitField0_ |= 0x00000001;
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  public Builder mergeHeader(Header value) {
+		    if (headerBuilder == null) {
+		      if (((bitField0_ & 0x00000001) == 0x00000001) &&
+		          header_ != Header.getDefaultInstance()) {
+		        header_ =
+		          Header.newBuilder(header_).mergeFrom(value).buildPartial();
+		      } else {
+		        header_ = value;
+		      }
+		      onChanged();
+		    } else {
+		      headerBuilder.mergeFrom(value);
+		    }
+		    bitField0_ |= 0x00000001;
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  public Builder clearHeader() {
+		    if (headerBuilder == null) {
+		      header_ = Header.getDefaultInstance();
+		      onChanged();
+		    } else {
+		      headerBuilder.clear();
+		    }
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  public Header.Builder getHeaderBuilder() {
+		    bitField0_ |= 0x00000001;
+		    onChanged();
+		    return getHeaderFieldBuilder().getBuilder();
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  @Override
+		public HeaderOrBuilder getHeaderOrBuilder() {
+		    if (headerBuilder != null) {
+		      return headerBuilder.getMessageOrBuilder();
+		    } else {
+		      return header_;
+		    }
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Header header = 1;</code>
+		   *
+		   * <pre>
+		   **协议头部信息*
+		   * </pre>
+		   */
+		  private com.google.protobuf.SingleFieldBuilder<
+		      Header, Header.Builder, HeaderOrBuilder>
+		      getHeaderFieldBuilder() {
+		    if (headerBuilder == null) {
+		      headerBuilder = new com.google.protobuf.SingleFieldBuilder<>(
+		              getHeader(),
+		              getParentForChildren(),
+		              isClean());
+		      header_ = null;
+		    }
+		    return headerBuilder;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
+		   *
+		   * <pre>
+		   **打散后的事件类型*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasEntryType() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
+		   *
+		   * <pre>
+		   **打散后的事件类型*
+		   * </pre>
+		   */
+		  @Override
+		public EntryType getEntryType() {
+		    return entryType_;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
+		   *
+		   * <pre>
+		   **打散后的事件类型*
+		   * </pre>
+		   */
+		  public Builder setEntryType(EntryType value) {
+		    if (value == null) {
+		      throw new NullPointerException();
+		    }
+		    bitField0_ |= 0x00000002;
+		    entryType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EntryType entryType = 2 [default = ROWDATA];</code>
+		   *
+		   * <pre>
+		   **打散后的事件类型*
+		   * </pre>
+		   */
+		  public Builder clearEntryType() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    entryType_ = EntryType.ROWDATA;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bytes storeValue = 3;</code>
+		   *
+		   * <pre>
+		   **传输的二进制数组*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasStoreValue() {
+		    return ((bitField0_ & 0x00000004) == 0x00000004);
+		  }
+
+		/**
+		   * <code>optional bytes storeValue = 3;</code>
+		   *
+		   * <pre>
+		   **传输的二进制数组*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString getStoreValue() {
+		    return storeValue_;
+		  }
+
+		/**
+		   * <code>optional bytes storeValue = 3;</code>
+		   *
+		   * <pre>
+		   **传输的二进制数组*
+		   * </pre>
+		   */
+		  public Builder setStoreValue(com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        storeValue_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bytes storeValue = 3;</code>
-       *
-       * <pre>
-       **传输的二进制数组*
-       * </pre>
-       */
-      public Builder clearStoreValue() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        storeValue_ = getDefaultInstance().getStoreValue();
-        onChanged();
-        return this;
-      }
+		    storeValue_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bytes storeValue = 3;</code>
+		   *
+		   * <pre>
+		   **传输的二进制数组*
+		   * </pre>
+		   */
+		  public Builder clearStoreValue() {
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    storeValue_ = getDefaultInstance().getStoreValue();
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.Entry)
-    }
-
-    static {
-      defaultInstance = new Entry(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.Entry)
@@ -1572,29 +1729,61 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.Header)
       HeaderOrBuilder {
-    // Use Header.newBuilder() to construct.
+    private static final Header defaultInstance;
+	public static com.google.protobuf.Parser<Header> PARSER =
+        new com.google.protobuf.AbstractParser<Header>() {
+      @Override
+	public Header parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Header(input, extensionRegistry);
+      }
+    };
+	public static final int VERSION_FIELD_NUMBER = 1;
+	public static final int LOGFILENAME_FIELD_NUMBER = 2;
+	public static final int LOGFILEOFFSET_FIELD_NUMBER = 3;
+	public static final int SERVERID_FIELD_NUMBER = 4;
+	public static final int SERVERENCODE_FIELD_NUMBER = 5;
+	public static final int EXECUTETIME_FIELD_NUMBER = 6;
+	public static final int SOURCETYPE_FIELD_NUMBER = 7;
+	public static final int SCHEMANAME_FIELD_NUMBER = 8;
+	public static final int TABLENAME_FIELD_NUMBER = 9;
+	public static final int EVENTLENGTH_FIELD_NUMBER = 10;
+	public static final int EVENTTYPE_FIELD_NUMBER = 11;
+	public static final int PROPS_FIELD_NUMBER = 12;
+	public static final int GTID_FIELD_NUMBER = 13;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new Header(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private int version;
+	private Object logfileName;
+	private long logfileOffset;
+	private long serverId;
+	private Object serverenCode;
+	private long executeTime;
+	private Type sourceType;
+	private Object schemaName;
+	private Object tableName;
+	private long eventLength;
+	private EventType eventType;
+	private java.util.List<Pair> props;
+	private Object gtid;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use Header.newBuilder() to construct.
     private Header(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Header(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Header defaultInstance;
-    public static Header getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Header getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Header(
+	private Header(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private Header(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -1619,34 +1808,34 @@ public final class CanalEntry {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              version_ = input.readInt32();
+              version = input.readInt32();
               break;
             }
             case 18: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              logfileName_ = bs;
+              logfileName = bs;
               break;
             }
             case 24: {
               bitField0_ |= 0x00000004;
-              logfileOffset_ = input.readInt64();
+              logfileOffset = input.readInt64();
               break;
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              serverId_ = input.readInt64();
+              serverId = input.readInt64();
               break;
             }
             case 42: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000010;
-              serverenCode_ = bs;
+              serverenCode = bs;
               break;
             }
             case 48: {
               bitField0_ |= 0x00000020;
-              executeTime_ = input.readInt64();
+              executeTime = input.readInt64();
               break;
             }
             case 56: {
@@ -1656,25 +1845,25 @@ public final class CanalEntry {
                 unknownFields.mergeVarintField(7, rawValue);
               } else {
                 bitField0_ |= 0x00000040;
-                sourceType_ = value;
+                sourceType = value;
               }
               break;
             }
             case 66: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000080;
-              schemaName_ = bs;
+              schemaName = bs;
               break;
             }
             case 74: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000100;
-              tableName_ = bs;
+              tableName = bs;
               break;
             }
             case 80: {
               bitField0_ |= 0x00000200;
-              eventLength_ = input.readInt64();
+              eventLength = input.readInt64();
               break;
             }
             case 88: {
@@ -1684,22 +1873,22 @@ public final class CanalEntry {
                 unknownFields.mergeVarintField(11, rawValue);
               } else {
                 bitField0_ |= 0x00000400;
-                eventType_ = value;
+                eventType = value;
               }
               break;
             }
             case 98: {
               if (!((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000800;
               }
-              props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
+              props.add(input.readMessage(Pair.PARSER, extensionRegistry));
               break;
             }
             case 106: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000800;
-              gtid_ = bs;
+              gtid = bs;
               break;
             }
           }
@@ -1711,84 +1900,82 @@ public final class CanalEntry {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000800) == 0x00000800)) {
-          props_ = java.util.Collections.unmodifiableList(props_);
+          props = java.util.Collections.unmodifiableList(props);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static Header getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public Header getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolHeaderFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               Header.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<Header> PARSER =
-        new com.google.protobuf.AbstractParser<Header>() {
-      public Header parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Header(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<Header> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int VERSION_FIELD_NUMBER = 1;
-    private int version_;
-    /**
+	/**
      * <code>optional int32 version = 1 [default = 1];</code>
      *
      * <pre>
      **协议的版本号*
      * </pre>
      */
-    public boolean hasVersion() {
+    @Override
+	public boolean hasVersion() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional int32 version = 1 [default = 1];</code>
      *
      * <pre>
      **协议的版本号*
      * </pre>
      */
-    public int getVersion() {
-      return version_;
+    @Override
+	public int getVersion() {
+      return version;
     }
-
-    public static final int LOGFILENAME_FIELD_NUMBER = 2;
-    private Object logfileName_;
-    /**
+	/**
      * <code>optional string logfileName = 2;</code>
      *
      * <pre>
      **binlog/redolog 文件名*
      * </pre>
      */
-    public boolean hasLogfileName() {
+    @Override
+	public boolean hasLogfileName() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional string logfileName = 2;</code>
      *
      * <pre>
      **binlog/redolog 文件名*
      * </pre>
      */
-    public String getLogfileName() {
-      Object ref = logfileName_;
+    @Override
+	public String getLogfileName() {
+      Object ref = logfileName;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -1796,99 +1983,96 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          logfileName_ = s;
+          logfileName = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string logfileName = 2;</code>
      *
      * <pre>
      **binlog/redolog 文件名*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getLogfileNameBytes() {
-      Object ref = logfileName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        logfileName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = logfileName;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	logfileName = b;
+	return b;
     }
-
-    public static final int LOGFILEOFFSET_FIELD_NUMBER = 3;
-    private long logfileOffset_;
-    /**
+	/**
      * <code>optional int64 logfileOffset = 3;</code>
      *
      * <pre>
      **binlog/redolog 文件的偏移位置*
      * </pre>
      */
-    public boolean hasLogfileOffset() {
+    @Override
+	public boolean hasLogfileOffset() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    /**
+	/**
      * <code>optional int64 logfileOffset = 3;</code>
      *
      * <pre>
      **binlog/redolog 文件的偏移位置*
      * </pre>
      */
-    public long getLogfileOffset() {
-      return logfileOffset_;
+    @Override
+	public long getLogfileOffset() {
+      return logfileOffset;
     }
-
-    public static final int SERVERID_FIELD_NUMBER = 4;
-    private long serverId_;
-    /**
+	/**
      * <code>optional int64 serverId = 4;</code>
      *
      * <pre>
      **服务端serverId*
      * </pre>
      */
-    public boolean hasServerId() {
+    @Override
+	public boolean hasServerId() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    /**
+	/**
      * <code>optional int64 serverId = 4;</code>
      *
      * <pre>
      **服务端serverId*
      * </pre>
      */
-    public long getServerId() {
-      return serverId_;
+    @Override
+	public long getServerId() {
+      return serverId;
     }
-
-    public static final int SERVERENCODE_FIELD_NUMBER = 5;
-    private Object serverenCode_;
-    /**
+	/**
      * <code>optional string serverenCode = 5;</code>
      *
      * <pre>
      ** 变更数据的编码 *
      * </pre>
      */
-    public boolean hasServerenCode() {
+    @Override
+	public boolean hasServerenCode() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    /**
+	/**
      * <code>optional string serverenCode = 5;</code>
      *
      * <pre>
      ** 变更数据的编码 *
      * </pre>
      */
-    public String getServerenCode() {
-      Object ref = serverenCode_;
+    @Override
+	public String getServerenCode() {
+      Object ref = serverenCode;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -1896,99 +2080,96 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          serverenCode_ = s;
+          serverenCode = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string serverenCode = 5;</code>
      *
      * <pre>
      ** 变更数据的编码 *
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getServerenCodeBytes() {
-      Object ref = serverenCode_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        serverenCode_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = serverenCode;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	serverenCode = b;
+	return b;
     }
-
-    public static final int EXECUTETIME_FIELD_NUMBER = 6;
-    private long executeTime_;
-    /**
+	/**
      * <code>optional int64 executeTime = 6;</code>
      *
      * <pre>
      **变更数据的执行时间 *
      * </pre>
      */
-    public boolean hasExecuteTime() {
+    @Override
+	public boolean hasExecuteTime() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    /**
+	/**
      * <code>optional int64 executeTime = 6;</code>
      *
      * <pre>
      **变更数据的执行时间 *
      * </pre>
      */
-    public long getExecuteTime() {
-      return executeTime_;
+    @Override
+	public long getExecuteTime() {
+      return executeTime;
     }
-
-    public static final int SOURCETYPE_FIELD_NUMBER = 7;
-    private Type sourceType_;
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
      *
      * <pre>
      ** 变更数据的来源*
      * </pre>
      */
-    public boolean hasSourceType() {
+    @Override
+	public boolean hasSourceType() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
      *
      * <pre>
      ** 变更数据的来源*
      * </pre>
      */
-    public Type getSourceType() {
-      return sourceType_;
+    @Override
+	public Type getSourceType() {
+      return sourceType;
     }
-
-    public static final int SCHEMANAME_FIELD_NUMBER = 8;
-    private Object schemaName_;
-    /**
+	/**
      * <code>optional string schemaName = 8;</code>
      *
      * <pre>
      ** 变更数据的schemaname*
      * </pre>
      */
-    public boolean hasSchemaName() {
+    @Override
+	public boolean hasSchemaName() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    /**
+	/**
      * <code>optional string schemaName = 8;</code>
      *
      * <pre>
      ** 变更数据的schemaname*
      * </pre>
      */
-    public String getSchemaName() {
-      Object ref = schemaName_;
+    @Override
+	public String getSchemaName() {
+      Object ref = schemaName;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -1996,53 +2177,52 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          schemaName_ = s;
+          schemaName = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string schemaName = 8;</code>
      *
      * <pre>
      ** 变更数据的schemaname*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getSchemaNameBytes() {
-      Object ref = schemaName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        schemaName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = schemaName;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	schemaName = b;
+	return b;
     }
-
-    public static final int TABLENAME_FIELD_NUMBER = 9;
-    private Object tableName_;
-    /**
+	/**
      * <code>optional string tableName = 9;</code>
      *
      * <pre>
      **变更数据的tablename*
      * </pre>
      */
-    public boolean hasTableName() {
+    @Override
+	public boolean hasTableName() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
-    /**
+	/**
      * <code>optional string tableName = 9;</code>
      *
      * <pre>
      **变更数据的tablename*
      * </pre>
      */
-    public String getTableName() {
-      Object ref = tableName_;
+    @Override
+	public String getTableName() {
+      Object ref = tableName;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -2050,154 +2230,153 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          tableName_ = s;
+          tableName = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string tableName = 9;</code>
      *
      * <pre>
      **变更数据的tablename*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getTableNameBytes() {
-      Object ref = tableName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        tableName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = tableName;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	tableName = b;
+	return b;
     }
-
-    public static final int EVENTLENGTH_FIELD_NUMBER = 10;
-    private long eventLength_;
-    /**
+	/**
      * <code>optional int64 eventLength = 10;</code>
      *
      * <pre>
      **每个event的长度*
      * </pre>
      */
-    public boolean hasEventLength() {
+    @Override
+	public boolean hasEventLength() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
-    /**
+	/**
      * <code>optional int64 eventLength = 10;</code>
      *
      * <pre>
      **每个event的长度*
      * </pre>
      */
-    public long getEventLength() {
-      return eventLength_;
+    @Override
+	public long getEventLength() {
+      return eventLength;
     }
-
-    public static final int EVENTTYPE_FIELD_NUMBER = 11;
-    private EventType eventType_;
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
      *
      * <pre>
      **数据变更类型*
      * </pre>
      */
-    public boolean hasEventType() {
+    @Override
+	public boolean hasEventType() {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
      *
      * <pre>
      **数据变更类型*
      * </pre>
      */
-    public EventType getEventType() {
-      return eventType_;
+    @Override
+	public EventType getEventType() {
+      return eventType;
     }
-
-    public static final int PROPS_FIELD_NUMBER = 12;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
-      return props_;
+    @Override
+	public java.util.List<Pair> getPropsList() {
+      return props;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
-      return props_;
+      return props;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
-      return props_.size();
+    @Override
+	public int getPropsCount() {
+      return props.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
-      return props_.get(index);
+    @Override
+	public Pair getProps(int index) {
+      return props.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
-      return props_.get(index);
+      return props.get(index);
     }
-
-    public static final int GTID_FIELD_NUMBER = 13;
-    private Object gtid_;
-    /**
+	/**
      * <code>optional string gtid = 13;</code>
      *
      * <pre>
      **当前事务的gitd*
      * </pre>
      */
-    public boolean hasGtid() {
+    @Override
+	public boolean hasGtid() {
       return ((bitField0_ & 0x00000800) == 0x00000800);
     }
-    /**
+	/**
      * <code>optional string gtid = 13;</code>
      *
      * <pre>
      **当前事务的gitd*
      * </pre>
      */
-    public String getGtid() {
-      Object ref = gtid_;
+    @Override
+	public String getGtid() {
+      Object ref = gtid;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -2205,80 +2384,83 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          gtid_ = s;
+          gtid = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string gtid = 13;</code>
      *
      * <pre>
      **当前事务的gitd*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getGtidBytes() {
-      Object ref = gtid_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        gtid_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = gtid;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	gtid = b;
+	return b;
     }
-
-    private void initFields() {
-      version_ = 1;
-      logfileName_ = "";
-      logfileOffset_ = 0L;
-      serverId_ = 0L;
-      serverenCode_ = "";
-      executeTime_ = 0L;
-      sourceType_ = Type.MYSQL;
-      schemaName_ = "";
-      tableName_ = "";
-      eventLength_ = 0L;
-      eventType_ = EventType.UPDATE;
-      props_ = java.util.Collections.emptyList();
-      gtid_ = "";
+	private void initFields() {
+      version = 1;
+      logfileName = "";
+      logfileOffset = 0L;
+      serverId = 0L;
+      serverenCode = "";
+      executeTime = 0L;
+      sourceType = Type.MYSQL;
+      schemaName = "";
+      tableName = "";
+      eventLength = 0L;
+      eventType = EventType.UPDATE;
+      props = java.util.Collections.emptyList();
+      gtid = "";
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt32(1, version_);
+        output.writeInt32(1, version);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getLogfileNameBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt64(3, logfileOffset_);
+        output.writeInt64(3, logfileOffset);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt64(4, serverId_);
+        output.writeInt64(4, serverId);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(5, getServerenCodeBytes());
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeInt64(6, executeTime_);
+        output.writeInt64(6, executeTime);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
-        output.writeEnum(7, sourceType_.getNumber());
+        output.writeEnum(7, sourceType.getNumber());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         output.writeBytes(8, getSchemaNameBytes());
@@ -2287,29 +2469,30 @@ public final class CanalEntry {
         output.writeBytes(9, getTableNameBytes());
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
-        output.writeInt64(10, eventLength_);
+        output.writeInt64(10, eventLength);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
-        output.writeEnum(11, eventType_.getNumber());
+        output.writeEnum(11, eventType.getNumber());
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(12, props_.get(i));
+      for (CanalEntry.Pair prop : props) {
+        output.writeMessage(12, prop);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         output.writeBytes(13, getGtidBytes());
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(1, version_);
+          .computeInt32Size(1, version);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2317,11 +2500,11 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(3, logfileOffset_);
+          .computeInt64Size(3, logfileOffset);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, serverId_);
+          .computeInt64Size(4, serverId);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2329,11 +2512,11 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(6, executeTime_);
+          .computeInt64Size(6, executeTime);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(7, sourceType_.getNumber());
+          .computeEnumSize(7, sourceType.getNumber());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2345,15 +2528,15 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000200) == 0x00000200)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(10, eventLength_);
+          .computeInt64Size(10, eventLength);
       }
       if (((bitField0_ & 0x00000400) == 0x00000400)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(11, eventType_.getNumber());
+          .computeEnumSize(11, eventType.getNumber());
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair prop : props) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(12, props_.get(i));
+          .computeMessageSize(12, prop);
       }
       if (((bitField0_ & 0x00000800) == 0x00000800)) {
         size += com.google.protobuf.CodedOutputStream
@@ -2363,81 +2546,78 @@ public final class CanalEntry {
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static Header parseFrom(
+	public static Header parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Header parseFrom(
+	public static Header parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Header parseFrom(byte[] data)
+	public static Header parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Header parseFrom(
+	public static Header parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Header parseFrom(java.io.InputStream input)
+	public static Header parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Header parseFrom(
+	public static Header parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static Header parseDelimitedFrom(java.io.InputStream input)
+	public static Header parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static Header parseDelimitedFrom(
+	public static Header parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static Header parseFrom(
+	public static Header parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Header parseFrom(
+	public static Header parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Header prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(Header prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.Header}
      *
      * <pre>
@@ -2448,1429 +2628,1539 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.Header)
         HeaderOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                Header.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.Header.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        version_ = 1;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        logfileName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        logfileOffset_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        serverId_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        serverenCode_ = "";
-        bitField0_ = (bitField0_ & ~0x00000010);
-        executeTime_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000020);
-        sourceType_ = Type.MYSQL;
-        bitField0_ = (bitField0_ & ~0x00000040);
-        schemaName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
-        tableName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000100);
-        eventLength_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000200);
-        eventType_ = EventType.UPDATE;
-        bitField0_ = (bitField0_ & ~0x00000400);
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
-        } else {
-          propsBuilder_.clear();
-        }
-        gtid_ = "";
-        bitField0_ = (bitField0_ & ~0x00001000);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
-      }
-
-      public Header getDefaultInstanceForType() {
-        return Header.getDefaultInstance();
-      }
-
-      public Header build() {
-        Header result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public Header buildPartial() {
-        Header result = new Header(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.version_ = version_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.logfileName_ = logfileName_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.logfileOffset_ = logfileOffset_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.serverId_ = serverId_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.serverenCode_ = serverenCode_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.executeTime_ = executeTime_;
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000040;
-        }
-        result.sourceType_ = sourceType_;
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000080;
-        }
-        result.schemaName_ = schemaName_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000100;
-        }
-        result.tableName_ = tableName_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000200;
-        }
-        result.eventLength_ = eventLength_;
-        if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
-          to_bitField0_ |= 0x00000400;
-        }
-        result.eventType_ = eventType_;
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000800) == 0x00000800)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000800);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
-          to_bitField0_ |= 0x00000800;
-        }
-        result.gtid_ = gtid_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Header) {
-          return mergeFrom((Header)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(Header other) {
-        if (other == Header.getDefaultInstance()) return this;
-        if (other.hasVersion()) {
-          setVersion(other.getVersion());
-        }
-        if (other.hasLogfileName()) {
-          bitField0_ |= 0x00000002;
-          logfileName_ = other.logfileName_;
-          onChanged();
-        }
-        if (other.hasLogfileOffset()) {
-          setLogfileOffset(other.getLogfileOffset());
-        }
-        if (other.hasServerId()) {
-          setServerId(other.getServerId());
-        }
-        if (other.hasServerenCode()) {
-          bitField0_ |= 0x00000010;
-          serverenCode_ = other.serverenCode_;
-          onChanged();
-        }
-        if (other.hasExecuteTime()) {
-          setExecuteTime(other.getExecuteTime());
-        }
-        if (other.hasSourceType()) {
-          setSourceType(other.getSourceType());
-        }
-        if (other.hasSchemaName()) {
-          bitField0_ |= 0x00000080;
-          schemaName_ = other.schemaName_;
-          onChanged();
-        }
-        if (other.hasTableName()) {
-          bitField0_ |= 0x00000100;
-          tableName_ = other.tableName_;
-          onChanged();
-        }
-        if (other.hasEventLength()) {
-          setEventLength(other.getEventLength());
-        }
-        if (other.hasEventType()) {
-          setEventType(other.getEventType());
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000800);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000800);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        if (other.hasGtid()) {
-          bitField0_ |= 0x00001000;
-          gtid_ = other.gtid_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        Header parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Header) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private int version_ = 1;
-      /**
-       * <code>optional int32 version = 1 [default = 1];</code>
-       *
-       * <pre>
-       **协议的版本号*
-       * </pre>
-       */
-      public boolean hasVersion() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional int32 version = 1 [default = 1];</code>
-       *
-       * <pre>
-       **协议的版本号*
-       * </pre>
-       */
-      public int getVersion() {
-        return version_;
-      }
-      /**
-       * <code>optional int32 version = 1 [default = 1];</code>
-       *
-       * <pre>
-       **协议的版本号*
-       * </pre>
-       */
-      public Builder setVersion(int value) {
-        bitField0_ |= 0x00000001;
-        version_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 version = 1 [default = 1];</code>
-       *
-       * <pre>
-       **协议的版本号*
-       * </pre>
-       */
-      public Builder clearVersion() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        version_ = 1;
-        onChanged();
-        return this;
-      }
+		private int version_ = 1;
 
-      private Object logfileName_ = "";
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public boolean hasLogfileName() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public String getLogfileName() {
-        Object ref = logfileName_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            logfileName_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getLogfileNameBytes() {
-        Object ref = logfileName_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          logfileName_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public Builder setLogfileName(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object logfileName_ = "";
+
+		private long logfileOffset_ ;
+
+		private long serverId_ ;
+
+		private Object serverenCode_ = "";
+
+		private long executeTime_ ;
+
+		private Type sourceType_ = Type.MYSQL;
+
+		private Object schemaName_ = "";
+
+		private Object tableName_ = "";
+
+		private long eventLength_ ;
+
+		private EventType eventType_ = EventType.UPDATE;
+
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder;
+
+		private Object gtid_ = "";
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.Header.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolHeaderFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            Header.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		      getPropsFieldBuilder();
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    version_ = 1;
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    logfileName_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    logfileOffset_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    serverId_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    serverenCode_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000010);
+		    executeTime_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000020);
+		    sourceType_ = Type.MYSQL;
+		    bitField0_ = (bitField0_ & ~0x00000040);
+		    schemaName_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000080);
+		    tableName_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000100);
+		    eventLength_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000200);
+		    eventType_ = EventType.UPDATE;
+		    bitField0_ = (bitField0_ & ~0x00000400);
+		    if (propsBuilder == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000800);
+		    } else {
+		      propsBuilder.clear();
+		    }
+		    gtid_ = "";
+		    bitField0_ = (bitField0_ & ~0x00001000);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
+		  }
+
+		@Override
+		public Header getDefaultInstanceForType() {
+		    return Header.getDefaultInstance();
+		  }
+
+		@Override
+		public Header build() {
+		    Header result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public Header buildPartial() {
+		    Header result = new Header(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.version = version_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.logfileName = logfileName_;
+		    if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+		      to_bitField0_ |= 0x00000004;
+		    }
+		    result.logfileOffset = logfileOffset_;
+		    if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+		      to_bitField0_ |= 0x00000008;
+		    }
+		    result.serverId = serverId_;
+		    if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+		      to_bitField0_ |= 0x00000010;
+		    }
+		    result.serverenCode = serverenCode_;
+		    if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+		      to_bitField0_ |= 0x00000020;
+		    }
+		    result.executeTime = executeTime_;
+		    if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+		      to_bitField0_ |= 0x00000040;
+		    }
+		    result.sourceType = sourceType_;
+		    if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+		      to_bitField0_ |= 0x00000080;
+		    }
+		    result.schemaName = schemaName_;
+		    if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+		      to_bitField0_ |= 0x00000100;
+		    }
+		    result.tableName = tableName_;
+		    if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+		      to_bitField0_ |= 0x00000200;
+		    }
+		    result.eventLength = eventLength_;
+		    if (((from_bitField0_ & 0x00000400) == 0x00000400)) {
+		      to_bitField0_ |= 0x00000400;
+		    }
+		    result.eventType = eventType_;
+		    if (propsBuilder == null) {
+		      if (((bitField0_ & 0x00000800) == 0x00000800)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000800);
+		      }
+		      result.props = props_;
+		    } else {
+		      result.props = propsBuilder.build();
+		    }
+		    if (((from_bitField0_ & 0x00001000) == 0x00001000)) {
+		      to_bitField0_ |= 0x00000800;
+		    }
+		    result.gtid = gtid_;
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof Header) {
+		      return mergeFrom((Header)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(Header other) {
+		    if (other == Header.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasVersion()) {
+		      setVersion(other.getVersion());
+		    }
+		    if (other.hasLogfileName()) {
+		      bitField0_ |= 0x00000002;
+		      logfileName_ = other.logfileName;
+		      onChanged();
+		    }
+		    if (other.hasLogfileOffset()) {
+		      setLogfileOffset(other.getLogfileOffset());
+		    }
+		    if (other.hasServerId()) {
+		      setServerId(other.getServerId());
+		    }
+		    if (other.hasServerenCode()) {
+		      bitField0_ |= 0x00000010;
+		      serverenCode_ = other.serverenCode;
+		      onChanged();
+		    }
+		    if (other.hasExecuteTime()) {
+		      setExecuteTime(other.getExecuteTime());
+		    }
+		    if (other.hasSourceType()) {
+		      setSourceType(other.getSourceType());
+		    }
+		    if (other.hasSchemaName()) {
+		      bitField0_ |= 0x00000080;
+		      schemaName_ = other.schemaName;
+		      onChanged();
+		    }
+		    if (other.hasTableName()) {
+		      bitField0_ |= 0x00000100;
+		      tableName_ = other.tableName;
+		      onChanged();
+		    }
+		    if (other.hasEventLength()) {
+		      setEventLength(other.getEventLength());
+		    }
+		    if (other.hasEventType()) {
+		      setEventType(other.getEventType());
+		    }
+		    if (propsBuilder == null) {
+		      if (!other.props.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props;
+		          bitField0_ = (bitField0_ & ~0x00000800);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props.isEmpty()) {
+		        if (propsBuilder.isEmpty()) {
+		          propsBuilder.dispose();
+		          propsBuilder = null;
+		          props_ = other.props;
+		          bitField0_ = (bitField0_ & ~0x00000800);
+		          propsBuilder =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder.addAllMessages(other.props);
+		        }
+		      }
+		    }
+		    if (other.hasGtid()) {
+		      bitField0_ |= 0x00001000;
+		      gtid_ = other.gtid;
+		      onChanged();
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    Header parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (Header) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 version = 1 [default = 1];</code>
+		   *
+		   * <pre>
+		   **协议的版本号*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasVersion() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional int32 version = 1 [default = 1];</code>
+		   *
+		   * <pre>
+		   **协议的版本号*
+		   * </pre>
+		   */
+		  @Override
+		public int getVersion() {
+		    return version_;
+		  }
+
+		/**
+		   * <code>optional int32 version = 1 [default = 1];</code>
+		   *
+		   * <pre>
+		   **协议的版本号*
+		   * </pre>
+		   */
+		  public Builder setVersion(int value) {
+		    bitField0_ |= 0x00000001;
+		    version_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 version = 1 [default = 1];</code>
+		   *
+		   * <pre>
+		   **协议的版本号*
+		   * </pre>
+		   */
+		  public Builder clearVersion() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    version_ = 1;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasLogfileName() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  @Override
+		public String getLogfileName() {
+		    Object ref = logfileName_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        logfileName_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getLogfileNameBytes() {
+		    Object ref = logfileName_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			logfileName_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  public Builder setLogfileName(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        logfileName_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public Builder clearLogfileName() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        logfileName_ = getDefaultInstance().getLogfileName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string logfileName = 2;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件名*
-       * </pre>
-       */
-      public Builder setLogfileNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    logfileName_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  public Builder clearLogfileName() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    logfileName_ = getDefaultInstance().getLogfileName();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string logfileName = 2;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件名*
+		   * </pre>
+		   */
+		  public Builder setLogfileNameBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        logfileName_ = value;
-        onChanged();
-        return this;
-      }
+		    logfileName_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private long logfileOffset_ ;
-      /**
-       * <code>optional int64 logfileOffset = 3;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件的偏移位置*
-       * </pre>
-       */
-      public boolean hasLogfileOffset() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional int64 logfileOffset = 3;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件的偏移位置*
-       * </pre>
-       */
-      public long getLogfileOffset() {
-        return logfileOffset_;
-      }
-      /**
-       * <code>optional int64 logfileOffset = 3;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件的偏移位置*
-       * </pre>
-       */
-      public Builder setLogfileOffset(long value) {
-        bitField0_ |= 0x00000004;
-        logfileOffset_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 logfileOffset = 3;</code>
-       *
-       * <pre>
-       **binlog/redolog 文件的偏移位置*
-       * </pre>
-       */
-      public Builder clearLogfileOffset() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        logfileOffset_ = 0L;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 logfileOffset = 3;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件的偏移位置*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasLogfileOffset() {
+		    return ((bitField0_ & 0x00000004) == 0x00000004);
+		  }
 
-      private long serverId_ ;
-      /**
-       * <code>optional int64 serverId = 4;</code>
-       *
-       * <pre>
-       **服务端serverId*
-       * </pre>
-       */
-      public boolean hasServerId() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional int64 serverId = 4;</code>
-       *
-       * <pre>
-       **服务端serverId*
-       * </pre>
-       */
-      public long getServerId() {
-        return serverId_;
-      }
-      /**
-       * <code>optional int64 serverId = 4;</code>
-       *
-       * <pre>
-       **服务端serverId*
-       * </pre>
-       */
-      public Builder setServerId(long value) {
-        bitField0_ |= 0x00000008;
-        serverId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 serverId = 4;</code>
-       *
-       * <pre>
-       **服务端serverId*
-       * </pre>
-       */
-      public Builder clearServerId() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        serverId_ = 0L;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 logfileOffset = 3;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件的偏移位置*
+		   * </pre>
+		   */
+		  @Override
+		public long getLogfileOffset() {
+		    return logfileOffset_;
+		  }
 
-      private Object serverenCode_ = "";
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public boolean hasServerenCode() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public String getServerenCode() {
-        Object ref = serverenCode_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            serverenCode_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getServerenCodeBytes() {
-        Object ref = serverenCode_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          serverenCode_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public Builder setServerenCode(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional int64 logfileOffset = 3;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件的偏移位置*
+		   * </pre>
+		   */
+		  public Builder setLogfileOffset(long value) {
+		    bitField0_ |= 0x00000004;
+		    logfileOffset_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 logfileOffset = 3;</code>
+		   *
+		   * <pre>
+		   **binlog/redolog 文件的偏移位置*
+		   * </pre>
+		   */
+		  public Builder clearLogfileOffset() {
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    logfileOffset_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 serverId = 4;</code>
+		   *
+		   * <pre>
+		   **服务端serverId*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasServerId() {
+		    return ((bitField0_ & 0x00000008) == 0x00000008);
+		  }
+
+		/**
+		   * <code>optional int64 serverId = 4;</code>
+		   *
+		   * <pre>
+		   **服务端serverId*
+		   * </pre>
+		   */
+		  @Override
+		public long getServerId() {
+		    return serverId_;
+		  }
+
+		/**
+		   * <code>optional int64 serverId = 4;</code>
+		   *
+		   * <pre>
+		   **服务端serverId*
+		   * </pre>
+		   */
+		  public Builder setServerId(long value) {
+		    bitField0_ |= 0x00000008;
+		    serverId_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 serverId = 4;</code>
+		   *
+		   * <pre>
+		   **服务端serverId*
+		   * </pre>
+		   */
+		  public Builder clearServerId() {
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    serverId_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasServerenCode() {
+		    return ((bitField0_ & 0x00000010) == 0x00000010);
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  @Override
+		public String getServerenCode() {
+		    Object ref = serverenCode_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        serverenCode_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getServerenCodeBytes() {
+		    Object ref = serverenCode_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			serverenCode_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  public Builder setServerenCode(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000010;
-        serverenCode_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public Builder clearServerenCode() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        serverenCode_ = getDefaultInstance().getServerenCode();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string serverenCode = 5;</code>
-       *
-       * <pre>
-       ** 变更数据的编码 *
-       * </pre>
-       */
-      public Builder setServerenCodeBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    serverenCode_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  public Builder clearServerenCode() {
+		    bitField0_ = (bitField0_ & ~0x00000010);
+		    serverenCode_ = getDefaultInstance().getServerenCode();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string serverenCode = 5;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的编码 *
+		   * </pre>
+		   */
+		  public Builder setServerenCodeBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000010;
-        serverenCode_ = value;
-        onChanged();
-        return this;
-      }
+		    serverenCode_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private long executeTime_ ;
-      /**
-       * <code>optional int64 executeTime = 6;</code>
-       *
-       * <pre>
-       **变更数据的执行时间 *
-       * </pre>
-       */
-      public boolean hasExecuteTime() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>optional int64 executeTime = 6;</code>
-       *
-       * <pre>
-       **变更数据的执行时间 *
-       * </pre>
-       */
-      public long getExecuteTime() {
-        return executeTime_;
-      }
-      /**
-       * <code>optional int64 executeTime = 6;</code>
-       *
-       * <pre>
-       **变更数据的执行时间 *
-       * </pre>
-       */
-      public Builder setExecuteTime(long value) {
-        bitField0_ |= 0x00000020;
-        executeTime_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 executeTime = 6;</code>
-       *
-       * <pre>
-       **变更数据的执行时间 *
-       * </pre>
-       */
-      public Builder clearExecuteTime() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        executeTime_ = 0L;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 executeTime = 6;</code>
+		   *
+		   * <pre>
+		   **变更数据的执行时间 *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasExecuteTime() {
+		    return ((bitField0_ & 0x00000020) == 0x00000020);
+		  }
 
-      private Type sourceType_ = Type.MYSQL;
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
-       *
-       * <pre>
-       ** 变更数据的来源*
-       * </pre>
-       */
-      public boolean hasSourceType() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
-       *
-       * <pre>
-       ** 变更数据的来源*
-       * </pre>
-       */
-      public Type getSourceType() {
-        return sourceType_;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
-       *
-       * <pre>
-       ** 变更数据的来源*
-       * </pre>
-       */
-      public Builder setSourceType(Type value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        bitField0_ |= 0x00000040;
-        sourceType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
-       *
-       * <pre>
-       ** 变更数据的来源*
-       * </pre>
-       */
-      public Builder clearSourceType() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        sourceType_ = Type.MYSQL;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 executeTime = 6;</code>
+		   *
+		   * <pre>
+		   **变更数据的执行时间 *
+		   * </pre>
+		   */
+		  @Override
+		public long getExecuteTime() {
+		    return executeTime_;
+		  }
 
-      private Object schemaName_ = "";
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public boolean hasSchemaName() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public String getSchemaName() {
-        Object ref = schemaName_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            schemaName_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getSchemaNameBytes() {
-        Object ref = schemaName_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          schemaName_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public Builder setSchemaName(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional int64 executeTime = 6;</code>
+		   *
+		   * <pre>
+		   **变更数据的执行时间 *
+		   * </pre>
+		   */
+		  public Builder setExecuteTime(long value) {
+		    bitField0_ |= 0x00000020;
+		    executeTime_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 6;</code>
+		   *
+		   * <pre>
+		   **变更数据的执行时间 *
+		   * </pre>
+		   */
+		  public Builder clearExecuteTime() {
+		    bitField0_ = (bitField0_ & ~0x00000020);
+		    executeTime_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
+		   *
+		   * <pre>
+		   ** 变更数据的来源*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasSourceType() {
+		    return ((bitField0_ & 0x00000040) == 0x00000040);
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
+		   *
+		   * <pre>
+		   ** 变更数据的来源*
+		   * </pre>
+		   */
+		  @Override
+		public Type getSourceType() {
+		    return sourceType_;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
+		   *
+		   * <pre>
+		   ** 变更数据的来源*
+		   * </pre>
+		   */
+		  public Builder setSourceType(Type value) {
+		    if (value == null) {
+		      throw new NullPointerException();
+		    }
+		    bitField0_ |= 0x00000040;
+		    sourceType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.Type sourceType = 7 [default = MYSQL];</code>
+		   *
+		   * <pre>
+		   ** 变更数据的来源*
+		   * </pre>
+		   */
+		  public Builder clearSourceType() {
+		    bitField0_ = (bitField0_ & ~0x00000040);
+		    sourceType_ = Type.MYSQL;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasSchemaName() {
+		    return ((bitField0_ & 0x00000080) == 0x00000080);
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  @Override
+		public String getSchemaName() {
+		    Object ref = schemaName_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        schemaName_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getSchemaNameBytes() {
+		    Object ref = schemaName_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			schemaName_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  public Builder setSchemaName(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        schemaName_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public Builder clearSchemaName() {
-        bitField0_ = (bitField0_ & ~0x00000080);
-        schemaName_ = getDefaultInstance().getSchemaName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string schemaName = 8;</code>
-       *
-       * <pre>
-       ** 变更数据的schemaname*
-       * </pre>
-       */
-      public Builder setSchemaNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    schemaName_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  public Builder clearSchemaName() {
+		    bitField0_ = (bitField0_ & ~0x00000080);
+		    schemaName_ = getDefaultInstance().getSchemaName();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string schemaName = 8;</code>
+		   *
+		   * <pre>
+		   ** 变更数据的schemaname*
+		   * </pre>
+		   */
+		  public Builder setSchemaNameBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        schemaName_ = value;
-        onChanged();
-        return this;
-      }
+		    schemaName_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private Object tableName_ = "";
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public boolean hasTableName() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
-      }
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public String getTableName() {
-        Object ref = tableName_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            tableName_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getTableNameBytes() {
-        Object ref = tableName_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          tableName_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public Builder setTableName(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasTableName() {
+		    return ((bitField0_ & 0x00000100) == 0x00000100);
+		  }
+
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  @Override
+		public String getTableName() {
+		    Object ref = tableName_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        tableName_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getTableNameBytes() {
+		    Object ref = tableName_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			tableName_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  public Builder setTableName(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000100;
-        tableName_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public Builder clearTableName() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        tableName_ = getDefaultInstance().getTableName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string tableName = 9;</code>
-       *
-       * <pre>
-       **变更数据的tablename*
-       * </pre>
-       */
-      public Builder setTableNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    tableName_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  public Builder clearTableName() {
+		    bitField0_ = (bitField0_ & ~0x00000100);
+		    tableName_ = getDefaultInstance().getTableName();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string tableName = 9;</code>
+		   *
+		   * <pre>
+		   **变更数据的tablename*
+		   * </pre>
+		   */
+		  public Builder setTableNameBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000100;
-        tableName_ = value;
-        onChanged();
-        return this;
-      }
+		    tableName_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private long eventLength_ ;
-      /**
-       * <code>optional int64 eventLength = 10;</code>
-       *
-       * <pre>
-       **每个event的长度*
-       * </pre>
-       */
-      public boolean hasEventLength() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
-      }
-      /**
-       * <code>optional int64 eventLength = 10;</code>
-       *
-       * <pre>
-       **每个event的长度*
-       * </pre>
-       */
-      public long getEventLength() {
-        return eventLength_;
-      }
-      /**
-       * <code>optional int64 eventLength = 10;</code>
-       *
-       * <pre>
-       **每个event的长度*
-       * </pre>
-       */
-      public Builder setEventLength(long value) {
-        bitField0_ |= 0x00000200;
-        eventLength_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 eventLength = 10;</code>
-       *
-       * <pre>
-       **每个event的长度*
-       * </pre>
-       */
-      public Builder clearEventLength() {
-        bitField0_ = (bitField0_ & ~0x00000200);
-        eventLength_ = 0L;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 eventLength = 10;</code>
+		   *
+		   * <pre>
+		   **每个event的长度*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasEventLength() {
+		    return ((bitField0_ & 0x00000200) == 0x00000200);
+		  }
 
-      private EventType eventType_ = EventType.UPDATE;
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public boolean hasEventType() {
-        return ((bitField0_ & 0x00000400) == 0x00000400);
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public EventType getEventType() {
-        return eventType_;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public Builder setEventType(EventType value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        bitField0_ |= 0x00000400;
-        eventType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public Builder clearEventType() {
-        bitField0_ = (bitField0_ & ~0x00000400);
-        eventType_ = EventType.UPDATE;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int64 eventLength = 10;</code>
+		   *
+		   * <pre>
+		   **每个event的长度*
+		   * </pre>
+		   */
+		  @Override
+		public long getEventLength() {
+		    return eventLength_;
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000800) == 0x00000800)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000800;
-         }
-      }
+		/**
+		   * <code>optional int64 eventLength = 10;</code>
+		   *
+		   * <pre>
+		   **每个event的长度*
+		   * </pre>
+		   */
+		  public Builder setEventLength(long value) {
+		    bitField0_ |= 0x00000200;
+		    eventLength_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		/**
+		   * <code>optional int64 eventLength = 10;</code>
+		   *
+		   * <pre>
+		   **每个event的长度*
+		   * </pre>
+		   */
+		  public Builder clearEventLength() {
+		    bitField0_ = (bitField0_ & ~0x00000200);
+		    eventLength_ = 0L;
+		    onChanged();
+		    return this;
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000800);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000800) == 0x00000800),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasEventType() {
+		    return ((bitField0_ & 0x00000400) == 0x00000400);
+		  }
 
-      private Object gtid_ = "";
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public boolean hasGtid() {
-        return ((bitField0_ & 0x00001000) == 0x00001000);
-      }
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public String getGtid() {
-        Object ref = gtid_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            gtid_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getGtidBytes() {
-        Object ref = gtid_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          gtid_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public Builder setGtid(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  @Override
+		public EventType getEventType() {
+		    return eventType_;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  public Builder setEventType(EventType value) {
+		    if (value == null) {
+		      throw new NullPointerException();
+		    }
+		    bitField0_ |= 0x00000400;
+		    eventType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 11 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  public Builder clearEventType() {
+		    bitField0_ = (bitField0_ & ~0x00000400);
+		    eventType_ = EventType.UPDATE;
+		    onChanged();
+		    return this;
+		  }
+
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000800) == 0x00000800) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000800;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000800);
+		      onChanged();
+		    } else {
+		      propsBuilder.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder != null) {
+		      return propsBuilder.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 12;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder == null) {
+		      propsBuilder = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000800) == 0x00000800),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder;
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasGtid() {
+		    return ((bitField0_ & 0x00001000) == 0x00001000);
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  @Override
+		public String getGtid() {
+		    Object ref = gtid_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        gtid_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getGtidBytes() {
+		    Object ref = gtid_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			gtid_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  public Builder setGtid(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00001000;
-        gtid_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public Builder clearGtid() {
-        bitField0_ = (bitField0_ & ~0x00001000);
-        gtid_ = getDefaultInstance().getGtid();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string gtid = 13;</code>
-       *
-       * <pre>
-       **当前事务的gitd*
-       * </pre>
-       */
-      public Builder setGtidBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    gtid_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  public Builder clearGtid() {
+		    bitField0_ = (bitField0_ & ~0x00001000);
+		    gtid_ = getDefaultInstance().getGtid();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string gtid = 13;</code>
+		   *
+		   * <pre>
+		   **当前事务的gitd*
+		   * </pre>
+		   */
+		  public Builder setGtidBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00001000;
-        gtid_ = value;
-        onChanged();
-        return this;
-      }
+		    gtid_ = value;
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.Header)
-    }
-
-    static {
-      defaultInstance = new Header(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.Header)
@@ -4114,29 +4404,55 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.Column)
       ColumnOrBuilder {
-    // Use Column.newBuilder() to construct.
+    private static final Column defaultInstance;
+	public static com.google.protobuf.Parser<Column> PARSER =
+        new com.google.protobuf.AbstractParser<Column>() {
+      @Override
+	public Column parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Column(input, extensionRegistry);
+      }
+    };
+	public static final int INDEX_FIELD_NUMBER = 1;
+	public static final int SQLTYPE_FIELD_NUMBER = 2;
+	public static final int NAME_FIELD_NUMBER = 3;
+	public static final int ISKEY_FIELD_NUMBER = 4;
+	public static final int UPDATED_FIELD_NUMBER = 5;
+	public static final int ISNULL_FIELD_NUMBER = 6;
+	public static final int PROPS_FIELD_NUMBER = 7;
+	public static final int VALUE_FIELD_NUMBER = 8;
+	public static final int LENGTH_FIELD_NUMBER = 9;
+	public static final int MYSQLTYPE_FIELD_NUMBER = 10;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new Column(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private int index_;
+	private int sqlType;
+	private Object name;
+	private boolean isKey;
+	private boolean updated;
+	private boolean isNull;
+	private java.util.List<Pair> props_;
+	private Object value_;
+	private int length;
+	private Object mysqlType;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use Column.newBuilder() to construct.
     private Column(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Column(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Column defaultInstance;
-    public static Column getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Column getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Column(
+	private Column(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private Column(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -4166,33 +4482,33 @@ public final class CanalEntry {
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              sqlType_ = input.readInt32();
+              sqlType = input.readInt32();
               break;
             }
             case 26: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000004;
-              name_ = bs;
+              name = bs;
               break;
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              isKey_ = input.readBool();
+              isKey = input.readBool();
               break;
             }
             case 40: {
               bitField0_ |= 0x00000010;
-              updated_ = input.readBool();
+              updated = input.readBool();
               break;
             }
             case 48: {
               bitField0_ |= 0x00000020;
-              isNull_ = input.readBool();
+              isNull = input.readBool();
               break;
             }
             case 58: {
               if (!((mutable_bitField0_ & 0x00000040) == 0x00000040)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000040;
               }
               props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
@@ -4206,13 +4522,13 @@ public final class CanalEntry {
             }
             case 72: {
               bitField0_ |= 0x00000080;
-              length_ = input.readInt32();
+              length = input.readInt32();
               break;
             }
             case 82: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000100;
-              mysqlType_ = bs;
+              mysqlType = bs;
               break;
             }
           }
@@ -4230,101 +4546,98 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static Column getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public Column getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolColumnFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               Column.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<Column> PARSER =
-        new com.google.protobuf.AbstractParser<Column>() {
-      public Column parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Column(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<Column> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int INDEX_FIELD_NUMBER = 1;
-    private int index_;
-    /**
+	/**
      * <code>optional int32 index = 1;</code>
      *
      * <pre>
      **字段下标*
      * </pre>
      */
-    public boolean hasIndex() {
+    @Override
+	public boolean hasIndex() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional int32 index = 1;</code>
      *
      * <pre>
      **字段下标*
      * </pre>
      */
-    public int getIndex() {
+    @Override
+	public int getIndex() {
       return index_;
     }
-
-    public static final int SQLTYPE_FIELD_NUMBER = 2;
-    private int sqlType_;
-    /**
+	/**
      * <code>optional int32 sqlType = 2;</code>
      *
      * <pre>
      **字段java中类型*
      * </pre>
      */
-    public boolean hasSqlType() {
+    @Override
+	public boolean hasSqlType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional int32 sqlType = 2;</code>
      *
      * <pre>
      **字段java中类型*
      * </pre>
      */
-    public int getSqlType() {
-      return sqlType_;
+    @Override
+	public int getSqlType() {
+      return sqlType;
     }
-
-    public static final int NAME_FIELD_NUMBER = 3;
-    private Object name_;
-    /**
+	/**
      * <code>optional string name = 3;</code>
      *
      * <pre>
      **字段名称(忽略大小写)，在mysql中是没有的*
      * </pre>
      */
-    public boolean hasName() {
+    @Override
+	public boolean hasName() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    /**
+	/**
      * <code>optional string name = 3;</code>
      *
      * <pre>
      **字段名称(忽略大小写)，在mysql中是没有的*
      * </pre>
      */
-    public String getName() {
-      Object ref = name_;
+    @Override
+	public String getName() {
+      Object ref = name;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -4332,176 +4645,174 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          name_ = s;
+          name = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string name = 3;</code>
      *
      * <pre>
      **字段名称(忽略大小写)，在mysql中是没有的*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getNameBytes() {
-      Object ref = name_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        name_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = name;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	name = b;
+	return b;
     }
-
-    public static final int ISKEY_FIELD_NUMBER = 4;
-    private boolean isKey_;
-    /**
+	/**
      * <code>optional bool isKey = 4;</code>
      *
      * <pre>
      **是否是主键*
      * </pre>
      */
-    public boolean hasIsKey() {
+    @Override
+	public boolean hasIsKey() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    /**
+	/**
      * <code>optional bool isKey = 4;</code>
      *
      * <pre>
      **是否是主键*
      * </pre>
      */
-    public boolean getIsKey() {
-      return isKey_;
+    @Override
+	public boolean getIsKey() {
+      return isKey;
     }
-
-    public static final int UPDATED_FIELD_NUMBER = 5;
-    private boolean updated_;
-    /**
+	/**
      * <code>optional bool updated = 5;</code>
      *
      * <pre>
      **如果EventType=UPDATE,用于标识这个字段值是否有修改*
      * </pre>
      */
-    public boolean hasUpdated() {
+    @Override
+	public boolean hasUpdated() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    /**
+	/**
      * <code>optional bool updated = 5;</code>
      *
      * <pre>
      **如果EventType=UPDATE,用于标识这个字段值是否有修改*
      * </pre>
      */
-    public boolean getUpdated() {
-      return updated_;
+    @Override
+	public boolean getUpdated() {
+      return updated;
     }
-
-    public static final int ISNULL_FIELD_NUMBER = 6;
-    private boolean isNull_;
-    /**
+	/**
      * <code>optional bool isNull = 6 [default = false];</code>
      *
      * <pre>
      ** 标识是否为空  *
      * </pre>
      */
-    public boolean hasIsNull() {
+    @Override
+	public boolean hasIsNull() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-    /**
+	/**
      * <code>optional bool isNull = 6 [default = false];</code>
      *
      * <pre>
      ** 标识是否为空  *
      * </pre>
      */
-    public boolean getIsNull() {
-      return isNull_;
+    @Override
+	public boolean getIsNull() {
+      return isNull;
     }
-
-    public static final int PROPS_FIELD_NUMBER = 7;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
+    @Override
+	public java.util.List<Pair> getPropsList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
+    @Override
+	public int getPropsCount() {
       return props_.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
+    @Override
+	public Pair getProps(int index) {
       return props_.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
       return props_.get(index);
     }
-
-    public static final int VALUE_FIELD_NUMBER = 8;
-    private Object value_;
-    /**
+	/**
      * <code>optional string value = 8;</code>
      *
      * <pre>
      ** 字段值,timestamp,Datetime是一个时间格式的文本 *
      * </pre>
      */
-    public boolean hasValue() {
+    @Override
+	public boolean hasValue() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
-    /**
+	/**
      * <code>optional string value = 8;</code>
      *
      * <pre>
      ** 字段值,timestamp,Datetime是一个时间格式的文本 *
      * </pre>
      */
-    public String getValue() {
+    @Override
+	public String getValue() {
       Object ref = value_;
       if (ref instanceof String) {
         return (String) ref;
@@ -4515,71 +4826,69 @@ public final class CanalEntry {
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string value = 8;</code>
      *
      * <pre>
      ** 字段值,timestamp,Datetime是一个时间格式的文本 *
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getValueBytes() {
       Object ref = value_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        value_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	value_ = b;
+	return b;
     }
-
-    public static final int LENGTH_FIELD_NUMBER = 9;
-    private int length_;
-    /**
+	/**
      * <code>optional int32 length = 9;</code>
      *
      * <pre>
      ** 对应数据对象原始长度 *
      * </pre>
      */
-    public boolean hasLength() {
+    @Override
+	public boolean hasLength() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
-    /**
+	/**
      * <code>optional int32 length = 9;</code>
      *
      * <pre>
      ** 对应数据对象原始长度 *
      * </pre>
      */
-    public int getLength() {
-      return length_;
+    @Override
+	public int getLength() {
+      return length;
     }
-
-    public static final int MYSQLTYPE_FIELD_NUMBER = 10;
-    private Object mysqlType_;
-    /**
+	/**
      * <code>optional string mysqlType = 10;</code>
      *
      * <pre>
      **字段mysql类型*
      * </pre>
      */
-    public boolean hasMysqlType() {
+    @Override
+	public boolean hasMysqlType() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
-    /**
+	/**
      * <code>optional string mysqlType = 10;</code>
      *
      * <pre>
      **字段mysql类型*
      * </pre>
      */
-    public String getMysqlType() {
-      Object ref = mysqlType_;
+    @Override
+	public String getMysqlType() {
+      Object ref = mysqlType;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -4587,94 +4896,98 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          mysqlType_ = s;
+          mysqlType = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string mysqlType = 10;</code>
      *
      * <pre>
      **字段mysql类型*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getMysqlTypeBytes() {
-      Object ref = mysqlType_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        mysqlType_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = mysqlType;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	mysqlType = b;
+	return b;
     }
-
-    private void initFields() {
+	private void initFields() {
       index_ = 0;
-      sqlType_ = 0;
-      name_ = "";
-      isKey_ = false;
-      updated_ = false;
-      isNull_ = false;
+      sqlType = 0;
+      name = "";
+      isKey = false;
+      updated = false;
+      isNull = false;
       props_ = java.util.Collections.emptyList();
       value_ = "";
-      length_ = 0;
-      mysqlType_ = "";
+      length = 0;
+      mysqlType = "";
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt32(1, index_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeInt32(2, sqlType_);
+        output.writeInt32(2, sqlType);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         output.writeBytes(3, getNameBytes());
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeBool(4, isKey_);
+        output.writeBool(4, isKey);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBool(5, updated_);
+        output.writeBool(5, updated);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeBool(6, isNull_);
+        output.writeBool(6, isNull);
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(7, props_.get(i));
+      for (CanalEntry.Pair aProps_ : props_) {
+        output.writeMessage(7, aProps_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         output.writeBytes(8, getValueBytes());
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
-        output.writeInt32(9, length_);
+        output.writeInt32(9, length);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         output.writeBytes(10, getMysqlTypeBytes());
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -4683,7 +4996,7 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(2, sqlType_);
+          .computeInt32Size(2, sqlType);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4691,19 +5004,19 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(4, isKey_);
+          .computeBoolSize(4, isKey);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(5, updated_);
+          .computeBoolSize(5, updated);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(6, isNull_);
+          .computeBoolSize(6, isNull);
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair aProps_ : props_) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(7, props_.get(i));
+          .computeMessageSize(7, aProps_);
       }
       if (((bitField0_ & 0x00000040) == 0x00000040)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4711,7 +5024,7 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000080) == 0x00000080)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(9, length_);
+          .computeInt32Size(9, length);
       }
       if (((bitField0_ & 0x00000100) == 0x00000100)) {
         size += com.google.protobuf.CodedOutputStream
@@ -4721,81 +5034,78 @@ public final class CanalEntry {
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static Column parseFrom(
+	public static Column parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Column parseFrom(
+	public static Column parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Column parseFrom(byte[] data)
+	public static Column parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Column parseFrom(
+	public static Column parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Column parseFrom(java.io.InputStream input)
+	public static Column parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Column parseFrom(
+	public static Column parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static Column parseDelimitedFrom(java.io.InputStream input)
+	public static Column parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static Column parseDelimitedFrom(
+	public static Column parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static Column parseFrom(
+	public static Column parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Column parseFrom(
+	public static Column parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Column prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(Column prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.Column}
      *
      * <pre>
@@ -4806,1144 +5116,1234 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.Column)
         ColumnOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                Column.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.Column.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        index_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        sqlType_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
-        isKey_ = false;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        updated_ = false;
-        bitField0_ = (bitField0_ & ~0x00000010);
-        isNull_ = false;
-        bitField0_ = (bitField0_ & ~0x00000020);
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
-        } else {
-          propsBuilder_.clear();
-        }
-        value_ = "";
-        bitField0_ = (bitField0_ & ~0x00000080);
-        length_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000100);
-        mysqlType_ = "";
-        bitField0_ = (bitField0_ & ~0x00000200);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
-      }
-
-      public Column getDefaultInstanceForType() {
-        return Column.getDefaultInstance();
-      }
-
-      public Column build() {
-        Column result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public Column buildPartial() {
-        Column result = new Column(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.index_ = index_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.sqlType_ = sqlType_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.name_ = name_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.isKey_ = isKey_;
-        if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.updated_ = updated_;
-        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
-          to_bitField0_ |= 0x00000020;
-        }
-        result.isNull_ = isNull_;
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000040) == 0x00000040)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000040);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
-          to_bitField0_ |= 0x00000040;
-        }
-        result.value_ = value_;
-        if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
-          to_bitField0_ |= 0x00000080;
-        }
-        result.length_ = length_;
-        if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
-          to_bitField0_ |= 0x00000100;
-        }
-        result.mysqlType_ = mysqlType_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Column) {
-          return mergeFrom((Column)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(Column other) {
-        if (other == Column.getDefaultInstance()) return this;
-        if (other.hasIndex()) {
-          setIndex(other.getIndex());
-        }
-        if (other.hasSqlType()) {
-          setSqlType(other.getSqlType());
-        }
-        if (other.hasName()) {
-          bitField0_ |= 0x00000004;
-          name_ = other.name_;
-          onChanged();
-        }
-        if (other.hasIsKey()) {
-          setIsKey(other.getIsKey());
-        }
-        if (other.hasUpdated()) {
-          setUpdated(other.getUpdated());
-        }
-        if (other.hasIsNull()) {
-          setIsNull(other.getIsNull());
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000040);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000040);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        if (other.hasValue()) {
-          bitField0_ |= 0x00000080;
-          value_ = other.value_;
-          onChanged();
-        }
-        if (other.hasLength()) {
-          setLength(other.getLength());
-        }
-        if (other.hasMysqlType()) {
-          bitField0_ |= 0x00000200;
-          mysqlType_ = other.mysqlType_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        Column parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Column) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private int index_ ;
-      /**
-       * <code>optional int32 index = 1;</code>
-       *
-       * <pre>
-       **字段下标*
-       * </pre>
-       */
-      public boolean hasIndex() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional int32 index = 1;</code>
-       *
-       * <pre>
-       **字段下标*
-       * </pre>
-       */
-      public int getIndex() {
-        return index_;
-      }
-      /**
-       * <code>optional int32 index = 1;</code>
-       *
-       * <pre>
-       **字段下标*
-       * </pre>
-       */
-      public Builder setIndex(int value) {
-        bitField0_ |= 0x00000001;
-        index_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 index = 1;</code>
-       *
-       * <pre>
-       **字段下标*
-       * </pre>
-       */
-      public Builder clearIndex() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        index_ = 0;
-        onChanged();
-        return this;
-      }
+		private int index_ ;
 
-      private int sqlType_ ;
-      /**
-       * <code>optional int32 sqlType = 2;</code>
-       *
-       * <pre>
-       **字段java中类型*
-       * </pre>
-       */
-      public boolean hasSqlType() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional int32 sqlType = 2;</code>
-       *
-       * <pre>
-       **字段java中类型*
-       * </pre>
-       */
-      public int getSqlType() {
-        return sqlType_;
-      }
-      /**
-       * <code>optional int32 sqlType = 2;</code>
-       *
-       * <pre>
-       **字段java中类型*
-       * </pre>
-       */
-      public Builder setSqlType(int value) {
-        bitField0_ |= 0x00000002;
-        sqlType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 sqlType = 2;</code>
-       *
-       * <pre>
-       **字段java中类型*
-       * </pre>
-       */
-      public Builder clearSqlType() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        sqlType_ = 0;
-        onChanged();
-        return this;
-      }
+		private int sqlType_ ;
 
-      private Object name_ = "";
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public boolean hasName() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public String getName() {
-        Object ref = name_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            name_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getNameBytes() {
-        Object ref = name_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          name_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public Builder setName(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object name_ = "";
+
+		private boolean isKey_ ;
+
+		private boolean updated_ ;
+
+		private boolean isNull_ ;
+
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+
+		private Object value_ = "";
+
+		private int length_ ;
+
+		private Object mysqlType_ = "";
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.Column.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolColumnFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            Column.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		      getPropsFieldBuilder();
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    index_ = 0;
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    sqlType_ = 0;
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    name_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    isKey_ = false;
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    updated_ = false;
+		    bitField0_ = (bitField0_ & ~0x00000010);
+		    isNull_ = false;
+		    bitField0_ = (bitField0_ & ~0x00000020);
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000040);
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    value_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000080);
+		    length_ = 0;
+		    bitField0_ = (bitField0_ & ~0x00000100);
+		    mysqlType_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000200);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
+		  }
+
+		@Override
+		public Column getDefaultInstanceForType() {
+		    return Column.getDefaultInstance();
+		  }
+
+		@Override
+		public Column build() {
+		    Column result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public Column buildPartial() {
+		    Column result = new Column(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.index_ = index_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.sqlType = sqlType_;
+		    if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+		      to_bitField0_ |= 0x00000004;
+		    }
+		    result.name = name_;
+		    if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+		      to_bitField0_ |= 0x00000008;
+		    }
+		    result.isKey = isKey_;
+		    if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
+		      to_bitField0_ |= 0x00000010;
+		    }
+		    result.updated = updated_;
+		    if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+		      to_bitField0_ |= 0x00000020;
+		    }
+		    result.isNull = isNull_;
+		    if (propsBuilder_ == null) {
+		      if (((bitField0_ & 0x00000040) == 0x00000040)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000040);
+		      }
+		      result.props_ = props_;
+		    } else {
+		      result.props_ = propsBuilder_.build();
+		    }
+		    if (((from_bitField0_ & 0x00000080) == 0x00000080)) {
+		      to_bitField0_ |= 0x00000040;
+		    }
+		    result.value_ = value_;
+		    if (((from_bitField0_ & 0x00000100) == 0x00000100)) {
+		      to_bitField0_ |= 0x00000080;
+		    }
+		    result.length = length_;
+		    if (((from_bitField0_ & 0x00000200) == 0x00000200)) {
+		      to_bitField0_ |= 0x00000100;
+		    }
+		    result.mysqlType = mysqlType_;
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof Column) {
+		      return mergeFrom((Column)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(Column other) {
+		    if (other == Column.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasIndex()) {
+		      setIndex(other.getIndex());
+		    }
+		    if (other.hasSqlType()) {
+		      setSqlType(other.getSqlType());
+		    }
+		    if (other.hasName()) {
+		      bitField0_ |= 0x00000004;
+		      name_ = other.name;
+		      onChanged();
+		    }
+		    if (other.hasIsKey()) {
+		      setIsKey(other.getIsKey());
+		    }
+		    if (other.hasUpdated()) {
+		      setUpdated(other.getUpdated());
+		    }
+		    if (other.hasIsNull()) {
+		      setIsNull(other.getIsNull());
+		    }
+		    if (propsBuilder_ == null) {
+		      if (!other.props_.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000040);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props_);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props_.isEmpty()) {
+		        if (propsBuilder_.isEmpty()) {
+		          propsBuilder_.dispose();
+		          propsBuilder_ = null;
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000040);
+		          propsBuilder_ =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder_.addAllMessages(other.props_);
+		        }
+		      }
+		    }
+		    if (other.hasValue()) {
+		      bitField0_ |= 0x00000080;
+		      value_ = other.value_;
+		      onChanged();
+		    }
+		    if (other.hasLength()) {
+		      setLength(other.getLength());
+		    }
+		    if (other.hasMysqlType()) {
+		      bitField0_ |= 0x00000200;
+		      mysqlType_ = other.mysqlType;
+		      onChanged();
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    Column parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (Column) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 index = 1;</code>
+		   *
+		   * <pre>
+		   **字段下标*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasIndex() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional int32 index = 1;</code>
+		   *
+		   * <pre>
+		   **字段下标*
+		   * </pre>
+		   */
+		  @Override
+		public int getIndex() {
+		    return index_;
+		  }
+
+		/**
+		   * <code>optional int32 index = 1;</code>
+		   *
+		   * <pre>
+		   **字段下标*
+		   * </pre>
+		   */
+		  public Builder setIndex(int value) {
+		    bitField0_ |= 0x00000001;
+		    index_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 index = 1;</code>
+		   *
+		   * <pre>
+		   **字段下标*
+		   * </pre>
+		   */
+		  public Builder clearIndex() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    index_ = 0;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 sqlType = 2;</code>
+		   *
+		   * <pre>
+		   **字段java中类型*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasSqlType() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional int32 sqlType = 2;</code>
+		   *
+		   * <pre>
+		   **字段java中类型*
+		   * </pre>
+		   */
+		  @Override
+		public int getSqlType() {
+		    return sqlType_;
+		  }
+
+		/**
+		   * <code>optional int32 sqlType = 2;</code>
+		   *
+		   * <pre>
+		   **字段java中类型*
+		   * </pre>
+		   */
+		  public Builder setSqlType(int value) {
+		    bitField0_ |= 0x00000002;
+		    sqlType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 sqlType = 2;</code>
+		   *
+		   * <pre>
+		   **字段java中类型*
+		   * </pre>
+		   */
+		  public Builder clearSqlType() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    sqlType_ = 0;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasName() {
+		    return ((bitField0_ & 0x00000004) == 0x00000004);
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  @Override
+		public String getName() {
+		    Object ref = name_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        name_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getNameBytes() {
+		    Object ref = name_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			name_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  public Builder setName(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        name_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        name_ = getDefaultInstance().getName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string name = 3;</code>
-       *
-       * <pre>
-       **字段名称(忽略大小写)，在mysql中是没有的*
-       * </pre>
-       */
-      public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    name_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  public Builder clearName() {
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    name_ = getDefaultInstance().getName();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string name = 3;</code>
+		   *
+		   * <pre>
+		   **字段名称(忽略大小写)，在mysql中是没有的*
+		   * </pre>
+		   */
+		  public Builder setNameBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000004;
-        name_ = value;
-        onChanged();
-        return this;
-      }
+		    name_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private boolean isKey_ ;
-      /**
-       * <code>optional bool isKey = 4;</code>
-       *
-       * <pre>
-       **是否是主键*
-       * </pre>
-       */
-      public boolean hasIsKey() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional bool isKey = 4;</code>
-       *
-       * <pre>
-       **是否是主键*
-       * </pre>
-       */
-      public boolean getIsKey() {
-        return isKey_;
-      }
-      /**
-       * <code>optional bool isKey = 4;</code>
-       *
-       * <pre>
-       **是否是主键*
-       * </pre>
-       */
-      public Builder setIsKey(boolean value) {
-        bitField0_ |= 0x00000008;
-        isKey_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool isKey = 4;</code>
-       *
-       * <pre>
-       **是否是主键*
-       * </pre>
-       */
-      public Builder clearIsKey() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        isKey_ = false;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional bool isKey = 4;</code>
+		   *
+		   * <pre>
+		   **是否是主键*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasIsKey() {
+		    return ((bitField0_ & 0x00000008) == 0x00000008);
+		  }
 
-      private boolean updated_ ;
-      /**
-       * <code>optional bool updated = 5;</code>
-       *
-       * <pre>
-       **如果EventType=UPDATE,用于标识这个字段值是否有修改*
-       * </pre>
-       */
-      public boolean hasUpdated() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
-      }
-      /**
-       * <code>optional bool updated = 5;</code>
-       *
-       * <pre>
-       **如果EventType=UPDATE,用于标识这个字段值是否有修改*
-       * </pre>
-       */
-      public boolean getUpdated() {
-        return updated_;
-      }
-      /**
-       * <code>optional bool updated = 5;</code>
-       *
-       * <pre>
-       **如果EventType=UPDATE,用于标识这个字段值是否有修改*
-       * </pre>
-       */
-      public Builder setUpdated(boolean value) {
-        bitField0_ |= 0x00000010;
-        updated_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool updated = 5;</code>
-       *
-       * <pre>
-       **如果EventType=UPDATE,用于标识这个字段值是否有修改*
-       * </pre>
-       */
-      public Builder clearUpdated() {
-        bitField0_ = (bitField0_ & ~0x00000010);
-        updated_ = false;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional bool isKey = 4;</code>
+		   *
+		   * <pre>
+		   **是否是主键*
+		   * </pre>
+		   */
+		  @Override
+		public boolean getIsKey() {
+		    return isKey_;
+		  }
 
-      private boolean isNull_ ;
-      /**
-       * <code>optional bool isNull = 6 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否为空  *
-       * </pre>
-       */
-      public boolean hasIsNull() {
-        return ((bitField0_ & 0x00000020) == 0x00000020);
-      }
-      /**
-       * <code>optional bool isNull = 6 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否为空  *
-       * </pre>
-       */
-      public boolean getIsNull() {
-        return isNull_;
-      }
-      /**
-       * <code>optional bool isNull = 6 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否为空  *
-       * </pre>
-       */
-      public Builder setIsNull(boolean value) {
-        bitField0_ |= 0x00000020;
-        isNull_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool isNull = 6 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否为空  *
-       * </pre>
-       */
-      public Builder clearIsNull() {
-        bitField0_ = (bitField0_ & ~0x00000020);
-        isNull_ = false;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional bool isKey = 4;</code>
+		   *
+		   * <pre>
+		   **是否是主键*
+		   * </pre>
+		   */
+		  public Builder setIsKey(boolean value) {
+		    bitField0_ |= 0x00000008;
+		    isKey_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000040) == 0x00000040)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000040;
-         }
-      }
+		/**
+		   * <code>optional bool isKey = 4;</code>
+		   *
+		   * <pre>
+		   **是否是主键*
+		   * </pre>
+		   */
+		  public Builder clearIsKey() {
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    isKey_ = false;
+		    onChanged();
+		    return this;
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		/**
+		   * <code>optional bool updated = 5;</code>
+		   *
+		   * <pre>
+		   **如果EventType=UPDATE,用于标识这个字段值是否有修改*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasUpdated() {
+		    return ((bitField0_ & 0x00000010) == 0x00000010);
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000040);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000040) == 0x00000040),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		/**
+		   * <code>optional bool updated = 5;</code>
+		   *
+		   * <pre>
+		   **如果EventType=UPDATE,用于标识这个字段值是否有修改*
+		   * </pre>
+		   */
+		  @Override
+		public boolean getUpdated() {
+		    return updated_;
+		  }
 
-      private Object value_ = "";
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public boolean hasValue() {
-        return ((bitField0_ & 0x00000080) == 0x00000080);
-      }
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public String getValue() {
-        Object ref = value_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            value_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getValueBytes() {
-        Object ref = value_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          value_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public Builder setValue(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional bool updated = 5;</code>
+		   *
+		   * <pre>
+		   **如果EventType=UPDATE,用于标识这个字段值是否有修改*
+		   * </pre>
+		   */
+		  public Builder setUpdated(boolean value) {
+		    bitField0_ |= 0x00000010;
+		    updated_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bool updated = 5;</code>
+		   *
+		   * <pre>
+		   **如果EventType=UPDATE,用于标识这个字段值是否有修改*
+		   * </pre>
+		   */
+		  public Builder clearUpdated() {
+		    bitField0_ = (bitField0_ & ~0x00000010);
+		    updated_ = false;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bool isNull = 6 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否为空  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasIsNull() {
+		    return ((bitField0_ & 0x00000020) == 0x00000020);
+		  }
+
+		/**
+		   * <code>optional bool isNull = 6 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否为空  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean getIsNull() {
+		    return isNull_;
+		  }
+
+		/**
+		   * <code>optional bool isNull = 6 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否为空  *
+		   * </pre>
+		   */
+		  public Builder setIsNull(boolean value) {
+		    bitField0_ |= 0x00000020;
+		    isNull_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bool isNull = 6 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否为空  *
+		   * </pre>
+		   */
+		  public Builder clearIsNull() {
+		    bitField0_ = (bitField0_ & ~0x00000020);
+		    isNull_ = false;
+		    onChanged();
+		    return this;
+		  }
+
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000040) == 0x00000040) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000040;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder_ == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder_.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder_ == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder_.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder_.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000040);
+		      onChanged();
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder_.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder_.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder_ != null) {
+		      return propsBuilder_.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 7;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder_ == null) {
+		      propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000040) == 0x00000040),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder_;
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasValue() {
+		    return ((bitField0_ & 0x00000080) == 0x00000080);
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  @Override
+		public String getValue() {
+		    Object ref = value_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        value_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getValueBytes() {
+		    Object ref = value_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			value_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  public Builder setValue(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public Builder clearValue() {
-        bitField0_ = (bitField0_ & ~0x00000080);
-        value_ = getDefaultInstance().getValue();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string value = 8;</code>
-       *
-       * <pre>
-       ** 字段值,timestamp,Datetime是一个时间格式的文本 *
-       * </pre>
-       */
-      public Builder setValueBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    value_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  public Builder clearValue() {
+		    bitField0_ = (bitField0_ & ~0x00000080);
+		    value_ = getDefaultInstance().getValue();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string value = 8;</code>
+		   *
+		   * <pre>
+		   ** 字段值,timestamp,Datetime是一个时间格式的文本 *
+		   * </pre>
+		   */
+		  public Builder setValueBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000080;
-        value_ = value;
-        onChanged();
-        return this;
-      }
+		    value_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private int length_ ;
-      /**
-       * <code>optional int32 length = 9;</code>
-       *
-       * <pre>
-       ** 对应数据对象原始长度 *
-       * </pre>
-       */
-      public boolean hasLength() {
-        return ((bitField0_ & 0x00000100) == 0x00000100);
-      }
-      /**
-       * <code>optional int32 length = 9;</code>
-       *
-       * <pre>
-       ** 对应数据对象原始长度 *
-       * </pre>
-       */
-      public int getLength() {
-        return length_;
-      }
-      /**
-       * <code>optional int32 length = 9;</code>
-       *
-       * <pre>
-       ** 对应数据对象原始长度 *
-       * </pre>
-       */
-      public Builder setLength(int value) {
-        bitField0_ |= 0x00000100;
-        length_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int32 length = 9;</code>
-       *
-       * <pre>
-       ** 对应数据对象原始长度 *
-       * </pre>
-       */
-      public Builder clearLength() {
-        bitField0_ = (bitField0_ & ~0x00000100);
-        length_ = 0;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>optional int32 length = 9;</code>
+		   *
+		   * <pre>
+		   ** 对应数据对象原始长度 *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasLength() {
+		    return ((bitField0_ & 0x00000100) == 0x00000100);
+		  }
 
-      private Object mysqlType_ = "";
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public boolean hasMysqlType() {
-        return ((bitField0_ & 0x00000200) == 0x00000200);
-      }
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public String getMysqlType() {
-        Object ref = mysqlType_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            mysqlType_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getMysqlTypeBytes() {
-        Object ref = mysqlType_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          mysqlType_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public Builder setMysqlType(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>optional int32 length = 9;</code>
+		   *
+		   * <pre>
+		   ** 对应数据对象原始长度 *
+		   * </pre>
+		   */
+		  @Override
+		public int getLength() {
+		    return length_;
+		  }
+
+		/**
+		   * <code>optional int32 length = 9;</code>
+		   *
+		   * <pre>
+		   ** 对应数据对象原始长度 *
+		   * </pre>
+		   */
+		  public Builder setLength(int value) {
+		    bitField0_ |= 0x00000100;
+		    length_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int32 length = 9;</code>
+		   *
+		   * <pre>
+		   ** 对应数据对象原始长度 *
+		   * </pre>
+		   */
+		  public Builder clearLength() {
+		    bitField0_ = (bitField0_ & ~0x00000100);
+		    length_ = 0;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasMysqlType() {
+		    return ((bitField0_ & 0x00000200) == 0x00000200);
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  @Override
+		public String getMysqlType() {
+		    Object ref = mysqlType_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        mysqlType_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getMysqlTypeBytes() {
+		    Object ref = mysqlType_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			mysqlType_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  public Builder setMysqlType(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000200;
-        mysqlType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public Builder clearMysqlType() {
-        bitField0_ = (bitField0_ & ~0x00000200);
-        mysqlType_ = getDefaultInstance().getMysqlType();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string mysqlType = 10;</code>
-       *
-       * <pre>
-       **字段mysql类型*
-       * </pre>
-       */
-      public Builder setMysqlTypeBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    mysqlType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  public Builder clearMysqlType() {
+		    bitField0_ = (bitField0_ & ~0x00000200);
+		    mysqlType_ = getDefaultInstance().getMysqlType();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string mysqlType = 10;</code>
+		   *
+		   * <pre>
+		   **字段mysql类型*
+		   * </pre>
+		   */
+		  public Builder setMysqlTypeBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000200;
-        mysqlType_ = value;
-        onChanged();
-        return this;
-      }
+		    mysqlType_ = value;
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.Column)
-    }
-
-    static {
-      defaultInstance = new Column(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.Column)
@@ -6089,29 +6489,40 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.RowData)
       RowDataOrBuilder {
-    // Use RowData.newBuilder() to construct.
+    private static final RowData defaultInstance;
+	public static com.google.protobuf.Parser<RowData> PARSER =
+        new com.google.protobuf.AbstractParser<RowData>() {
+      @Override
+	public RowData parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RowData(input, extensionRegistry);
+      }
+    };
+	public static final int BEFORECOLUMNS_FIELD_NUMBER = 1;
+	public static final int AFTERCOLUMNS_FIELD_NUMBER = 2;
+	public static final int PROPS_FIELD_NUMBER = 3;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new RowData(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private java.util.List<Column> beforeColumns;
+	private java.util.List<Column> afterColumns;
+	private java.util.List<Pair> props_;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use RowData.newBuilder() to construct.
     private RowData(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private RowData(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final RowData defaultInstance;
-    public static RowData getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public RowData getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private RowData(
+	private RowData(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private RowData(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -6136,23 +6547,23 @@ public final class CanalEntry {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                beforeColumns_ = new java.util.ArrayList<Column>();
+                beforeColumns = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              beforeColumns_.add(input.readMessage(Column.PARSER, extensionRegistry));
+              beforeColumns.add(input.readMessage(Column.PARSER, extensionRegistry));
               break;
             }
             case 18: {
               if (!((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-                afterColumns_ = new java.util.ArrayList<Column>();
+                afterColumns = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000002;
               }
-              afterColumns_.add(input.readMessage(Column.PARSER, extensionRegistry));
+              afterColumns.add(input.readMessage(Column.PARSER, extensionRegistry));
               break;
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000004;
               }
               props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
@@ -6167,10 +6578,10 @@ public final class CanalEntry {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-          beforeColumns_ = java.util.Collections.unmodifiableList(beforeColumns_);
+          beforeColumns = java.util.Collections.unmodifiableList(beforeColumns);
         }
         if (((mutable_bitField0_ & 0x00000002) == 0x00000002)) {
-          afterColumns_ = java.util.Collections.unmodifiableList(afterColumns_);
+          afterColumns = java.util.Collections.unmodifiableList(afterColumns);
         }
         if (((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
           props_ = java.util.Collections.unmodifiableList(props_);
@@ -6179,1500 +6590,1590 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static RowData getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public RowData getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolRowDataFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               RowData.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<RowData> PARSER =
-        new com.google.protobuf.AbstractParser<RowData>() {
-      public RowData parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new RowData(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<RowData> getParserForType() {
       return PARSER;
     }
-
-    public static final int BEFORECOLUMNS_FIELD_NUMBER = 1;
-    private java.util.List<Column> beforeColumns_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改前,删除前) *
      * </pre>
      */
-    public java.util.List<Column> getBeforeColumnsList() {
-      return beforeColumns_;
+    @Override
+	public java.util.List<Column> getBeforeColumnsList() {
+      return beforeColumns;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改前,删除前) *
      * </pre>
      */
-    public java.util.List<? extends ColumnOrBuilder>
+    @Override
+	public java.util.List<? extends ColumnOrBuilder>
         getBeforeColumnsOrBuilderList() {
-      return beforeColumns_;
+      return beforeColumns;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改前,删除前) *
      * </pre>
      */
-    public int getBeforeColumnsCount() {
-      return beforeColumns_.size();
+    @Override
+	public int getBeforeColumnsCount() {
+      return beforeColumns.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改前,删除前) *
      * </pre>
      */
-    public Column getBeforeColumns(int index) {
-      return beforeColumns_.get(index);
+    @Override
+	public Column getBeforeColumns(int index) {
+      return beforeColumns.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改前,删除前) *
      * </pre>
      */
-    public ColumnOrBuilder getBeforeColumnsOrBuilder(
+    @Override
+	public ColumnOrBuilder getBeforeColumnsOrBuilder(
         int index) {
-      return beforeColumns_.get(index);
+      return beforeColumns.get(index);
     }
-
-    public static final int AFTERCOLUMNS_FIELD_NUMBER = 2;
-    private java.util.List<Column> afterColumns_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改后,新增后)  *
      * </pre>
      */
-    public java.util.List<Column> getAfterColumnsList() {
-      return afterColumns_;
+    @Override
+	public java.util.List<Column> getAfterColumnsList() {
+      return afterColumns;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改后,新增后)  *
      * </pre>
      */
-    public java.util.List<? extends ColumnOrBuilder>
+    @Override
+	public java.util.List<? extends ColumnOrBuilder>
         getAfterColumnsOrBuilderList() {
-      return afterColumns_;
+      return afterColumns;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改后,新增后)  *
      * </pre>
      */
-    public int getAfterColumnsCount() {
-      return afterColumns_.size();
+    @Override
+	public int getAfterColumnsCount() {
+      return afterColumns.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改后,新增后)  *
      * </pre>
      */
-    public Column getAfterColumns(int index) {
-      return afterColumns_.get(index);
+    @Override
+	public Column getAfterColumns(int index) {
+      return afterColumns.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
      *
      * <pre>
      ** 字段信息，增量数据(修改后,新增后)  *
      * </pre>
      */
-    public ColumnOrBuilder getAfterColumnsOrBuilder(
+    @Override
+	public ColumnOrBuilder getAfterColumnsOrBuilder(
         int index) {
-      return afterColumns_.get(index);
+      return afterColumns.get(index);
     }
-
-    public static final int PROPS_FIELD_NUMBER = 3;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
+    @Override
+	public java.util.List<Pair> getPropsList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
+    @Override
+	public int getPropsCount() {
       return props_.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
+    @Override
+	public Pair getProps(int index) {
       return props_.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
       return props_.get(index);
     }
-
-    private void initFields() {
-      beforeColumns_ = java.util.Collections.emptyList();
-      afterColumns_ = java.util.Collections.emptyList();
+	private void initFields() {
+      beforeColumns = java.util.Collections.emptyList();
+      afterColumns = java.util.Collections.emptyList();
       props_ = java.util.Collections.emptyList();
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      for (int i = 0; i < beforeColumns_.size(); i++) {
-        output.writeMessage(1, beforeColumns_.get(i));
+      for (CanalEntry.Column beforeColumn : beforeColumns) {
+        output.writeMessage(1, beforeColumn);
       }
-      for (int i = 0; i < afterColumns_.size(); i++) {
-        output.writeMessage(2, afterColumns_.get(i));
+      for (CanalEntry.Column afterColumn : afterColumns) {
+        output.writeMessage(2, afterColumn);
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(3, props_.get(i));
+      for (CanalEntry.Pair aProps_ : props_) {
+        output.writeMessage(3, aProps_);
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
-      for (int i = 0; i < beforeColumns_.size(); i++) {
+      for (CanalEntry.Column beforeColumn : beforeColumns) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(1, beforeColumns_.get(i));
+          .computeMessageSize(1, beforeColumn);
       }
-      for (int i = 0; i < afterColumns_.size(); i++) {
+      for (CanalEntry.Column afterColumn : afterColumns) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(2, afterColumns_.get(i));
+          .computeMessageSize(2, afterColumn);
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair aProps_ : props_) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, props_.get(i));
+          .computeMessageSize(3, aProps_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static RowData parseFrom(byte[] data)
+	public static RowData parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static RowData parseFrom(java.io.InputStream input)
+	public static RowData parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static RowData parseDelimitedFrom(java.io.InputStream input)
+	public static RowData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static RowData parseDelimitedFrom(
+	public static RowData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static RowData parseFrom(
+	public static RowData parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(RowData prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(RowData prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.RowData}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.RowData)
         RowDataOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                RowData.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.RowData.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getBeforeColumnsFieldBuilder();
-          getAfterColumnsFieldBuilder();
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        if (beforeColumnsBuilder_ == null) {
-          beforeColumns_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        } else {
-          beforeColumnsBuilder_.clear();
-        }
-        if (afterColumnsBuilder_ == null) {
-          afterColumns_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-        } else {
-          afterColumnsBuilder_.clear();
-        }
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
-      }
-
-      public RowData getDefaultInstanceForType() {
-        return RowData.getDefaultInstance();
-      }
-
-      public RowData build() {
-        RowData result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public RowData buildPartial() {
-        RowData result = new RowData(this);
-        int from_bitField0_ = bitField0_;
-        if (beforeColumnsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) == 0x00000001)) {
-            beforeColumns_ = java.util.Collections.unmodifiableList(beforeColumns_);
-            bitField0_ = (bitField0_ & ~0x00000001);
-          }
-          result.beforeColumns_ = beforeColumns_;
-        } else {
-          result.beforeColumns_ = beforeColumnsBuilder_.build();
-        }
-        if (afterColumnsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) == 0x00000002)) {
-            afterColumns_ = java.util.Collections.unmodifiableList(afterColumns_);
-            bitField0_ = (bitField0_ & ~0x00000002);
-          }
-          result.afterColumns_ = afterColumns_;
-        } else {
-          result.afterColumns_ = afterColumnsBuilder_.build();
-        }
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000004);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof RowData) {
-          return mergeFrom((RowData)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(RowData other) {
-        if (other == RowData.getDefaultInstance()) return this;
-        if (beforeColumnsBuilder_ == null) {
-          if (!other.beforeColumns_.isEmpty()) {
-            if (beforeColumns_.isEmpty()) {
-              beforeColumns_ = other.beforeColumns_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-            } else {
-              ensureBeforeColumnsIsMutable();
-              beforeColumns_.addAll(other.beforeColumns_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.beforeColumns_.isEmpty()) {
-            if (beforeColumnsBuilder_.isEmpty()) {
-              beforeColumnsBuilder_.dispose();
-              beforeColumnsBuilder_ = null;
-              beforeColumns_ = other.beforeColumns_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              beforeColumnsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getBeforeColumnsFieldBuilder() : null;
-            } else {
-              beforeColumnsBuilder_.addAllMessages(other.beforeColumns_);
-            }
-          }
-        }
-        if (afterColumnsBuilder_ == null) {
-          if (!other.afterColumns_.isEmpty()) {
-            if (afterColumns_.isEmpty()) {
-              afterColumns_ = other.afterColumns_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-            } else {
-              ensureAfterColumnsIsMutable();
-              afterColumns_.addAll(other.afterColumns_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.afterColumns_.isEmpty()) {
-            if (afterColumnsBuilder_.isEmpty()) {
-              afterColumnsBuilder_.dispose();
-              afterColumnsBuilder_ = null;
-              afterColumns_ = other.afterColumns_;
-              bitField0_ = (bitField0_ & ~0x00000002);
-              afterColumnsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getAfterColumnsFieldBuilder() : null;
-            } else {
-              afterColumnsBuilder_.addAllMessages(other.afterColumns_);
-            }
-          }
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        RowData parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (RowData) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private java.util.List<Column> beforeColumns_ =
-        java.util.Collections.emptyList();
-      private void ensureBeforeColumnsIsMutable() {
-        if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          beforeColumns_ = new java.util.ArrayList<Column>(beforeColumns_);
-          bitField0_ |= 0x00000001;
-         }
-      }
+		private java.util.List<Column> beforeColumns_ =
+		    java.util.Collections.emptyList();
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Column, Column.Builder, ColumnOrBuilder> beforeColumnsBuilder_;
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Column, Column.Builder, ColumnOrBuilder> beforeColumnsBuilder;
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public java.util.List<Column> getBeforeColumnsList() {
-        if (beforeColumnsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(beforeColumns_);
-        } else {
-          return beforeColumnsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public int getBeforeColumnsCount() {
-        if (beforeColumnsBuilder_ == null) {
-          return beforeColumns_.size();
-        } else {
-          return beforeColumnsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Column getBeforeColumns(int index) {
-        if (beforeColumnsBuilder_ == null) {
-          return beforeColumns_.get(index);
-        } else {
-          return beforeColumnsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder setBeforeColumns(
-          int index, Column value) {
-        if (beforeColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.set(index, value);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder setBeforeColumns(
-          int index, Column.Builder builderForValue) {
-        if (beforeColumnsBuilder_ == null) {
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder addBeforeColumns(Column value) {
-        if (beforeColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.add(value);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder addBeforeColumns(
-          int index, Column value) {
-        if (beforeColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.add(index, value);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder addBeforeColumns(
-          Column.Builder builderForValue) {
-        if (beforeColumnsBuilder_ == null) {
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.add(builderForValue.build());
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder addBeforeColumns(
-          int index, Column.Builder builderForValue) {
-        if (beforeColumnsBuilder_ == null) {
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder addAllBeforeColumns(
-          Iterable<? extends Column> values) {
-        if (beforeColumnsBuilder_ == null) {
-          ensureBeforeColumnsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, beforeColumns_);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder clearBeforeColumns() {
-        if (beforeColumnsBuilder_ == null) {
-          beforeColumns_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Builder removeBeforeColumns(int index) {
-        if (beforeColumnsBuilder_ == null) {
-          ensureBeforeColumnsIsMutable();
-          beforeColumns_.remove(index);
-          onChanged();
-        } else {
-          beforeColumnsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Column.Builder getBeforeColumnsBuilder(
-          int index) {
-        return getBeforeColumnsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public ColumnOrBuilder getBeforeColumnsOrBuilder(
-          int index) {
-        if (beforeColumnsBuilder_ == null) {
-          return beforeColumns_.get(index);  } else {
-          return beforeColumnsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public java.util.List<? extends ColumnOrBuilder>
-           getBeforeColumnsOrBuilderList() {
-        if (beforeColumnsBuilder_ != null) {
-          return beforeColumnsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(beforeColumns_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Column.Builder addBeforeColumnsBuilder() {
-        return getBeforeColumnsFieldBuilder().addBuilder(
-            Column.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public Column.Builder addBeforeColumnsBuilder(
-          int index) {
-        return getBeforeColumnsFieldBuilder().addBuilder(
-            index, Column.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改前,删除前) *
-       * </pre>
-       */
-      public java.util.List<Column.Builder>
-           getBeforeColumnsBuilderList() {
-        return getBeforeColumnsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Column, Column.Builder, ColumnOrBuilder>
-          getBeforeColumnsFieldBuilder() {
-        if (beforeColumnsBuilder_ == null) {
-          beforeColumnsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Column, Column.Builder, ColumnOrBuilder>(
-                  beforeColumns_,
-                  ((bitField0_ & 0x00000001) == 0x00000001),
-                  getParentForChildren(),
-                  isClean());
-          beforeColumns_ = null;
-        }
-        return beforeColumnsBuilder_;
-      }
+		private java.util.List<Column> afterColumns_ =
+		    java.util.Collections.emptyList();
 
-      private java.util.List<Column> afterColumns_ =
-        java.util.Collections.emptyList();
-      private void ensureAfterColumnsIsMutable() {
-        if (!((bitField0_ & 0x00000002) == 0x00000002)) {
-          afterColumns_ = new java.util.ArrayList<Column>(afterColumns_);
-          bitField0_ |= 0x00000002;
-         }
-      }
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Column, Column.Builder, ColumnOrBuilder> afterColumnsBuilder;
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Column, Column.Builder, ColumnOrBuilder> afterColumnsBuilder_;
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public java.util.List<Column> getAfterColumnsList() {
-        if (afterColumnsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(afterColumns_);
-        } else {
-          return afterColumnsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public int getAfterColumnsCount() {
-        if (afterColumnsBuilder_ == null) {
-          return afterColumns_.size();
-        } else {
-          return afterColumnsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Column getAfterColumns(int index) {
-        if (afterColumnsBuilder_ == null) {
-          return afterColumns_.get(index);
-        } else {
-          return afterColumnsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder setAfterColumns(
-          int index, Column value) {
-        if (afterColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAfterColumnsIsMutable();
-          afterColumns_.set(index, value);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder setAfterColumns(
-          int index, Column.Builder builderForValue) {
-        if (afterColumnsBuilder_ == null) {
-          ensureAfterColumnsIsMutable();
-          afterColumns_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          afterColumnsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder addAfterColumns(Column value) {
-        if (afterColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAfterColumnsIsMutable();
-          afterColumns_.add(value);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder addAfterColumns(
-          int index, Column value) {
-        if (afterColumnsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureAfterColumnsIsMutable();
-          afterColumns_.add(index, value);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder addAfterColumns(
-          Column.Builder builderForValue) {
-        if (afterColumnsBuilder_ == null) {
-          ensureAfterColumnsIsMutable();
-          afterColumns_.add(builderForValue.build());
-          onChanged();
-        } else {
-          afterColumnsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder addAfterColumns(
-          int index, Column.Builder builderForValue) {
-        if (afterColumnsBuilder_ == null) {
-          ensureAfterColumnsIsMutable();
-          afterColumns_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          afterColumnsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder addAllAfterColumns(
-          Iterable<? extends Column> values) {
-        if (afterColumnsBuilder_ == null) {
-          ensureAfterColumnsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, afterColumns_);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder clearAfterColumns() {
-        if (afterColumnsBuilder_ == null) {
-          afterColumns_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Builder removeAfterColumns(int index) {
-        if (afterColumnsBuilder_ == null) {
-          ensureAfterColumnsIsMutable();
-          afterColumns_.remove(index);
-          onChanged();
-        } else {
-          afterColumnsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Column.Builder getAfterColumnsBuilder(
-          int index) {
-        return getAfterColumnsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public ColumnOrBuilder getAfterColumnsOrBuilder(
-          int index) {
-        if (afterColumnsBuilder_ == null) {
-          return afterColumns_.get(index);  } else {
-          return afterColumnsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public java.util.List<? extends ColumnOrBuilder>
-           getAfterColumnsOrBuilderList() {
-        if (afterColumnsBuilder_ != null) {
-          return afterColumnsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(afterColumns_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Column.Builder addAfterColumnsBuilder() {
-        return getAfterColumnsFieldBuilder().addBuilder(
-            Column.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public Column.Builder addAfterColumnsBuilder(
-          int index) {
-        return getAfterColumnsFieldBuilder().addBuilder(
-            index, Column.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
-       *
-       * <pre>
-       ** 字段信息，增量数据(修改后,新增后)  *
-       * </pre>
-       */
-      public java.util.List<Column.Builder>
-           getAfterColumnsBuilderList() {
-        return getAfterColumnsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Column, Column.Builder, ColumnOrBuilder>
-          getAfterColumnsFieldBuilder() {
-        if (afterColumnsBuilder_ == null) {
-          afterColumnsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Column, Column.Builder, ColumnOrBuilder>(
-                  afterColumns_,
-                  ((bitField0_ & 0x00000002) == 0x00000002),
-                  getParentForChildren(),
-                  isClean());
-          afterColumns_ = null;
-        }
-        return afterColumnsBuilder_;
-      }
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.RowData.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000004;
-         }
-      }
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolRowDataFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            RowData.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (!(com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders)) {
+				return;
+			}
+			getBeforeColumnsFieldBuilder();
+			getAfterColumnsFieldBuilder();
+			getPropsFieldBuilder();
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    if (beforeColumnsBuilder == null) {
+		      beforeColumns_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000001);
+		    } else {
+		      beforeColumnsBuilder.clear();
+		    }
+		    if (afterColumnsBuilder == null) {
+		      afterColumns_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000002);
+		    } else {
+		      afterColumnsBuilder.clear();
+		    }
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
+		  }
+
+		@Override
+		public RowData getDefaultInstanceForType() {
+		    return RowData.getDefaultInstance();
+		  }
+
+		@Override
+		public RowData build() {
+		    RowData result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public RowData buildPartial() {
+		    RowData result = new RowData(this);
+		    int from_bitField0_ = bitField0_;
+		    if (beforeColumnsBuilder == null) {
+		      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+		        beforeColumns_ = java.util.Collections.unmodifiableList(beforeColumns_);
+		        bitField0_ = (bitField0_ & ~0x00000001);
+		      }
+		      result.beforeColumns = beforeColumns_;
+		    } else {
+		      result.beforeColumns = beforeColumnsBuilder.build();
+		    }
+		    if (afterColumnsBuilder == null) {
+		      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+		        afterColumns_ = java.util.Collections.unmodifiableList(afterColumns_);
+		        bitField0_ = (bitField0_ & ~0x00000002);
+		      }
+		      result.afterColumns = afterColumns_;
+		    } else {
+		      result.afterColumns = afterColumnsBuilder.build();
+		    }
+		    if (propsBuilder_ == null) {
+		      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000004);
+		      }
+		      result.props_ = props_;
+		    } else {
+		      result.props_ = propsBuilder_.build();
+		    }
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof RowData) {
+		      return mergeFrom((RowData)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(RowData other) {
+		    if (other == RowData.getDefaultInstance()) {
+				return this;
+			}
+		    if (beforeColumnsBuilder == null) {
+		      if (!other.beforeColumns.isEmpty()) {
+		        if (beforeColumns_.isEmpty()) {
+		          beforeColumns_ = other.beforeColumns;
+		          bitField0_ = (bitField0_ & ~0x00000001);
+		        } else {
+		          ensureBeforeColumnsIsMutable();
+		          beforeColumns_.addAll(other.beforeColumns);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.beforeColumns.isEmpty()) {
+		        if (beforeColumnsBuilder.isEmpty()) {
+		          beforeColumnsBuilder.dispose();
+		          beforeColumnsBuilder = null;
+		          beforeColumns_ = other.beforeColumns;
+		          bitField0_ = (bitField0_ & ~0x00000001);
+		          beforeColumnsBuilder =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getBeforeColumnsFieldBuilder() : null;
+		        } else {
+		          beforeColumnsBuilder.addAllMessages(other.beforeColumns);
+		        }
+		      }
+		    }
+		    if (afterColumnsBuilder == null) {
+		      if (!other.afterColumns.isEmpty()) {
+		        if (afterColumns_.isEmpty()) {
+		          afterColumns_ = other.afterColumns;
+		          bitField0_ = (bitField0_ & ~0x00000002);
+		        } else {
+		          ensureAfterColumnsIsMutable();
+		          afterColumns_.addAll(other.afterColumns);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.afterColumns.isEmpty()) {
+		        if (afterColumnsBuilder.isEmpty()) {
+		          afterColumnsBuilder.dispose();
+		          afterColumnsBuilder = null;
+		          afterColumns_ = other.afterColumns;
+		          bitField0_ = (bitField0_ & ~0x00000002);
+		          afterColumnsBuilder =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getAfterColumnsFieldBuilder() : null;
+		        } else {
+		          afterColumnsBuilder.addAllMessages(other.afterColumns);
+		        }
+		      }
+		    }
+		    if (propsBuilder_ == null) {
+		      if (!other.props_.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props_);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props_.isEmpty()) {
+		        if (propsBuilder_.isEmpty()) {
+		          propsBuilder_.dispose();
+		          propsBuilder_ = null;
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		          propsBuilder_ =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder_.addAllMessages(other.props_);
+		        }
+		      }
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    RowData parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (RowData) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		private void ensureBeforeColumnsIsMutable() {
+		    if ((bitField0_ & 0x00000001) == 0x00000001) {
+				return;
+			}
+			beforeColumns_ = new java.util.ArrayList<>(beforeColumns_);
+			bitField0_ |= 0x00000001;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Column> getBeforeColumnsList() {
+		    if (beforeColumnsBuilder == null) {
+		      return java.util.Collections.unmodifiableList(beforeColumns_);
+		    } else {
+		      return beforeColumnsBuilder.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  @Override
+		public int getBeforeColumnsCount() {
+		    if (beforeColumnsBuilder == null) {
+		      return beforeColumns_.size();
+		    } else {
+		      return beforeColumnsBuilder.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  @Override
+		public Column getBeforeColumns(int index) {
+		    if (beforeColumnsBuilder == null) {
+		      return beforeColumns_.get(index);
+		    } else {
+		      return beforeColumnsBuilder.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder setBeforeColumns(
+		      int index, Column value) {
+		    if (beforeColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.set(index, value);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder setBeforeColumns(
+		      int index, Column.Builder builderForValue) {
+		    if (beforeColumnsBuilder == null) {
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder addBeforeColumns(Column value) {
+		    if (beforeColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.add(value);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder addBeforeColumns(
+		      int index, Column value) {
+		    if (beforeColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.add(index, value);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder addBeforeColumns(
+		      Column.Builder builderForValue) {
+		    if (beforeColumnsBuilder == null) {
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder addBeforeColumns(
+		      int index, Column.Builder builderForValue) {
+		    if (beforeColumnsBuilder == null) {
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder addAllBeforeColumns(
+		      Iterable<? extends Column> values) {
+		    if (beforeColumnsBuilder == null) {
+		      ensureBeforeColumnsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, beforeColumns_);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder clearBeforeColumns() {
+		    if (beforeColumnsBuilder == null) {
+		      beforeColumns_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000001);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Builder removeBeforeColumns(int index) {
+		    if (beforeColumnsBuilder == null) {
+		      ensureBeforeColumnsIsMutable();
+		      beforeColumns_.remove(index);
+		      onChanged();
+		    } else {
+		      beforeColumnsBuilder.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Column.Builder getBeforeColumnsBuilder(
+		      int index) {
+		    return getBeforeColumnsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  @Override
+		public ColumnOrBuilder getBeforeColumnsOrBuilder(
+		      int index) {
+		    if (beforeColumnsBuilder == null) {
+		      return beforeColumns_.get(index);  } else {
+		      return beforeColumnsBuilder.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends ColumnOrBuilder>
+		       getBeforeColumnsOrBuilderList() {
+		    if (beforeColumnsBuilder != null) {
+		      return beforeColumnsBuilder.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(beforeColumns_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Column.Builder addBeforeColumnsBuilder() {
+		    return getBeforeColumnsFieldBuilder().addBuilder(
+		        Column.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public Column.Builder addBeforeColumnsBuilder(
+		      int index) {
+		    return getBeforeColumnsFieldBuilder().addBuilder(
+		        index, Column.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column beforeColumns = 1;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改前,删除前) *
+		   * </pre>
+		   */
+		  public java.util.List<Column.Builder>
+		       getBeforeColumnsBuilderList() {
+		    return getBeforeColumnsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Column, Column.Builder, ColumnOrBuilder>
+		      getBeforeColumnsFieldBuilder() {
+		    if (beforeColumnsBuilder == null) {
+		      beforeColumnsBuilder = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              beforeColumns_,
+		              ((bitField0_ & 0x00000001) == 0x00000001),
+		              getParentForChildren(),
+		              isClean());
+		      beforeColumns_ = null;
+		    }
+		    return beforeColumnsBuilder;
+		  }
+
+		private void ensureAfterColumnsIsMutable() {
+		    if ((bitField0_ & 0x00000002) == 0x00000002) {
+				return;
+			}
+			afterColumns_ = new java.util.ArrayList<>(afterColumns_);
+			bitField0_ |= 0x00000002;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Column> getAfterColumnsList() {
+		    if (afterColumnsBuilder == null) {
+		      return java.util.Collections.unmodifiableList(afterColumns_);
+		    } else {
+		      return afterColumnsBuilder.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  @Override
+		public int getAfterColumnsCount() {
+		    if (afterColumnsBuilder == null) {
+		      return afterColumns_.size();
+		    } else {
+		      return afterColumnsBuilder.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  @Override
+		public Column getAfterColumns(int index) {
+		    if (afterColumnsBuilder == null) {
+		      return afterColumns_.get(index);
+		    } else {
+		      return afterColumnsBuilder.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder setAfterColumns(
+		      int index, Column value) {
+		    if (afterColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.set(index, value);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder setAfterColumns(
+		      int index, Column.Builder builderForValue) {
+		    if (afterColumnsBuilder == null) {
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder addAfterColumns(Column value) {
+		    if (afterColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.add(value);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder addAfterColumns(
+		      int index, Column value) {
+		    if (afterColumnsBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.add(index, value);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder addAfterColumns(
+		      Column.Builder builderForValue) {
+		    if (afterColumnsBuilder == null) {
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder addAfterColumns(
+		      int index, Column.Builder builderForValue) {
+		    if (afterColumnsBuilder == null) {
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder addAllAfterColumns(
+		      Iterable<? extends Column> values) {
+		    if (afterColumnsBuilder == null) {
+		      ensureAfterColumnsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, afterColumns_);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder clearAfterColumns() {
+		    if (afterColumnsBuilder == null) {
+		      afterColumns_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000002);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Builder removeAfterColumns(int index) {
+		    if (afterColumnsBuilder == null) {
+		      ensureAfterColumnsIsMutable();
+		      afterColumns_.remove(index);
+		      onChanged();
+		    } else {
+		      afterColumnsBuilder.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Column.Builder getAfterColumnsBuilder(
+		      int index) {
+		    return getAfterColumnsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  @Override
+		public ColumnOrBuilder getAfterColumnsOrBuilder(
+		      int index) {
+		    if (afterColumnsBuilder == null) {
+		      return afterColumns_.get(index);  } else {
+		      return afterColumnsBuilder.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends ColumnOrBuilder>
+		       getAfterColumnsOrBuilderList() {
+		    if (afterColumnsBuilder != null) {
+		      return afterColumnsBuilder.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(afterColumns_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Column.Builder addAfterColumnsBuilder() {
+		    return getAfterColumnsFieldBuilder().addBuilder(
+		        Column.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public Column.Builder addAfterColumnsBuilder(
+		      int index) {
+		    return getAfterColumnsFieldBuilder().addBuilder(
+		        index, Column.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Column afterColumns = 2;</code>
+		   *
+		   * <pre>
+		   ** 字段信息，增量数据(修改后,新增后)  *
+		   * </pre>
+		   */
+		  public java.util.List<Column.Builder>
+		       getAfterColumnsBuilderList() {
+		    return getAfterColumnsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Column, Column.Builder, ColumnOrBuilder>
+		      getAfterColumnsFieldBuilder() {
+		    if (afterColumnsBuilder == null) {
+		      afterColumnsBuilder = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              afterColumns_,
+		              ((bitField0_ & 0x00000002) == 0x00000002),
+		              getParentForChildren(),
+		              isClean());
+		      afterColumns_ = null;
+		    }
+		    return afterColumnsBuilder;
+		  }
+
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000004) == 0x00000004) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000004;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder_ == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder_.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder_ == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder_.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder_.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		      onChanged();
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder_.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder_.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder_ != null) {
+		      return propsBuilder_.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder_ == null) {
+		      propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000004) == 0x00000004),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder_;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.RowData)
-    }
-
-    static {
-      defaultInstance = new RowData(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.RowData)
@@ -7882,29 +8383,49 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.RowChange)
       RowChangeOrBuilder {
-    // Use RowChange.newBuilder() to construct.
+    private static final RowChange defaultInstance;
+	public static com.google.protobuf.Parser<RowChange> PARSER =
+        new com.google.protobuf.AbstractParser<RowChange>() {
+      @Override
+	public RowChange parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new RowChange(input, extensionRegistry);
+      }
+    };
+	public static final int TABLEID_FIELD_NUMBER = 1;
+	public static final int EVENTTYPE_FIELD_NUMBER = 2;
+	public static final int ISDDL_FIELD_NUMBER = 10;
+	public static final int SQL_FIELD_NUMBER = 11;
+	public static final int ROWDATAS_FIELD_NUMBER = 12;
+	public static final int PROPS_FIELD_NUMBER = 13;
+	public static final int DDLSCHEMANAME_FIELD_NUMBER = 14;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new RowChange(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private long tableId;
+	private EventType eventType_;
+	private boolean isDdl;
+	private Object sql;
+	private java.util.List<RowData> rowDatas;
+	private java.util.List<Pair> props_;
+	private Object ddlSchemaName;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use RowChange.newBuilder() to construct.
     private RowChange(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private RowChange(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final RowChange defaultInstance;
-    public static RowChange getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public RowChange getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private RowChange(
+	private RowChange(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private RowChange(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -7929,7 +8450,7 @@ public final class CanalEntry {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              tableId_ = input.readInt64();
+              tableId = input.readInt64();
               break;
             }
             case 16: {
@@ -7945,26 +8466,26 @@ public final class CanalEntry {
             }
             case 80: {
               bitField0_ |= 0x00000004;
-              isDdl_ = input.readBool();
+              isDdl = input.readBool();
               break;
             }
             case 90: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000008;
-              sql_ = bs;
+              sql = bs;
               break;
             }
             case 98: {
               if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-                rowDatas_ = new java.util.ArrayList<RowData>();
+                rowDatas = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000010;
               }
-              rowDatas_.add(input.readMessage(RowData.PARSER, extensionRegistry));
+              rowDatas.add(input.readMessage(RowData.PARSER, extensionRegistry));
               break;
             }
             case 106: {
               if (!((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000020;
               }
               props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
@@ -7973,7 +8494,7 @@ public final class CanalEntry {
             case 114: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000010;
-              ddlSchemaName_ = bs;
+              ddlSchemaName = bs;
               break;
             }
           }
@@ -7985,7 +8506,7 @@ public final class CanalEntry {
             e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-          rowDatas_ = java.util.Collections.unmodifiableList(rowDatas_);
+          rowDatas = java.util.Collections.unmodifiableList(rowDatas);
         }
         if (((mutable_bitField0_ & 0x00000020) == 0x00000020)) {
           props_ = java.util.Collections.unmodifiableList(props_);
@@ -7994,124 +8515,120 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static RowChange getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public RowChange getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolRowChangeFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               RowChange.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<RowChange> PARSER =
-        new com.google.protobuf.AbstractParser<RowChange>() {
-      public RowChange parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new RowChange(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<RowChange> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int TABLEID_FIELD_NUMBER = 1;
-    private long tableId_;
-    /**
+	/**
      * <code>optional int64 tableId = 1;</code>
      *
      * <pre>
      **tableId,由数据库产生*
      * </pre>
      */
-    public boolean hasTableId() {
+    @Override
+	public boolean hasTableId() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional int64 tableId = 1;</code>
      *
      * <pre>
      **tableId,由数据库产生*
      * </pre>
      */
-    public long getTableId() {
-      return tableId_;
+    @Override
+	public long getTableId() {
+      return tableId;
     }
-
-    public static final int EVENTTYPE_FIELD_NUMBER = 2;
-    private EventType eventType_;
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
      *
      * <pre>
      **数据变更类型*
      * </pre>
      */
-    public boolean hasEventType() {
+    @Override
+	public boolean hasEventType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
      *
      * <pre>
      **数据变更类型*
      * </pre>
      */
-    public EventType getEventType() {
+    @Override
+	public EventType getEventType() {
       return eventType_;
     }
-
-    public static final int ISDDL_FIELD_NUMBER = 10;
-    private boolean isDdl_;
-    /**
+	/**
      * <code>optional bool isDdl = 10 [default = false];</code>
      *
      * <pre>
      ** 标识是否是ddl语句  *
      * </pre>
      */
-    public boolean hasIsDdl() {
+    @Override
+	public boolean hasIsDdl() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    /**
+	/**
      * <code>optional bool isDdl = 10 [default = false];</code>
      *
      * <pre>
      ** 标识是否是ddl语句  *
      * </pre>
      */
-    public boolean getIsDdl() {
-      return isDdl_;
+    @Override
+	public boolean getIsDdl() {
+      return isDdl;
     }
-
-    public static final int SQL_FIELD_NUMBER = 11;
-    private Object sql_;
-    /**
+	/**
      * <code>optional string sql = 11;</code>
      *
      * <pre>
      ** ddl/query的sql语句  *
      * </pre>
      */
-    public boolean hasSql() {
+    @Override
+	public boolean hasSql() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-    /**
+	/**
      * <code>optional string sql = 11;</code>
      *
      * <pre>
      ** ddl/query的sql语句  *
      * </pre>
      */
-    public String getSql() {
-      Object ref = sql_;
+    @Override
+	public String getSql() {
+      Object ref = sql;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -8119,163 +8636,166 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          sql_ = s;
+          sql = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string sql = 11;</code>
      *
      * <pre>
      ** ddl/query的sql语句  *
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getSqlBytes() {
-      Object ref = sql_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        sql_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = sql;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	sql = b;
+	return b;
     }
-
-    public static final int ROWDATAS_FIELD_NUMBER = 12;
-    private java.util.List<RowData> rowDatas_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
      *
      * <pre>
      ** 一次数据库变更可能存在多行  *
      * </pre>
      */
-    public java.util.List<RowData> getRowDatasList() {
-      return rowDatas_;
+    @Override
+	public java.util.List<RowData> getRowDatasList() {
+      return rowDatas;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
      *
      * <pre>
      ** 一次数据库变更可能存在多行  *
      * </pre>
      */
-    public java.util.List<? extends RowDataOrBuilder>
+    @Override
+	public java.util.List<? extends RowDataOrBuilder>
         getRowDatasOrBuilderList() {
-      return rowDatas_;
+      return rowDatas;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
      *
      * <pre>
      ** 一次数据库变更可能存在多行  *
      * </pre>
      */
-    public int getRowDatasCount() {
-      return rowDatas_.size();
+    @Override
+	public int getRowDatasCount() {
+      return rowDatas.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
      *
      * <pre>
      ** 一次数据库变更可能存在多行  *
      * </pre>
      */
-    public RowData getRowDatas(int index) {
-      return rowDatas_.get(index);
+    @Override
+	public RowData getRowDatas(int index) {
+      return rowDatas.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
      *
      * <pre>
      ** 一次数据库变更可能存在多行  *
      * </pre>
      */
-    public RowDataOrBuilder getRowDatasOrBuilder(
+    @Override
+	public RowDataOrBuilder getRowDatasOrBuilder(
         int index) {
-      return rowDatas_.get(index);
+      return rowDatas.get(index);
     }
-
-    public static final int PROPS_FIELD_NUMBER = 13;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
+    @Override
+	public java.util.List<Pair> getPropsList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
+    @Override
+	public int getPropsCount() {
       return props_.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
+    @Override
+	public Pair getProps(int index) {
       return props_.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
       return props_.get(index);
     }
-
-    public static final int DDLSCHEMANAME_FIELD_NUMBER = 14;
-    private Object ddlSchemaName_;
-    /**
+	/**
      * <code>optional string ddlSchemaName = 14;</code>
      *
      * <pre>
      ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
      * </pre>
      */
-    public boolean hasDdlSchemaName() {
+    @Override
+	public boolean hasDdlSchemaName() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-    /**
+	/**
      * <code>optional string ddlSchemaName = 14;</code>
      *
      * <pre>
      ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
      * </pre>
      */
-    public String getDdlSchemaName() {
-      Object ref = ddlSchemaName_;
+    @Override
+	public String getDdlSchemaName() {
+      Object ref = ddlSchemaName;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -8283,87 +8803,91 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          ddlSchemaName_ = s;
+          ddlSchemaName = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string ddlSchemaName = 14;</code>
      *
      * <pre>
      ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getDdlSchemaNameBytes() {
-      Object ref = ddlSchemaName_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        ddlSchemaName_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = ddlSchemaName;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	ddlSchemaName = b;
+	return b;
     }
-
-    private void initFields() {
-      tableId_ = 0L;
+	private void initFields() {
+      tableId = 0L;
       eventType_ = EventType.UPDATE;
-      isDdl_ = false;
-      sql_ = "";
-      rowDatas_ = java.util.Collections.emptyList();
+      isDdl = false;
+      sql = "";
+      rowDatas = java.util.Collections.emptyList();
       props_ = java.util.Collections.emptyList();
-      ddlSchemaName_ = "";
+      ddlSchemaName = "";
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeInt64(1, tableId_);
+        output.writeInt64(1, tableId);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeEnum(2, eventType_.getNumber());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBool(10, isDdl_);
+        output.writeBool(10, isDdl);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         output.writeBytes(11, getSqlBytes());
       }
-      for (int i = 0; i < rowDatas_.size(); i++) {
-        output.writeMessage(12, rowDatas_.get(i));
+      for (CanalEntry.RowData rowData : rowDatas) {
+        output.writeMessage(12, rowData);
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(13, props_.get(i));
+      for (CanalEntry.Pair aProps_ : props_) {
+        output.writeMessage(13, aProps_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeBytes(14, getDdlSchemaNameBytes());
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(1, tableId_);
+          .computeInt64Size(1, tableId);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
@@ -8371,19 +8895,19 @@ public final class CanalEntry {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(10, isDdl_);
+          .computeBoolSize(10, isDdl);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(11, getSqlBytes());
       }
-      for (int i = 0; i < rowDatas_.size(); i++) {
+      for (CanalEntry.RowData rowData : rowDatas) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(12, rowDatas_.get(i));
+          .computeMessageSize(12, rowData);
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair aProps_ : props_) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(13, props_.get(i));
+          .computeMessageSize(13, aProps_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
@@ -8393,81 +8917,78 @@ public final class CanalEntry {
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static RowChange parseFrom(byte[] data)
+	public static RowChange parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static RowChange parseFrom(java.io.InputStream input)
+	public static RowChange parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static RowChange parseDelimitedFrom(java.io.InputStream input)
+	public static RowChange parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static RowChange parseDelimitedFrom(
+	public static RowChange parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static RowChange parseFrom(
+	public static RowChange parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(RowChange prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(RowChange prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.RowChange}
      *
      * <pre>
@@ -8478,1219 +8999,1309 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.RowChange)
         RowChangeOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                RowChange.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.RowChange.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getRowDatasFieldBuilder();
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        tableId_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        eventType_ = EventType.UPDATE;
-        bitField0_ = (bitField0_ & ~0x00000002);
-        isDdl_ = false;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        sql_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        if (rowDatasBuilder_ == null) {
-          rowDatas_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
-        } else {
-          rowDatasBuilder_.clear();
-        }
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
-        } else {
-          propsBuilder_.clear();
-        }
-        ddlSchemaName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000040);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
-      }
-
-      public RowChange getDefaultInstanceForType() {
-        return RowChange.getDefaultInstance();
-      }
-
-      public RowChange build() {
-        RowChange result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public RowChange buildPartial() {
-        RowChange result = new RowChange(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.tableId_ = tableId_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.eventType_ = eventType_;
-        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.isDdl_ = isDdl_;
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000008;
-        }
-        result.sql_ = sql_;
-        if (rowDatasBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) == 0x00000010)) {
-            rowDatas_ = java.util.Collections.unmodifiableList(rowDatas_);
-            bitField0_ = (bitField0_ & ~0x00000010);
-          }
-          result.rowDatas_ = rowDatas_;
-        } else {
-          result.rowDatas_ = rowDatasBuilder_.build();
-        }
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000020) == 0x00000020)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000020);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
-          to_bitField0_ |= 0x00000010;
-        }
-        result.ddlSchemaName_ = ddlSchemaName_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof RowChange) {
-          return mergeFrom((RowChange)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(RowChange other) {
-        if (other == RowChange.getDefaultInstance()) return this;
-        if (other.hasTableId()) {
-          setTableId(other.getTableId());
-        }
-        if (other.hasEventType()) {
-          setEventType(other.getEventType());
-        }
-        if (other.hasIsDdl()) {
-          setIsDdl(other.getIsDdl());
-        }
-        if (other.hasSql()) {
-          bitField0_ |= 0x00000008;
-          sql_ = other.sql_;
-          onChanged();
-        }
-        if (rowDatasBuilder_ == null) {
-          if (!other.rowDatas_.isEmpty()) {
-            if (rowDatas_.isEmpty()) {
-              rowDatas_ = other.rowDatas_;
-              bitField0_ = (bitField0_ & ~0x00000010);
-            } else {
-              ensureRowDatasIsMutable();
-              rowDatas_.addAll(other.rowDatas_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.rowDatas_.isEmpty()) {
-            if (rowDatasBuilder_.isEmpty()) {
-              rowDatasBuilder_.dispose();
-              rowDatasBuilder_ = null;
-              rowDatas_ = other.rowDatas_;
-              bitField0_ = (bitField0_ & ~0x00000010);
-              rowDatasBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getRowDatasFieldBuilder() : null;
-            } else {
-              rowDatasBuilder_.addAllMessages(other.rowDatas_);
-            }
-          }
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000020);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000020);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        if (other.hasDdlSchemaName()) {
-          bitField0_ |= 0x00000040;
-          ddlSchemaName_ = other.ddlSchemaName_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        RowChange parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (RowChange) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private long tableId_ ;
-      /**
-       * <code>optional int64 tableId = 1;</code>
-       *
-       * <pre>
-       **tableId,由数据库产生*
-       * </pre>
-       */
-      public boolean hasTableId() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional int64 tableId = 1;</code>
-       *
-       * <pre>
-       **tableId,由数据库产生*
-       * </pre>
-       */
-      public long getTableId() {
-        return tableId_;
-      }
-      /**
-       * <code>optional int64 tableId = 1;</code>
-       *
-       * <pre>
-       **tableId,由数据库产生*
-       * </pre>
-       */
-      public Builder setTableId(long value) {
-        bitField0_ |= 0x00000001;
-        tableId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 tableId = 1;</code>
-       *
-       * <pre>
-       **tableId,由数据库产生*
-       * </pre>
-       */
-      public Builder clearTableId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        tableId_ = 0L;
-        onChanged();
-        return this;
-      }
+		private long tableId_ ;
 
-      private EventType eventType_ = EventType.UPDATE;
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public boolean hasEventType() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public EventType getEventType() {
-        return eventType_;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public Builder setEventType(EventType value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        bitField0_ |= 0x00000002;
-        eventType_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
-       *
-       * <pre>
-       **数据变更类型*
-       * </pre>
-       */
-      public Builder clearEventType() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        eventType_ = EventType.UPDATE;
-        onChanged();
-        return this;
-      }
+		private EventType eventType_ = EventType.UPDATE;
 
-      private boolean isDdl_ ;
-      /**
-       * <code>optional bool isDdl = 10 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否是ddl语句  *
-       * </pre>
-       */
-      public boolean hasIsDdl() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>optional bool isDdl = 10 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否是ddl语句  *
-       * </pre>
-       */
-      public boolean getIsDdl() {
-        return isDdl_;
-      }
-      /**
-       * <code>optional bool isDdl = 10 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否是ddl语句  *
-       * </pre>
-       */
-      public Builder setIsDdl(boolean value) {
-        bitField0_ |= 0x00000004;
-        isDdl_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional bool isDdl = 10 [default = false];</code>
-       *
-       * <pre>
-       ** 标识是否是ddl语句  *
-       * </pre>
-       */
-      public Builder clearIsDdl() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        isDdl_ = false;
-        onChanged();
-        return this;
-      }
+		private boolean isDdl_ ;
 
-      private Object sql_ = "";
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public boolean hasSql() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public String getSql() {
-        Object ref = sql_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            sql_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getSqlBytes() {
-        Object ref = sql_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          sql_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public Builder setSql(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object sql_ = "";
+
+		private java.util.List<RowData> rowDatas_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      RowData, RowData.Builder, RowDataOrBuilder> rowDatasBuilder;
+
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+
+		private Object ddlSchemaName_ = "";
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.RowChange.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolRowChangeFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            RowChange.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (!(com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders)) {
+				return;
+			}
+			getRowDatasFieldBuilder();
+			getPropsFieldBuilder();
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    tableId_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    eventType_ = EventType.UPDATE;
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    isDdl_ = false;
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    sql_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    if (rowDatasBuilder == null) {
+		      rowDatas_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000010);
+		    } else {
+		      rowDatasBuilder.clear();
+		    }
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000020);
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    ddlSchemaName_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000040);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
+		  }
+
+		@Override
+		public RowChange getDefaultInstanceForType() {
+		    return RowChange.getDefaultInstance();
+		  }
+
+		@Override
+		public RowChange build() {
+		    RowChange result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public RowChange buildPartial() {
+		    RowChange result = new RowChange(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.tableId = tableId_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.eventType_ = eventType_;
+		    if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+		      to_bitField0_ |= 0x00000004;
+		    }
+		    result.isDdl = isDdl_;
+		    if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+		      to_bitField0_ |= 0x00000008;
+		    }
+		    result.sql = sql_;
+		    if (rowDatasBuilder == null) {
+		      if (((bitField0_ & 0x00000010) == 0x00000010)) {
+		        rowDatas_ = java.util.Collections.unmodifiableList(rowDatas_);
+		        bitField0_ = (bitField0_ & ~0x00000010);
+		      }
+		      result.rowDatas = rowDatas_;
+		    } else {
+		      result.rowDatas = rowDatasBuilder.build();
+		    }
+		    if (propsBuilder_ == null) {
+		      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000020);
+		      }
+		      result.props_ = props_;
+		    } else {
+		      result.props_ = propsBuilder_.build();
+		    }
+		    if (((from_bitField0_ & 0x00000040) == 0x00000040)) {
+		      to_bitField0_ |= 0x00000010;
+		    }
+		    result.ddlSchemaName = ddlSchemaName_;
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof RowChange) {
+		      return mergeFrom((RowChange)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(RowChange other) {
+		    if (other == RowChange.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasTableId()) {
+		      setTableId(other.getTableId());
+		    }
+		    if (other.hasEventType()) {
+		      setEventType(other.getEventType());
+		    }
+		    if (other.hasIsDdl()) {
+		      setIsDdl(other.getIsDdl());
+		    }
+		    if (other.hasSql()) {
+		      bitField0_ |= 0x00000008;
+		      sql_ = other.sql;
+		      onChanged();
+		    }
+		    if (rowDatasBuilder == null) {
+		      if (!other.rowDatas.isEmpty()) {
+		        if (rowDatas_.isEmpty()) {
+		          rowDatas_ = other.rowDatas;
+		          bitField0_ = (bitField0_ & ~0x00000010);
+		        } else {
+		          ensureRowDatasIsMutable();
+		          rowDatas_.addAll(other.rowDatas);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.rowDatas.isEmpty()) {
+		        if (rowDatasBuilder.isEmpty()) {
+		          rowDatasBuilder.dispose();
+		          rowDatasBuilder = null;
+		          rowDatas_ = other.rowDatas;
+		          bitField0_ = (bitField0_ & ~0x00000010);
+		          rowDatasBuilder =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getRowDatasFieldBuilder() : null;
+		        } else {
+		          rowDatasBuilder.addAllMessages(other.rowDatas);
+		        }
+		      }
+		    }
+		    if (propsBuilder_ == null) {
+		      if (!other.props_.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000020);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props_);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props_.isEmpty()) {
+		        if (propsBuilder_.isEmpty()) {
+		          propsBuilder_.dispose();
+		          propsBuilder_ = null;
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000020);
+		          propsBuilder_ =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder_.addAllMessages(other.props_);
+		        }
+		      }
+		    }
+		    if (other.hasDdlSchemaName()) {
+		      bitField0_ |= 0x00000040;
+		      ddlSchemaName_ = other.ddlSchemaName;
+		      onChanged();
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    RowChange parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (RowChange) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 tableId = 1;</code>
+		   *
+		   * <pre>
+		   **tableId,由数据库产生*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasTableId() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional int64 tableId = 1;</code>
+		   *
+		   * <pre>
+		   **tableId,由数据库产生*
+		   * </pre>
+		   */
+		  @Override
+		public long getTableId() {
+		    return tableId_;
+		  }
+
+		/**
+		   * <code>optional int64 tableId = 1;</code>
+		   *
+		   * <pre>
+		   **tableId,由数据库产生*
+		   * </pre>
+		   */
+		  public Builder setTableId(long value) {
+		    bitField0_ |= 0x00000001;
+		    tableId_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 tableId = 1;</code>
+		   *
+		   * <pre>
+		   **tableId,由数据库产生*
+		   * </pre>
+		   */
+		  public Builder clearTableId() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    tableId_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasEventType() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  @Override
+		public EventType getEventType() {
+		    return eventType_;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  public Builder setEventType(EventType value) {
+		    if (value == null) {
+		      throw new NullPointerException();
+		    }
+		    bitField0_ |= 0x00000002;
+		    eventType_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional .com.alibaba.otter.canal.protocol.EventType eventType = 2 [default = UPDATE];</code>
+		   *
+		   * <pre>
+		   **数据变更类型*
+		   * </pre>
+		   */
+		  public Builder clearEventType() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    eventType_ = EventType.UPDATE;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bool isDdl = 10 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否是ddl语句  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasIsDdl() {
+		    return ((bitField0_ & 0x00000004) == 0x00000004);
+		  }
+
+		/**
+		   * <code>optional bool isDdl = 10 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否是ddl语句  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean getIsDdl() {
+		    return isDdl_;
+		  }
+
+		/**
+		   * <code>optional bool isDdl = 10 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否是ddl语句  *
+		   * </pre>
+		   */
+		  public Builder setIsDdl(boolean value) {
+		    bitField0_ |= 0x00000004;
+		    isDdl_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional bool isDdl = 10 [default = false];</code>
+		   *
+		   * <pre>
+		   ** 标识是否是ddl语句  *
+		   * </pre>
+		   */
+		  public Builder clearIsDdl() {
+		    bitField0_ = (bitField0_ & ~0x00000004);
+		    isDdl_ = false;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasSql() {
+		    return ((bitField0_ & 0x00000008) == 0x00000008);
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  @Override
+		public String getSql() {
+		    Object ref = sql_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        sql_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getSqlBytes() {
+		    Object ref = sql_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			sql_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  public Builder setSql(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        sql_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public Builder clearSql() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        sql_ = getDefaultInstance().getSql();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string sql = 11;</code>
-       *
-       * <pre>
-       ** ddl/query的sql语句  *
-       * </pre>
-       */
-      public Builder setSqlBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    sql_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  public Builder clearSql() {
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    sql_ = getDefaultInstance().getSql();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string sql = 11;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的sql语句  *
+		   * </pre>
+		   */
+		  public Builder setSqlBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000008;
-        sql_ = value;
-        onChanged();
-        return this;
-      }
+		    sql_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private java.util.List<RowData> rowDatas_ =
-        java.util.Collections.emptyList();
-      private void ensureRowDatasIsMutable() {
-        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
-          rowDatas_ = new java.util.ArrayList<RowData>(rowDatas_);
-          bitField0_ |= 0x00000010;
-         }
-      }
+		private void ensureRowDatasIsMutable() {
+		    if ((bitField0_ & 0x00000010) == 0x00000010) {
+				return;
+			}
+			rowDatas_ = new java.util.ArrayList<>(rowDatas_);
+			bitField0_ |= 0x00000010;
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          RowData, RowData.Builder, RowDataOrBuilder> rowDatasBuilder_;
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<RowData> getRowDatasList() {
+		    if (rowDatasBuilder == null) {
+		      return java.util.Collections.unmodifiableList(rowDatas_);
+		    } else {
+		      return rowDatasBuilder.getMessageList();
+		    }
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public java.util.List<RowData> getRowDatasList() {
-        if (rowDatasBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(rowDatas_);
-        } else {
-          return rowDatasBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public int getRowDatasCount() {
-        if (rowDatasBuilder_ == null) {
-          return rowDatas_.size();
-        } else {
-          return rowDatasBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public RowData getRowDatas(int index) {
-        if (rowDatasBuilder_ == null) {
-          return rowDatas_.get(index);
-        } else {
-          return rowDatasBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder setRowDatas(
-          int index, RowData value) {
-        if (rowDatasBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureRowDatasIsMutable();
-          rowDatas_.set(index, value);
-          onChanged();
-        } else {
-          rowDatasBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder setRowDatas(
-          int index, RowData.Builder builderForValue) {
-        if (rowDatasBuilder_ == null) {
-          ensureRowDatasIsMutable();
-          rowDatas_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          rowDatasBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder addRowDatas(RowData value) {
-        if (rowDatasBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureRowDatasIsMutable();
-          rowDatas_.add(value);
-          onChanged();
-        } else {
-          rowDatasBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder addRowDatas(
-          int index, RowData value) {
-        if (rowDatasBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensureRowDatasIsMutable();
-          rowDatas_.add(index, value);
-          onChanged();
-        } else {
-          rowDatasBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder addRowDatas(
-          RowData.Builder builderForValue) {
-        if (rowDatasBuilder_ == null) {
-          ensureRowDatasIsMutable();
-          rowDatas_.add(builderForValue.build());
-          onChanged();
-        } else {
-          rowDatasBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder addRowDatas(
-          int index, RowData.Builder builderForValue) {
-        if (rowDatasBuilder_ == null) {
-          ensureRowDatasIsMutable();
-          rowDatas_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          rowDatasBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder addAllRowDatas(
-          Iterable<? extends RowData> values) {
-        if (rowDatasBuilder_ == null) {
-          ensureRowDatasIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, rowDatas_);
-          onChanged();
-        } else {
-          rowDatasBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder clearRowDatas() {
-        if (rowDatasBuilder_ == null) {
-          rowDatas_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000010);
-          onChanged();
-        } else {
-          rowDatasBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public Builder removeRowDatas(int index) {
-        if (rowDatasBuilder_ == null) {
-          ensureRowDatasIsMutable();
-          rowDatas_.remove(index);
-          onChanged();
-        } else {
-          rowDatasBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public RowData.Builder getRowDatasBuilder(
-          int index) {
-        return getRowDatasFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public RowDataOrBuilder getRowDatasOrBuilder(
-          int index) {
-        if (rowDatasBuilder_ == null) {
-          return rowDatas_.get(index);  } else {
-          return rowDatasBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public java.util.List<? extends RowDataOrBuilder>
-           getRowDatasOrBuilderList() {
-        if (rowDatasBuilder_ != null) {
-          return rowDatasBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(rowDatas_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public RowData.Builder addRowDatasBuilder() {
-        return getRowDatasFieldBuilder().addBuilder(
-            RowData.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public RowData.Builder addRowDatasBuilder(
-          int index) {
-        return getRowDatasFieldBuilder().addBuilder(
-            index, RowData.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
-       *
-       * <pre>
-       ** 一次数据库变更可能存在多行  *
-       * </pre>
-       */
-      public java.util.List<RowData.Builder>
-           getRowDatasBuilderList() {
-        return getRowDatasFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          RowData, RowData.Builder, RowDataOrBuilder>
-          getRowDatasFieldBuilder() {
-        if (rowDatasBuilder_ == null) {
-          rowDatasBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              RowData, RowData.Builder, RowDataOrBuilder>(
-                  rowDatas_,
-                  ((bitField0_ & 0x00000010) == 0x00000010),
-                  getParentForChildren(),
-                  isClean());
-          rowDatas_ = null;
-        }
-        return rowDatasBuilder_;
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  @Override
+		public int getRowDatasCount() {
+		    if (rowDatasBuilder == null) {
+		      return rowDatas_.size();
+		    } else {
+		      return rowDatasBuilder.getCount();
+		    }
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000020) == 0x00000020)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000020;
-         }
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  @Override
+		public RowData getRowDatas(int index) {
+		    if (rowDatasBuilder == null) {
+		      return rowDatas_.get(index);
+		    } else {
+		      return rowDatasBuilder.getMessage(index);
+		    }
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder setRowDatas(
+		      int index, RowData value) {
+		    if (rowDatasBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureRowDatasIsMutable();
+		      rowDatas_.set(index, value);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.setMessage(index, value);
+		    }
+		    return this;
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000020);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000020) == 0x00000020),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder setRowDatas(
+		      int index, RowData.Builder builderForValue) {
+		    if (rowDatasBuilder == null) {
+		      ensureRowDatasIsMutable();
+		      rowDatas_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
 
-      private Object ddlSchemaName_ = "";
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public boolean hasDdlSchemaName() {
-        return ((bitField0_ & 0x00000040) == 0x00000040);
-      }
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public String getDdlSchemaName() {
-        Object ref = ddlSchemaName_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            ddlSchemaName_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getDdlSchemaNameBytes() {
-        Object ref = ddlSchemaName_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          ddlSchemaName_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public Builder setDdlSchemaName(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder addRowDatas(RowData value) {
+		    if (rowDatasBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureRowDatasIsMutable();
+		      rowDatas_.add(value);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder addRowDatas(
+		      int index, RowData value) {
+		    if (rowDatasBuilder == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensureRowDatasIsMutable();
+		      rowDatas_.add(index, value);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder addRowDatas(
+		      RowData.Builder builderForValue) {
+		    if (rowDatasBuilder == null) {
+		      ensureRowDatasIsMutable();
+		      rowDatas_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder addRowDatas(
+		      int index, RowData.Builder builderForValue) {
+		    if (rowDatasBuilder == null) {
+		      ensureRowDatasIsMutable();
+		      rowDatas_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder addAllRowDatas(
+		      Iterable<? extends RowData> values) {
+		    if (rowDatasBuilder == null) {
+		      ensureRowDatasIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, rowDatas_);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder clearRowDatas() {
+		    if (rowDatasBuilder == null) {
+		      rowDatas_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000010);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public Builder removeRowDatas(int index) {
+		    if (rowDatasBuilder == null) {
+		      ensureRowDatasIsMutable();
+		      rowDatas_.remove(index);
+		      onChanged();
+		    } else {
+		      rowDatasBuilder.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public RowData.Builder getRowDatasBuilder(
+		      int index) {
+		    return getRowDatasFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  @Override
+		public RowDataOrBuilder getRowDatasOrBuilder(
+		      int index) {
+		    if (rowDatasBuilder == null) {
+		      return rowDatas_.get(index);  } else {
+		      return rowDatasBuilder.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends RowDataOrBuilder>
+		       getRowDatasOrBuilderList() {
+		    if (rowDatasBuilder != null) {
+		      return rowDatasBuilder.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(rowDatas_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public RowData.Builder addRowDatasBuilder() {
+		    return getRowDatasFieldBuilder().addBuilder(
+		        RowData.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public RowData.Builder addRowDatasBuilder(
+		      int index) {
+		    return getRowDatasFieldBuilder().addBuilder(
+		        index, RowData.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.RowData rowDatas = 12;</code>
+		   *
+		   * <pre>
+		   ** 一次数据库变更可能存在多行  *
+		   * </pre>
+		   */
+		  public java.util.List<RowData.Builder>
+		       getRowDatasBuilderList() {
+		    return getRowDatasFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      RowData, RowData.Builder, RowDataOrBuilder>
+		      getRowDatasFieldBuilder() {
+		    if (rowDatasBuilder == null) {
+		      rowDatasBuilder = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              rowDatas_,
+		              ((bitField0_ & 0x00000010) == 0x00000010),
+		              getParentForChildren(),
+		              isClean());
+		      rowDatas_ = null;
+		    }
+		    return rowDatasBuilder;
+		  }
+
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000020) == 0x00000020) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000020;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder_ == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder_.getMessageList();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder_ == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder_.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder_.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000020);
+		      onChanged();
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder_.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder_.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder_ != null) {
+		      return propsBuilder_.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 13;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder_ == null) {
+		      propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000020) == 0x00000020),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder_;
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasDdlSchemaName() {
+		    return ((bitField0_ & 0x00000040) == 0x00000040);
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  @Override
+		public String getDdlSchemaName() {
+		    Object ref = ddlSchemaName_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        ddlSchemaName_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getDdlSchemaNameBytes() {
+		    Object ref = ddlSchemaName_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			ddlSchemaName_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  public Builder setDdlSchemaName(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000040;
-        ddlSchemaName_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public Builder clearDdlSchemaName() {
-        bitField0_ = (bitField0_ & ~0x00000040);
-        ddlSchemaName_ = getDefaultInstance().getDdlSchemaName();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string ddlSchemaName = 14;</code>
-       *
-       * <pre>
-       ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
-       * </pre>
-       */
-      public Builder setDdlSchemaNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    ddlSchemaName_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  public Builder clearDdlSchemaName() {
+		    bitField0_ = (bitField0_ & ~0x00000040);
+		    ddlSchemaName_ = getDefaultInstance().getDdlSchemaName();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string ddlSchemaName = 14;</code>
+		   *
+		   * <pre>
+		   ** ddl/query的schemaName，会存在跨库ddl，需要保留执行ddl的当前schemaName  *
+		   * </pre>
+		   */
+		  public Builder setDdlSchemaNameBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000040;
-        ddlSchemaName_ = value;
-        onChanged();
-        return this;
-      }
+		    ddlSchemaName_ = value;
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.RowChange)
-    }
-
-    static {
-      defaultInstance = new RowChange(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.RowChange)
@@ -9814,29 +10425,43 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.TransactionBegin)
       TransactionBeginOrBuilder {
-    // Use TransactionBegin.newBuilder() to construct.
+    private static final TransactionBegin defaultInstance;
+	public static com.google.protobuf.Parser<TransactionBegin> PARSER =
+        new com.google.protobuf.AbstractParser<TransactionBegin>() {
+      @Override
+	public TransactionBegin parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TransactionBegin(input, extensionRegistry);
+      }
+    };
+	public static final int EXECUTETIME_FIELD_NUMBER = 1;
+	public static final int TRANSACTIONID_FIELD_NUMBER = 2;
+	public static final int PROPS_FIELD_NUMBER = 3;
+	public static final int THREADID_FIELD_NUMBER = 4;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new TransactionBegin(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private long executeTime_;
+	private Object transactionId;
+	private java.util.List<Pair> props_;
+	private long threadId;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use TransactionBegin.newBuilder() to construct.
     private TransactionBegin(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private TransactionBegin(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final TransactionBegin defaultInstance;
-    public static TransactionBegin getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public TransactionBegin getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private TransactionBegin(
+	private TransactionBegin(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private TransactionBegin(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -9867,12 +10492,12 @@ public final class CanalEntry {
             case 18: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              transactionId_ = bs;
+              transactionId = bs;
               break;
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000004;
               }
               props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
@@ -9880,7 +10505,7 @@ public final class CanalEntry {
             }
             case 32: {
               bitField0_ |= 0x00000004;
-              threadId_ = input.readInt64();
+              threadId = input.readInt64();
               break;
             }
           }
@@ -9898,78 +10523,76 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static TransactionBegin getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public TransactionBegin getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolTransactionBeginFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               TransactionBegin.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<TransactionBegin> PARSER =
-        new com.google.protobuf.AbstractParser<TransactionBegin>() {
-      public TransactionBegin parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TransactionBegin(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<TransactionBegin> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int EXECUTETIME_FIELD_NUMBER = 1;
-    private long executeTime_;
-    /**
+	/**
      * <code>optional int64 executeTime = 1;</code>
      *
      * <pre>
      **已废弃，请使用header里的executeTime*
      * </pre>
      */
-    public boolean hasExecuteTime() {
+    @Override
+	public boolean hasExecuteTime() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional int64 executeTime = 1;</code>
      *
      * <pre>
      **已废弃，请使用header里的executeTime*
      * </pre>
      */
-    public long getExecuteTime() {
+    @Override
+	public long getExecuteTime() {
       return executeTime_;
     }
-
-    public static final int TRANSACTIONID_FIELD_NUMBER = 2;
-    private Object transactionId_;
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **已废弃，Begin里不提供事务id*
      * </pre>
      */
-    public boolean hasTransactionId() {
+    @Override
+	public boolean hasTransactionId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **已废弃，Begin里不提供事务id*
      * </pre>
      */
-    public String getTransactionId() {
-      Object ref = transactionId_;
+    @Override
+	public String getTransactionId() {
+      Object ref = transactionId;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -9977,127 +10600,131 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          transactionId_ = s;
+          transactionId = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **已废弃，Begin里不提供事务id*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getTransactionIdBytes() {
-      Object ref = transactionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        transactionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = transactionId;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	transactionId = b;
+	return b;
     }
-
-    public static final int PROPS_FIELD_NUMBER = 3;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
+    @Override
+	public java.util.List<Pair> getPropsList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
+    @Override
+	public int getPropsCount() {
       return props_.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
+    @Override
+	public Pair getProps(int index) {
       return props_.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
       return props_.get(index);
     }
-
-    public static final int THREADID_FIELD_NUMBER = 4;
-    private long threadId_;
-    /**
+	/**
      * <code>optional int64 threadId = 4;</code>
      *
      * <pre>
      **执行的thread Id*
      * </pre>
      */
-    public boolean hasThreadId() {
+    @Override
+	public boolean hasThreadId() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-    /**
+	/**
      * <code>optional int64 threadId = 4;</code>
      *
      * <pre>
      **执行的thread Id*
      * </pre>
      */
-    public long getThreadId() {
-      return threadId_;
+    @Override
+	public long getThreadId() {
+      return threadId;
     }
-
-    private void initFields() {
+	private void initFields() {
       executeTime_ = 0L;
-      transactionId_ = "";
+      transactionId = "";
       props_ = java.util.Collections.emptyList();
-      threadId_ = 0L;
+      threadId = 0L;
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -10106,19 +10733,20 @@ public final class CanalEntry {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getTransactionIdBytes());
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(3, props_.get(i));
+      for (CanalEntry.Pair aProps_ : props_) {
+        output.writeMessage(3, aProps_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeInt64(4, threadId_);
+        output.writeInt64(4, threadId);
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -10129,93 +10757,90 @@ public final class CanalEntry {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getTransactionIdBytes());
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair aProps_ : props_) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, props_.get(i));
+          .computeMessageSize(3, aProps_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, threadId_);
+          .computeInt64Size(4, threadId);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static TransactionBegin parseFrom(byte[] data)
+	public static TransactionBegin parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static TransactionBegin parseFrom(java.io.InputStream input)
+	public static TransactionBegin parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static TransactionBegin parseDelimitedFrom(java.io.InputStream input)
+	public static TransactionBegin parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static TransactionBegin parseDelimitedFrom(
+	public static TransactionBegin parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static TransactionBegin parseFrom(
+	public static TransactionBegin parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(TransactionBegin prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(TransactionBegin prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.TransactionBegin}
      *
      * <pre>
@@ -10226,694 +10851,746 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.TransactionBegin)
         TransactionBeginOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                TransactionBegin.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.TransactionBegin.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        executeTime_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        transactionId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-        } else {
-          propsBuilder_.clear();
-        }
-        threadId_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
-      }
-
-      public TransactionBegin getDefaultInstanceForType() {
-        return TransactionBegin.getDefaultInstance();
-      }
-
-      public TransactionBegin build() {
-        TransactionBegin result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public TransactionBegin buildPartial() {
-        TransactionBegin result = new TransactionBegin(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.executeTime_ = executeTime_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.transactionId_ = transactionId_;
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000004);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.threadId_ = threadId_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof TransactionBegin) {
-          return mergeFrom((TransactionBegin)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(TransactionBegin other) {
-        if (other == TransactionBegin.getDefaultInstance()) return this;
-        if (other.hasExecuteTime()) {
-          setExecuteTime(other.getExecuteTime());
-        }
-        if (other.hasTransactionId()) {
-          bitField0_ |= 0x00000002;
-          transactionId_ = other.transactionId_;
-          onChanged();
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        if (other.hasThreadId()) {
-          setThreadId(other.getThreadId());
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        TransactionBegin parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (TransactionBegin) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private long executeTime_ ;
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public boolean hasExecuteTime() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public long getExecuteTime() {
-        return executeTime_;
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public Builder setExecuteTime(long value) {
-        bitField0_ |= 0x00000001;
-        executeTime_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public Builder clearExecuteTime() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        executeTime_ = 0L;
-        onChanged();
-        return this;
-      }
+		private long executeTime_ ;
 
-      private Object transactionId_ = "";
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public boolean hasTransactionId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public String getTransactionId() {
-        Object ref = transactionId_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            transactionId_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getTransactionIdBytes() {
-        Object ref = transactionId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          transactionId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public Builder setTransactionId(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object transactionId_ = "";
+
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+
+		private long threadId_ ;
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.TransactionBegin.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolTransactionBeginFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            TransactionBegin.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		      getPropsFieldBuilder();
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    executeTime_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    transactionId_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    threadId_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
+		  }
+
+		@Override
+		public TransactionBegin getDefaultInstanceForType() {
+		    return TransactionBegin.getDefaultInstance();
+		  }
+
+		@Override
+		public TransactionBegin build() {
+		    TransactionBegin result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public TransactionBegin buildPartial() {
+		    TransactionBegin result = new TransactionBegin(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.executeTime_ = executeTime_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.transactionId = transactionId_;
+		    if (propsBuilder_ == null) {
+		      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000004);
+		      }
+		      result.props_ = props_;
+		    } else {
+		      result.props_ = propsBuilder_.build();
+		    }
+		    if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+		      to_bitField0_ |= 0x00000004;
+		    }
+		    result.threadId = threadId_;
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof TransactionBegin) {
+		      return mergeFrom((TransactionBegin)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(TransactionBegin other) {
+		    if (other == TransactionBegin.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasExecuteTime()) {
+		      setExecuteTime(other.getExecuteTime());
+		    }
+		    if (other.hasTransactionId()) {
+		      bitField0_ |= 0x00000002;
+		      transactionId_ = other.transactionId;
+		      onChanged();
+		    }
+		    if (propsBuilder_ == null) {
+		      if (!other.props_.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props_);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props_.isEmpty()) {
+		        if (propsBuilder_.isEmpty()) {
+		          propsBuilder_.dispose();
+		          propsBuilder_ = null;
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		          propsBuilder_ =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder_.addAllMessages(other.props_);
+		        }
+		      }
+		    }
+		    if (other.hasThreadId()) {
+		      setThreadId(other.getThreadId());
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    TransactionBegin parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (TransactionBegin) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasExecuteTime() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  @Override
+		public long getExecuteTime() {
+		    return executeTime_;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  public Builder setExecuteTime(long value) {
+		    bitField0_ |= 0x00000001;
+		    executeTime_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  public Builder clearExecuteTime() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    executeTime_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasTransactionId() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  @Override
+		public String getTransactionId() {
+		    Object ref = transactionId_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        transactionId_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getTransactionIdBytes() {
+		    Object ref = transactionId_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			transactionId_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  public Builder setTransactionId(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public Builder clearTransactionId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        transactionId_ = getDefaultInstance().getTransactionId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **已废弃，Begin里不提供事务id*
-       * </pre>
-       */
-      public Builder setTransactionIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    transactionId_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  public Builder clearTransactionId() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    transactionId_ = getDefaultInstance().getTransactionId();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **已废弃，Begin里不提供事务id*
+		   * </pre>
+		   */
+		  public Builder setTransactionIdBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
+		    transactionId_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000004;
-         }
-      }
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000004) == 0x00000004) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000004;
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder_ == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder_.getMessageList();
+		    }
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder_ == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder_.getCount();
+		    }
+		  }
 
-      private long threadId_ ;
-      /**
-       * <code>optional int64 threadId = 4;</code>
-       *
-       * <pre>
-       **执行的thread Id*
-       * </pre>
-       */
-      public boolean hasThreadId() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
-      }
-      /**
-       * <code>optional int64 threadId = 4;</code>
-       *
-       * <pre>
-       **执行的thread Id*
-       * </pre>
-       */
-      public long getThreadId() {
-        return threadId_;
-      }
-      /**
-       * <code>optional int64 threadId = 4;</code>
-       *
-       * <pre>
-       **执行的thread Id*
-       * </pre>
-       */
-      public Builder setThreadId(long value) {
-        bitField0_ |= 0x00000008;
-        threadId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 threadId = 4;</code>
-       *
-       * <pre>
-       **执行的thread Id*
-       * </pre>
-       */
-      public Builder clearThreadId() {
-        bitField0_ = (bitField0_ & ~0x00000008);
-        threadId_ = 0L;
-        onChanged();
-        return this;
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder_.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		      onChanged();
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder_.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder_.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder_ != null) {
+		      return propsBuilder_.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder_ == null) {
+		      propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000004) == 0x00000004),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder_;
+		  }
+
+		/**
+		   * <code>optional int64 threadId = 4;</code>
+		   *
+		   * <pre>
+		   **执行的thread Id*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasThreadId() {
+		    return ((bitField0_ & 0x00000008) == 0x00000008);
+		  }
+
+		/**
+		   * <code>optional int64 threadId = 4;</code>
+		   *
+		   * <pre>
+		   **执行的thread Id*
+		   * </pre>
+		   */
+		  @Override
+		public long getThreadId() {
+		    return threadId_;
+		  }
+
+		/**
+		   * <code>optional int64 threadId = 4;</code>
+		   *
+		   * <pre>
+		   **执行的thread Id*
+		   * </pre>
+		   */
+		  public Builder setThreadId(long value) {
+		    bitField0_ |= 0x00000008;
+		    threadId_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 threadId = 4;</code>
+		   *
+		   * <pre>
+		   **执行的thread Id*
+		   * </pre>
+		   */
+		  public Builder clearThreadId() {
+		    bitField0_ = (bitField0_ & ~0x00000008);
+		    threadId_ = 0L;
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.TransactionBegin)
-    }
-
-    static {
-      defaultInstance = new TransactionBegin(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.TransactionBegin)
@@ -11020,29 +11697,41 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.TransactionEnd)
       TransactionEndOrBuilder {
-    // Use TransactionEnd.newBuilder() to construct.
+    private static final TransactionEnd defaultInstance;
+	public static com.google.protobuf.Parser<TransactionEnd> PARSER =
+        new com.google.protobuf.AbstractParser<TransactionEnd>() {
+      @Override
+	public TransactionEnd parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new TransactionEnd(input, extensionRegistry);
+      }
+    };
+	public static final int EXECUTETIME_FIELD_NUMBER = 1;
+	public static final int TRANSACTIONID_FIELD_NUMBER = 2;
+	public static final int PROPS_FIELD_NUMBER = 3;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new TransactionEnd(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private long executeTime_;
+	private Object transactionId_;
+	private java.util.List<Pair> props_;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use TransactionEnd.newBuilder() to construct.
     private TransactionEnd(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private TransactionEnd(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final TransactionEnd defaultInstance;
-    public static TransactionEnd getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public TransactionEnd getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private TransactionEnd(
+	private TransactionEnd(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private TransactionEnd(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -11078,7 +11767,7 @@ public final class CanalEntry {
             }
             case 26: {
               if (!((mutable_bitField0_ & 0x00000004) == 0x00000004)) {
-                props_ = new java.util.ArrayList<Pair>();
+                props_ = new java.util.ArrayList<>();
                 mutable_bitField0_ |= 0x00000004;
               }
               props_.add(input.readMessage(Pair.PARSER, extensionRegistry));
@@ -11099,77 +11788,75 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static TransactionEnd getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public TransactionEnd getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolTransactionEndFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               TransactionEnd.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<TransactionEnd> PARSER =
-        new com.google.protobuf.AbstractParser<TransactionEnd>() {
-      public TransactionEnd parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new TransactionEnd(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<TransactionEnd> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int EXECUTETIME_FIELD_NUMBER = 1;
-    private long executeTime_;
-    /**
+	/**
      * <code>optional int64 executeTime = 1;</code>
      *
      * <pre>
      **已废弃，请使用header里的executeTime*
      * </pre>
      */
-    public boolean hasExecuteTime() {
+    @Override
+	public boolean hasExecuteTime() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional int64 executeTime = 1;</code>
      *
      * <pre>
      **已废弃，请使用header里的executeTime*
      * </pre>
      */
-    public long getExecuteTime() {
+    @Override
+	public long getExecuteTime() {
       return executeTime_;
     }
-
-    public static final int TRANSACTIONID_FIELD_NUMBER = 2;
-    private Object transactionId_;
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **事务号*
      * </pre>
      */
-    public boolean hasTransactionId() {
+    @Override
+	public boolean hasTransactionId() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **事务号*
      * </pre>
      */
-    public String getTransactionId() {
+    @Override
+	public String getTransactionId() {
       Object ref = transactionId_;
       if (ref instanceof String) {
         return (String) ref;
@@ -11183,98 +11870,103 @@ public final class CanalEntry {
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string transactionId = 2;</code>
      *
      * <pre>
      **事务号*
      * </pre>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getTransactionIdBytes() {
       Object ref = transactionId_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        transactionId_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	transactionId_ = b;
+	return b;
     }
-
-    public static final int PROPS_FIELD_NUMBER = 3;
-    private java.util.List<Pair> props_;
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<Pair> getPropsList() {
+    @Override
+	public java.util.List<Pair> getPropsList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public java.util.List<? extends PairOrBuilder>
+    @Override
+	public java.util.List<? extends PairOrBuilder>
         getPropsOrBuilderList() {
       return props_;
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public int getPropsCount() {
+    @Override
+	public int getPropsCount() {
       return props_.size();
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public Pair getProps(int index) {
+    @Override
+	public Pair getProps(int index) {
       return props_.get(index);
     }
-    /**
+	/**
      * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
      *
      * <pre>
      **预留扩展*
      * </pre>
      */
-    public PairOrBuilder getPropsOrBuilder(
+    @Override
+	public PairOrBuilder getPropsOrBuilder(
         int index) {
       return props_.get(index);
     }
-
-    private void initFields() {
+	private void initFields() {
       executeTime_ = 0L;
       transactionId_ = "";
       props_ = java.util.Collections.emptyList();
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -11283,16 +11975,17 @@ public final class CanalEntry {
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         output.writeBytes(2, getTransactionIdBytes());
       }
-      for (int i = 0; i < props_.size(); i++) {
-        output.writeMessage(3, props_.get(i));
+      for (CanalEntry.Pair aProps_ : props_) {
+        output.writeMessage(3, aProps_);
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -11303,89 +11996,86 @@ public final class CanalEntry {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, getTransactionIdBytes());
       }
-      for (int i = 0; i < props_.size(); i++) {
+      for (CanalEntry.Pair aProps_ : props_) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, props_.get(i));
+          .computeMessageSize(3, aProps_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static TransactionEnd parseFrom(byte[] data)
+	public static TransactionEnd parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static TransactionEnd parseFrom(java.io.InputStream input)
+	public static TransactionEnd parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static TransactionEnd parseDelimitedFrom(java.io.InputStream input)
+	public static TransactionEnd parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static TransactionEnd parseDelimitedFrom(
+	public static TransactionEnd parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static TransactionEnd parseFrom(
+	public static TransactionEnd parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(TransactionEnd prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(TransactionEnd prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.TransactionEnd}
      *
      * <pre>
@@ -11396,637 +12086,683 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.TransactionEnd)
         TransactionEndOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                TransactionEnd.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.TransactionEnd.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-          getPropsFieldBuilder();
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        executeTime_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
-        transactionId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
-      }
-
-      public TransactionEnd getDefaultInstanceForType() {
-        return TransactionEnd.getDefaultInstance();
-      }
-
-      public TransactionEnd build() {
-        TransactionEnd result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public TransactionEnd buildPartial() {
-        TransactionEnd result = new TransactionEnd(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.executeTime_ = executeTime_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.transactionId_ = transactionId_;
-        if (propsBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) == 0x00000004)) {
-            props_ = java.util.Collections.unmodifiableList(props_);
-            bitField0_ = (bitField0_ & ~0x00000004);
-          }
-          result.props_ = props_;
-        } else {
-          result.props_ = propsBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof TransactionEnd) {
-          return mergeFrom((TransactionEnd)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(TransactionEnd other) {
-        if (other == TransactionEnd.getDefaultInstance()) return this;
-        if (other.hasExecuteTime()) {
-          setExecuteTime(other.getExecuteTime());
-        }
-        if (other.hasTransactionId()) {
-          bitField0_ |= 0x00000002;
-          transactionId_ = other.transactionId_;
-          onChanged();
-        }
-        if (propsBuilder_ == null) {
-          if (!other.props_.isEmpty()) {
-            if (props_.isEmpty()) {
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-            } else {
-              ensurePropsIsMutable();
-              props_.addAll(other.props_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.props_.isEmpty()) {
-            if (propsBuilder_.isEmpty()) {
-              propsBuilder_.dispose();
-              propsBuilder_ = null;
-              props_ = other.props_;
-              bitField0_ = (bitField0_ & ~0x00000004);
-              propsBuilder_ =
-                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
-                   getPropsFieldBuilder() : null;
-            } else {
-              propsBuilder_.addAllMessages(other.props_);
-            }
-          }
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        TransactionEnd parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (TransactionEnd) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private long executeTime_ ;
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public boolean hasExecuteTime() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public long getExecuteTime() {
-        return executeTime_;
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public Builder setExecuteTime(long value) {
-        bitField0_ |= 0x00000001;
-        executeTime_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional int64 executeTime = 1;</code>
-       *
-       * <pre>
-       **已废弃，请使用header里的executeTime*
-       * </pre>
-       */
-      public Builder clearExecuteTime() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        executeTime_ = 0L;
-        onChanged();
-        return this;
-      }
+		private long executeTime_ ;
 
-      private Object transactionId_ = "";
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public boolean hasTransactionId() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public String getTransactionId() {
-        Object ref = transactionId_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            transactionId_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public com.google.protobuf.ByteString
-          getTransactionIdBytes() {
-        Object ref = transactionId_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          transactionId_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public Builder setTransactionId(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object transactionId_ = "";
+
+		private java.util.List<Pair> props_ =
+		    java.util.Collections.emptyList();
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.TransactionEnd.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolTransactionEndFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            TransactionEnd.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		      getPropsFieldBuilder();
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    executeTime_ = 0L;
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    transactionId_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
+		  }
+
+		@Override
+		public TransactionEnd getDefaultInstanceForType() {
+		    return TransactionEnd.getDefaultInstance();
+		  }
+
+		@Override
+		public TransactionEnd build() {
+		    TransactionEnd result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public TransactionEnd buildPartial() {
+		    TransactionEnd result = new TransactionEnd(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.executeTime_ = executeTime_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.transactionId_ = transactionId_;
+		    if (propsBuilder_ == null) {
+		      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+		        props_ = java.util.Collections.unmodifiableList(props_);
+		        bitField0_ = (bitField0_ & ~0x00000004);
+		      }
+		      result.props_ = props_;
+		    } else {
+		      result.props_ = propsBuilder_.build();
+		    }
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof TransactionEnd) {
+		      return mergeFrom((TransactionEnd)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(TransactionEnd other) {
+		    if (other == TransactionEnd.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasExecuteTime()) {
+		      setExecuteTime(other.getExecuteTime());
+		    }
+		    if (other.hasTransactionId()) {
+		      bitField0_ |= 0x00000002;
+		      transactionId_ = other.transactionId_;
+		      onChanged();
+		    }
+		    if (propsBuilder_ == null) {
+		      if (!other.props_.isEmpty()) {
+		        if (props_.isEmpty()) {
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		        } else {
+		          ensurePropsIsMutable();
+		          props_.addAll(other.props_);
+		        }
+		        onChanged();
+		      }
+		    } else {
+		      if (!other.props_.isEmpty()) {
+		        if (propsBuilder_.isEmpty()) {
+		          propsBuilder_.dispose();
+		          propsBuilder_ = null;
+		          props_ = other.props_;
+		          bitField0_ = (bitField0_ & ~0x00000004);
+		          propsBuilder_ =
+		            com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+		               getPropsFieldBuilder() : null;
+		        } else {
+		          propsBuilder_.addAllMessages(other.props_);
+		        }
+		      }
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    TransactionEnd parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (TransactionEnd) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasExecuteTime() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  @Override
+		public long getExecuteTime() {
+		    return executeTime_;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  public Builder setExecuteTime(long value) {
+		    bitField0_ |= 0x00000001;
+		    executeTime_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional int64 executeTime = 1;</code>
+		   *
+		   * <pre>
+		   **已废弃，请使用header里的executeTime*
+		   * </pre>
+		   */
+		  public Builder clearExecuteTime() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    executeTime_ = 0L;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  @Override
+		public boolean hasTransactionId() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  @Override
+		public String getTransactionId() {
+		    Object ref = transactionId_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        transactionId_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getTransactionIdBytes() {
+		    Object ref = transactionId_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			transactionId_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  public Builder setTransactionId(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public Builder clearTransactionId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        transactionId_ = getDefaultInstance().getTransactionId();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string transactionId = 2;</code>
-       *
-       * <pre>
-       **事务号*
-       * </pre>
-       */
-      public Builder setTransactionIdBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    transactionId_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  public Builder clearTransactionId() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    transactionId_ = getDefaultInstance().getTransactionId();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string transactionId = 2;</code>
+		   *
+		   * <pre>
+		   **事务号*
+		   * </pre>
+		   */
+		  public Builder setTransactionIdBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        transactionId_ = value;
-        onChanged();
-        return this;
-      }
+		    transactionId_ = value;
+		    onChanged();
+		    return this;
+		  }
 
-      private java.util.List<Pair> props_ =
-        java.util.Collections.emptyList();
-      private void ensurePropsIsMutable() {
-        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
-          props_ = new java.util.ArrayList<Pair>(props_);
-          bitField0_ |= 0x00000004;
-         }
-      }
+		private void ensurePropsIsMutable() {
+		    if ((bitField0_ & 0x00000004) == 0x00000004) {
+				return;
+			}
+			props_ = new java.util.ArrayList<>(props_);
+			bitField0_ |= 0x00000004;
+		  }
 
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder> propsBuilder_;
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<Pair> getPropsList() {
+		    if (propsBuilder_ == null) {
+		      return java.util.Collections.unmodifiableList(props_);
+		    } else {
+		      return propsBuilder_.getMessageList();
+		    }
+		  }
 
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair> getPropsList() {
-        if (propsBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(props_);
-        } else {
-          return propsBuilder_.getMessageList();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public int getPropsCount() {
-        if (propsBuilder_ == null) {
-          return props_.size();
-        } else {
-          return propsBuilder_.getCount();
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair getProps(int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);
-        } else {
-          return propsBuilder_.getMessage(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.set(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder setProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.set(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.setMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair value) {
-        if (propsBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePropsIsMutable();
-          props_.add(index, value);
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, value);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addProps(
-          int index, Pair.Builder builderForValue) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          propsBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder addAllProps(
-          Iterable<? extends Pair> values) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, props_);
-          onChanged();
-        } else {
-          propsBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder clearProps() {
-        if (propsBuilder_ == null) {
-          props_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
-          onChanged();
-        } else {
-          propsBuilder_.clear();
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Builder removeProps(int index) {
-        if (propsBuilder_ == null) {
-          ensurePropsIsMutable();
-          props_.remove(index);
-          onChanged();
-        } else {
-          propsBuilder_.remove(index);
-        }
-        return this;
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder getPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().getBuilder(index);
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public PairOrBuilder getPropsOrBuilder(
-          int index) {
-        if (propsBuilder_ == null) {
-          return props_.get(index);  } else {
-          return propsBuilder_.getMessageOrBuilder(index);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<? extends PairOrBuilder>
-           getPropsOrBuilderList() {
-        if (propsBuilder_ != null) {
-          return propsBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(props_);
-        }
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder() {
-        return getPropsFieldBuilder().addBuilder(
-            Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public Pair.Builder addPropsBuilder(
-          int index) {
-        return getPropsFieldBuilder().addBuilder(
-            index, Pair.getDefaultInstance());
-      }
-      /**
-       * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
-       *
-       * <pre>
-       **预留扩展*
-       * </pre>
-       */
-      public java.util.List<Pair.Builder>
-           getPropsBuilderList() {
-        return getPropsFieldBuilder().getBuilderList();
-      }
-      private com.google.protobuf.RepeatedFieldBuilder<
-          Pair, Pair.Builder, PairOrBuilder>
-          getPropsFieldBuilder() {
-        if (propsBuilder_ == null) {
-          propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              Pair, Pair.Builder, PairOrBuilder>(
-                  props_,
-                  ((bitField0_ & 0x00000004) == 0x00000004),
-                  getParentForChildren(),
-                  isClean());
-          props_ = null;
-        }
-        return propsBuilder_;
-      }
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public int getPropsCount() {
+		    if (propsBuilder_ == null) {
+		      return props_.size();
+		    } else {
+		      return propsBuilder_.getCount();
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public Pair getProps(int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);
+		    } else {
+		      return propsBuilder_.getMessage(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.set(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder setProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.set(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.setMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair value) {
+		    if (propsBuilder_ == null) {
+		      if (value == null) {
+		        throw new NullPointerException();
+		      }
+		      ensurePropsIsMutable();
+		      props_.add(index, value);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, value);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addProps(
+		      int index, Pair.Builder builderForValue) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.add(index, builderForValue.build());
+		      onChanged();
+		    } else {
+		      propsBuilder_.addMessage(index, builderForValue.build());
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder addAllProps(
+		      Iterable<? extends Pair> values) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      com.google.protobuf.AbstractMessageLite.Builder.addAll(
+		          values, props_);
+		      onChanged();
+		    } else {
+		      propsBuilder_.addAllMessages(values);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder clearProps() {
+		    if (propsBuilder_ == null) {
+		      props_ = java.util.Collections.emptyList();
+		      bitField0_ = (bitField0_ & ~0x00000004);
+		      onChanged();
+		    } else {
+		      propsBuilder_.clear();
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Builder removeProps(int index) {
+		    if (propsBuilder_ == null) {
+		      ensurePropsIsMutable();
+		      props_.remove(index);
+		      onChanged();
+		    } else {
+		      propsBuilder_.remove(index);
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder getPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().getBuilder(index);
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public PairOrBuilder getPropsOrBuilder(
+		      int index) {
+		    if (propsBuilder_ == null) {
+		      return props_.get(index);  } else {
+		      return propsBuilder_.getMessageOrBuilder(index);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  @Override
+		public java.util.List<? extends PairOrBuilder>
+		       getPropsOrBuilderList() {
+		    if (propsBuilder_ != null) {
+		      return propsBuilder_.getMessageOrBuilderList();
+		    } else {
+		      return java.util.Collections.unmodifiableList(props_);
+		    }
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder() {
+		    return getPropsFieldBuilder().addBuilder(
+		        Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public Pair.Builder addPropsBuilder(
+		      int index) {
+		    return getPropsFieldBuilder().addBuilder(
+		        index, Pair.getDefaultInstance());
+		  }
+
+		/**
+		   * <code>repeated .com.alibaba.otter.canal.protocol.Pair props = 3;</code>
+		   *
+		   * <pre>
+		   **预留扩展*
+		   * </pre>
+		   */
+		  public java.util.List<Pair.Builder>
+		       getPropsBuilderList() {
+		    return getPropsFieldBuilder().getBuilderList();
+		  }
+
+		private com.google.protobuf.RepeatedFieldBuilder<
+		      Pair, Pair.Builder, PairOrBuilder>
+		      getPropsFieldBuilder() {
+		    if (propsBuilder_ == null) {
+		      propsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<>(
+		              props_,
+		              ((bitField0_ & 0x00000004) == 0x00000004),
+		              getParentForChildren(),
+		              isClean());
+		      props_ = null;
+		    }
+		    return propsBuilder_;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.TransactionEnd)
-    }
-
-    static {
-      defaultInstance = new TransactionEnd(true);
-      defaultInstance.initFields();
     }
 
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.TransactionEnd)
@@ -12075,29 +12811,39 @@ public final class CanalEntry {
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:com.alibaba.otter.canal.protocol.Pair)
       PairOrBuilder {
-    // Use Pair.newBuilder() to construct.
+    private static final Pair defaultInstance;
+	public static com.google.protobuf.Parser<Pair> PARSER =
+        new com.google.protobuf.AbstractParser<Pair>() {
+      @Override
+	public Pair parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Pair(input, extensionRegistry);
+      }
+    };
+	public static final int KEY_FIELD_NUMBER = 1;
+	public static final int VALUE_FIELD_NUMBER = 2;
+	private static final long serialVersionUID = 0L;
+
+	static {
+      defaultInstance = new Pair(true);
+      defaultInstance.initFields();
+    }
+
+	private final com.google.protobuf.UnknownFieldSet unknownFields;
+	private int bitField0_;
+	private Object key;
+	private Object value_;
+	private byte memoizedIsInitialized = -1;
+	private int memoizedSerializedSize = -1;
+	// Use Pair.newBuilder() to construct.
     private Pair(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
       this.unknownFields = builder.getUnknownFields();
     }
-    private Pair(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
-
-    private static final Pair defaultInstance;
-    public static Pair getDefaultInstance() {
-      return defaultInstance;
-    }
-
-    public Pair getDefaultInstanceForType() {
-      return defaultInstance;
-    }
-
-    private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-        getUnknownFields() {
-      return this.unknownFields;
-    }
-    private Pair(
+	private Pair(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+	private Pair(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -12123,7 +12869,7 @@ public final class CanalEntry {
             case 10: {
               com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000001;
-              key_ = bs;
+              key = bs;
               break;
             }
             case 18: {
@@ -12144,47 +12890,46 @@ public final class CanalEntry {
         makeExtensionsImmutable();
       }
     }
-    public static final com.google.protobuf.Descriptors.Descriptor
+	public static Pair getDefaultInstance() {
+      return defaultInstance;
+    }
+	@Override
+	public Pair getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+	@Override
+    public final com.google.protobuf.UnknownFieldSet
+        getUnknownFields() {
+      return this.unknownFields;
+    }
+	public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
     }
-
-    protected FieldAccessorTable
+	@Override
+	protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_fieldAccessorTable
+      return CanalEntry.internalStaticComAlibabaOtterCanalProtocolPairFieldAccessorTable
           .ensureFieldAccessorsInitialized(
               Pair.class, Builder.class);
     }
-
-    public static com.google.protobuf.Parser<Pair> PARSER =
-        new com.google.protobuf.AbstractParser<Pair>() {
-      public Pair parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        return new Pair(input, extensionRegistry);
-      }
-    };
-
-    @Override
+	@Override
     public com.google.protobuf.Parser<Pair> getParserForType() {
       return PARSER;
     }
-
-    private int bitField0_;
-    public static final int KEY_FIELD_NUMBER = 1;
-    private Object key_;
-    /**
+	/**
      * <code>optional string key = 1;</code>
      */
-    public boolean hasKey() {
+    @Override
+	public boolean hasKey() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-    /**
+	/**
      * <code>optional string key = 1;</code>
      */
-    public String getKey() {
-      Object ref = key_;
+    @Override
+	public String getKey() {
+      Object ref = key;
       if (ref instanceof String) {
         return (String) ref;
       } else {
@@ -12192,40 +12937,39 @@ public final class CanalEntry {
             (com.google.protobuf.ByteString) ref;
         String s = bs.toStringUtf8();
         if (bs.isValidUtf8()) {
-          key_ = s;
+          key = s;
         }
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string key = 1;</code>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getKeyBytes() {
-      Object ref = key_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        key_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      Object ref = key;
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	key = b;
+	return b;
     }
-
-    public static final int VALUE_FIELD_NUMBER = 2;
-    private Object value_;
-    /**
+	/**
      * <code>optional string value = 2;</code>
      */
-    public boolean hasValue() {
+    @Override
+	public boolean hasValue() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-    /**
+	/**
      * <code>optional string value = 2;</code>
      */
-    public String getValue() {
+    @Override
+	public String getValue() {
       Object ref = value_;
       if (ref instanceof String) {
         return (String) ref;
@@ -12239,38 +12983,41 @@ public final class CanalEntry {
         return s;
       }
     }
-    /**
+	/**
      * <code>optional string value = 2;</code>
      */
-    public com.google.protobuf.ByteString
+    @Override
+	public com.google.protobuf.ByteString
         getValueBytes() {
       Object ref = value_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
-        value_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
+      if (!(ref instanceof String)) {
+		return (com.google.protobuf.ByteString) ref;
+	}
+	com.google.protobuf.ByteString b =
+	    com.google.protobuf.ByteString.copyFromUtf8(
+	        (String) ref);
+	value_ = b;
+	return b;
     }
-
-    private void initFields() {
-      key_ = "";
+	private void initFields() {
+      key = "";
       value_ = "";
     }
-    private byte memoizedIsInitialized = -1;
-    public final boolean isInitialized() {
+	@Override
+	public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) return true;
-      if (isInitialized == 0) return false;
+      if (isInitialized == 1) {
+		return true;
+	}
+      if (isInitialized == 0) {
+		return false;
+	}
 
       memoizedIsInitialized = 1;
       return true;
     }
-
-    public void writeTo(com.google.protobuf.CodedOutputStream output)
+	@Override
+	public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12281,11 +13028,12 @@ public final class CanalEntry {
       }
       getUnknownFields().writeTo(output);
     }
-
-    private int memoizedSerializedSize = -1;
-    public int getSerializedSize() {
+	@Override
+	public int getSerializedSize() {
       int size = memoizedSerializedSize;
-      if (size != -1) return size;
+      if (size != -1) {
+		return size;
+	}
 
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -12300,81 +13048,78 @@ public final class CanalEntry {
       memoizedSerializedSize = size;
       return size;
     }
-
-    private static final long serialVersionUID = 0L;
-    @Override
+	@Override
     protected Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
-
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Pair parseFrom(byte[] data)
+	public static Pair parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static Pair parseFrom(java.io.InputStream input)
+	public static Pair parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static Pair parseDelimitedFrom(java.io.InputStream input)
+	public static Pair parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static Pair parseDelimitedFrom(
+	public static Pair parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static Pair parseFrom(
+	public static Pair parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-
-    public static Builder newBuilder() { return Builder.create(); }
-    public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(Pair prototype) {
+	public static Builder newBuilder() { return Builder.create(); }
+	@Override
+	public Builder newBuilderForType() { return newBuilder(); }
+	public static Builder newBuilder(Pair prototype) {
       return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() { return newBuilder(this); }
-
-    @Override
+	@Override
+	public Builder toBuilder() { return newBuilder(this); }
+	@Override
     protected Builder newBuilderForType(
         BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-    /**
+	/**
      * Protobuf type {@code com.alibaba.otter.canal.protocol.Pair}
      *
      * <pre>
@@ -12385,454 +13130,315 @@ public final class CanalEntry {
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:com.alibaba.otter.canal.protocol.Pair)
         PairOrBuilder {
-      public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
-      }
-
-      protected FieldAccessorTable
-          internalGetFieldAccessorTable() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                Pair.class, Builder.class);
-      }
-
-      // Construct using com.alibaba.otter.canal.protocol.CanalEntry.Pair.newBuilder()
-      private Builder() {
-        maybeForceBuilderInitialization();
-      }
-
-      private Builder(
-          BuilderParent parent) {
-        super(parent);
-        maybeForceBuilderInitialization();
-      }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
-        }
-      }
-      private static Builder create() {
-        return new Builder();
-      }
-
-      public Builder clear() {
-        super.clear();
-        key_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
-        value_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
-        return this;
-      }
-
-      public Builder clone() {
-        return create().mergeFrom(buildPartial());
-      }
-
-      public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
-        return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
-      }
-
-      public Pair getDefaultInstanceForType() {
-        return Pair.getDefaultInstance();
-      }
-
-      public Pair build() {
-        Pair result = buildPartial();
-        if (!result.isInitialized()) {
-          throw newUninitializedMessageException(result);
-        }
-        return result;
-      }
-
-      public Pair buildPartial() {
-        Pair result = new Pair(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.key_ = key_;
-        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.value_ = value_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
-      }
-
-      public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Pair) {
-          return mergeFrom((Pair)other);
-        } else {
-          super.mergeFrom(other);
-          return this;
-        }
-      }
-
-      public Builder mergeFrom(Pair other) {
-        if (other == Pair.getDefaultInstance()) return this;
-        if (other.hasKey()) {
-          bitField0_ |= 0x00000001;
-          key_ = other.key_;
-          onChanged();
-        }
-        if (other.hasValue()) {
-          bitField0_ |= 0x00000002;
-          value_ = other.value_;
-          onChanged();
-        }
-        this.mergeUnknownFields(other.getUnknownFields());
-        return this;
-      }
-
-      public final boolean isInitialized() {
-        return true;
-      }
-
-      public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
-        Pair parsedMessage = null;
-        try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
-        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Pair) e.getUnfinishedMessage();
-          throw e;
-        } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
-        return this;
-      }
       private int bitField0_;
 
-      private Object key_ = "";
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public boolean hasKey() {
-        return ((bitField0_ & 0x00000001) == 0x00000001);
-      }
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public String getKey() {
-        Object ref = key_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            key_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public com.google.protobuf.ByteString
-          getKeyBytes() {
-        Object ref = key_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          key_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public Builder setKey(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        key_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public Builder clearKey() {
-        bitField0_ = (bitField0_ & ~0x00000001);
-        key_ = getDefaultInstance().getKey();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string key = 1;</code>
-       */
-      public Builder setKeyBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
-        key_ = value;
-        onChanged();
-        return this;
-      }
+		private Object key_ = "";
 
-      private Object value_ = "";
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public boolean hasValue() {
-        return ((bitField0_ & 0x00000002) == 0x00000002);
-      }
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public String getValue() {
-        Object ref = value_;
-        if (!(ref instanceof String)) {
-          com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
-          if (bs.isValidUtf8()) {
-            value_ = s;
-          }
-          return s;
-        } else {
-          return (String) ref;
-        }
-      }
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public com.google.protobuf.ByteString
-          getValueBytes() {
-        Object ref = value_;
-        if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
-          value_ = b;
-          return b;
-        } else {
-          return (com.google.protobuf.ByteString) ref;
-        }
-      }
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public Builder setValue(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
+		private Object value_ = "";
+		// Construct using com.alibaba.otter.canal.protocol.CanalEntry.Pair.newBuilder()
+		  private Builder() {
+		    maybeForceBuilderInitialization();
+		  }
+
+		private Builder(
+		      BuilderParent parent) {
+		    super(parent);
+		    maybeForceBuilderInitialization();
+		  }
+
+		public static final com.google.protobuf.Descriptors.Descriptor
+		      getDescriptor() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
+		  }
+
+		@Override
+		protected FieldAccessorTable
+		      internalGetFieldAccessorTable() {
+		    return CanalEntry.internalStaticComAlibabaOtterCanalProtocolPairFieldAccessorTable
+		        .ensureFieldAccessorsInitialized(
+		            Pair.class, Builder.class);
+		  }
+
+		private void maybeForceBuilderInitialization() {
+		    if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+		    }
+		  }
+
+		private static Builder create() {
+		    return new Builder();
+		  }
+
+		@Override
+		public Builder clear() {
+		    super.clear();
+		    key_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    value_ = "";
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    return this;
+		  }
+
+		@Override
+		public Builder clone() {
+		    return create().mergeFrom(buildPartial());
+		  }
+
+		@Override
+		public com.google.protobuf.Descriptors.Descriptor
+		      getDescriptorForType() {
+		    return CanalEntry.internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
+		  }
+
+		@Override
+		public Pair getDefaultInstanceForType() {
+		    return Pair.getDefaultInstance();
+		  }
+
+		@Override
+		public Pair build() {
+		    Pair result = buildPartial();
+		    if (!result.isInitialized()) {
+		      throw newUninitializedMessageException(result);
+		    }
+		    return result;
+		  }
+
+		@Override
+		public Pair buildPartial() {
+		    Pair result = new Pair(this);
+		    int from_bitField0_ = bitField0_;
+		    int to_bitField0_ = 0;
+		    if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+		      to_bitField0_ |= 0x00000001;
+		    }
+		    result.key = key_;
+		    if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+		      to_bitField0_ |= 0x00000002;
+		    }
+		    result.value_ = value_;
+		    result.bitField0_ = to_bitField0_;
+		    onBuilt();
+		    return result;
+		  }
+
+		@Override
+		public Builder mergeFrom(com.google.protobuf.Message other) {
+		    if (other instanceof Pair) {
+		      return mergeFrom((Pair)other);
+		    } else {
+		      super.mergeFrom(other);
+		      return this;
+		    }
+		  }
+
+		public Builder mergeFrom(Pair other) {
+		    if (other == Pair.getDefaultInstance()) {
+				return this;
+			}
+		    if (other.hasKey()) {
+		      bitField0_ |= 0x00000001;
+		      key_ = other.key;
+		      onChanged();
+		    }
+		    if (other.hasValue()) {
+		      bitField0_ |= 0x00000002;
+		      value_ = other.value_;
+		      onChanged();
+		    }
+		    this.mergeUnknownFields(other.getUnknownFields());
+		    return this;
+		  }
+
+		@Override
+		public final boolean isInitialized() {
+		    return true;
+		  }
+
+		@Override
+		public Builder mergeFrom(
+		      com.google.protobuf.CodedInputStream input,
+		      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+		      throws java.io.IOException {
+		    Pair parsedMessage = null;
+		    try {
+		      parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+		    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+		      parsedMessage = (Pair) e.getUnfinishedMessage();
+		      throw e;
+		    } finally {
+		      if (parsedMessage != null) {
+		        mergeFrom(parsedMessage);
+		      }
+		    }
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  @Override
+		public boolean hasKey() {
+		    return ((bitField0_ & 0x00000001) == 0x00000001);
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  @Override
+		public String getKey() {
+		    Object ref = key_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        key_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getKeyBytes() {
+		    Object ref = key_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			key_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  public Builder setKey(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+		    key_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  public Builder clearKey() {
+		    bitField0_ = (bitField0_ & ~0x00000001);
+		    key_ = getDefaultInstance().getKey();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string key = 1;</code>
+		   */
+		  public Builder setKeyBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000001;
+		    key_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  @Override
+		public boolean hasValue() {
+		    return ((bitField0_ & 0x00000002) == 0x00000002);
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  @Override
+		public String getValue() {
+		    Object ref = value_;
+		    if (ref instanceof String) {
+				return (String) ref;
+			}
+			com.google.protobuf.ByteString bs =
+		          (com.google.protobuf.ByteString) ref;
+			String s = bs.toStringUtf8();
+			if (bs.isValidUtf8()) {
+		        value_ = s;
+		      }
+			return s;
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  @Override
+		public com.google.protobuf.ByteString
+		      getValueBytes() {
+		    Object ref = value_;
+		    if (!(ref instanceof String)) {
+				return (com.google.protobuf.ByteString) ref;
+			}
+			com.google.protobuf.ByteString b =
+		          com.google.protobuf.ByteString.copyFromUtf8(
+		              (String) ref);
+			value_ = b;
+			return b;
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  public Builder setValue(
+		      String value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        value_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public Builder clearValue() {
-        bitField0_ = (bitField0_ & ~0x00000002);
-        value_ = getDefaultInstance().getValue();
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>optional string value = 2;</code>
-       */
-      public Builder setValueBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
+		    value_ = value;
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  public Builder clearValue() {
+		    bitField0_ = (bitField0_ & ~0x00000002);
+		    value_ = getDefaultInstance().getValue();
+		    onChanged();
+		    return this;
+		  }
+
+		/**
+		   * <code>optional string value = 2;</code>
+		   */
+		  public Builder setValueBytes(
+		      com.google.protobuf.ByteString value) {
+		    if (value == null) {
+		throw new NullPointerException();
   }
   bitField0_ |= 0x00000002;
-        value_ = value;
-        onChanged();
-        return this;
-      }
+		    value_ = value;
+		    onChanged();
+		    return this;
+		  }
 
       // @@protoc_insertion_point(builder_scope:com.alibaba.otter.canal.protocol.Pair)
     }
 
-    static {
-      defaultInstance = new Pair(true);
-      defaultInstance.initFields();
-    }
-
     // @@protoc_insertion_point(class_scope:com.alibaba.otter.canal.protocol.Pair)
-  }
-
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_Entry_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_Header_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_Header_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_Column_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_Column_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_RowData_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_RowChange_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor;
-  private static
-    com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_com_alibaba_otter_canal_protocol_Pair_fieldAccessorTable;
-
-  public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
-    return descriptor;
-  }
-  private static com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
-  static {
-    String[] descriptorData = {
-      "\n\023EntryProtocol.proto\022 com.alibaba.otter" +
-      ".canal.protocol\"\236\001\n\005Entry\0228\n\006header\030\001 \001(" +
-      "\0132(.com.alibaba.otter.canal.protocol.Hea" +
-      "der\022G\n\tentryType\030\002 \001(\0162+.com.alibaba.ott" +
-      "er.canal.protocol.EntryType:\007ROWDATA\022\022\n\n" +
-      "storeValue\030\003 \001(\014\"\221\003\n\006Header\022\022\n\007version\030\001" +
-      " \001(\005:\0011\022\023\n\013logfileName\030\002 \001(\t\022\025\n\rlogfileO" +
-      "ffset\030\003 \001(\003\022\020\n\010serverId\030\004 \001(\003\022\024\n\014servere" +
-      "nCode\030\005 \001(\t\022\023\n\013executeTime\030\006 \001(\003\022A\n\nsour" +
-      "ceType\030\007 \001(\0162&.com.alibaba.otter.canal.p",
-      "rotocol.Type:\005MYSQL\022\022\n\nschemaName\030\010 \001(\t\022" +
-      "\021\n\ttableName\030\t \001(\t\022\023\n\013eventLength\030\n \001(\003\022" +
-      "F\n\teventType\030\013 \001(\0162+.com.alibaba.otter.c" +
-      "anal.protocol.EventType:\006UPDATE\0225\n\005props" +
-      "\030\014 \003(\0132&.com.alibaba.otter.canal.protoco" +
-      "l.Pair\022\014\n\004gtid\030\r \001(\t\"\326\001\n\006Column\022\r\n\005index" +
-      "\030\001 \001(\005\022\017\n\007sqlType\030\002 \001(\005\022\014\n\004name\030\003 \001(\t\022\r\n" +
-      "\005isKey\030\004 \001(\010\022\017\n\007updated\030\005 \001(\010\022\025\n\006isNull\030" +
-      "\006 \001(\010:\005false\0225\n\005props\030\007 \003(\0132&.com.alibab" +
-      "a.otter.canal.protocol.Pair\022\r\n\005value\030\010 \001",
-      "(\t\022\016\n\006length\030\t \001(\005\022\021\n\tmysqlType\030\n \001(\t\"\301\001" +
-      "\n\007RowData\022?\n\rbeforeColumns\030\001 \003(\0132(.com.a" +
-      "libaba.otter.canal.protocol.Column\022>\n\014af" +
-      "terColumns\030\002 \003(\0132(.com.alibaba.otter.can" +
-      "al.protocol.Column\0225\n\005props\030\003 \003(\0132&.com." +
-      "alibaba.otter.canal.protocol.Pair\"\222\002\n\tRo" +
-      "wChange\022\017\n\007tableId\030\001 \001(\003\022F\n\teventType\030\002 " +
-      "\001(\0162+.com.alibaba.otter.canal.protocol.E" +
-      "ventType:\006UPDATE\022\024\n\005isDdl\030\n \001(\010:\005false\022\013" +
-      "\n\003sql\030\013 \001(\t\022;\n\010rowDatas\030\014 \003(\0132).com.alib",
-      "aba.otter.canal.protocol.RowData\0225\n\005prop" +
-      "s\030\r \003(\0132&.com.alibaba.otter.canal.protoc" +
-      "ol.Pair\022\025\n\rddlSchemaName\030\016 \001(\t\"\207\001\n\020Trans" +
-      "actionBegin\022\023\n\013executeTime\030\001 \001(\003\022\025\n\rtran" +
-      "sactionId\030\002 \001(\t\0225\n\005props\030\003 \003(\0132&.com.ali" +
-      "baba.otter.canal.protocol.Pair\022\020\n\010thread" +
-      "Id\030\004 \001(\003\"s\n\016TransactionEnd\022\023\n\013executeTim" +
-      "e\030\001 \001(\003\022\025\n\rtransactionId\030\002 \001(\t\0225\n\005props\030" +
-      "\003 \003(\0132&.com.alibaba.otter.canal.protocol" +
-      ".Pair\"\"\n\004Pair\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(",
-      "\t*^\n\tEntryType\022\024\n\020TRANSACTIONBEGIN\020\001\022\013\n\007" +
-      "ROWDATA\020\002\022\022\n\016TRANSACTIONEND\020\003\022\r\n\tHEARTBE" +
-      "AT\020\004\022\013\n\007GTIDLOG\020\005*\306\001\n\tEventType\022\n\n\006INSER" +
-      "T\020\001\022\n\n\006UPDATE\020\002\022\n\n\006DELETE\020\003\022\n\n\006CREATE\020\004\022" +
-      "\t\n\005ALTER\020\005\022\t\n\005ERASE\020\006\022\t\n\005QUERY\020\007\022\014\n\010TRUN" +
-      "CATE\020\010\022\n\n\006RENAME\020\t\022\n\n\006CINDEX\020\n\022\n\n\006DINDEX" +
-      "\020\013\022\010\n\004GTID\020\014\022\014\n\010XACOMMIT\020\r\022\016\n\nXAROLLBACK" +
-      "\020\016\022\016\n\nMHEARTBEAT\020\017*(\n\004Type\022\n\n\006ORACLE\020\001\022\t" +
-      "\n\005MYSQL\020\002\022\t\n\005PGSQL\020\003B0\n com.alibaba.otte" +
-      "r.canal.protocolB\nCanalEntryH\001"
-    };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
-    internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_com_alibaba_otter_canal_protocol_Entry_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_Entry_descriptor,
-        new String[] { "Header", "EntryType", "StoreValue", });
-    internal_static_com_alibaba_otter_canal_protocol_Header_descriptor =
-      getDescriptor().getMessageTypes().get(1);
-    internal_static_com_alibaba_otter_canal_protocol_Header_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_Header_descriptor,
-        new String[] { "Version", "LogfileName", "LogfileOffset", "ServerId", "ServerenCode", "ExecuteTime", "SourceType", "SchemaName", "TableName", "EventLength", "EventType", "Props", "Gtid", });
-    internal_static_com_alibaba_otter_canal_protocol_Column_descriptor =
-      getDescriptor().getMessageTypes().get(2);
-    internal_static_com_alibaba_otter_canal_protocol_Column_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_Column_descriptor,
-        new String[] { "Index", "SqlType", "Name", "IsKey", "Updated", "IsNull", "Props", "Value", "Length", "MysqlType", });
-    internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor =
-      getDescriptor().getMessageTypes().get(3);
-    internal_static_com_alibaba_otter_canal_protocol_RowData_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_RowData_descriptor,
-        new String[] { "BeforeColumns", "AfterColumns", "Props", });
-    internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor =
-      getDescriptor().getMessageTypes().get(4);
-    internal_static_com_alibaba_otter_canal_protocol_RowChange_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_RowChange_descriptor,
-        new String[] { "TableId", "EventType", "IsDdl", "Sql", "RowDatas", "Props", "DdlSchemaName", });
-    internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor =
-      getDescriptor().getMessageTypes().get(5);
-    internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_TransactionBegin_descriptor,
-        new String[] { "ExecuteTime", "TransactionId", "Props", "ThreadId", });
-    internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor =
-      getDescriptor().getMessageTypes().get(6);
-    internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_TransactionEnd_descriptor,
-        new String[] { "ExecuteTime", "TransactionId", "Props", });
-    internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor =
-      getDescriptor().getMessageTypes().get(7);
-    internal_static_com_alibaba_otter_canal_protocol_Pair_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_com_alibaba_otter_canal_protocol_Pair_descriptor,
-        new String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

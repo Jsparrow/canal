@@ -40,11 +40,17 @@ public class MysqlGTIDSet implements GTIDSet {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (this == o) return true;
+        if (o == null) {
+			return false;
+		}
+        if (this == o) {
+			return true;
+		}
 
         MysqlGTIDSet gs = (MysqlGTIDSet) o;
-        if (gs.sets == null) return false;
+        if (gs.sets == null) {
+			return false;
+		}
 
         for (Map.Entry<String, UUIDSet> entry : sets.entrySet()) {
             if (!entry.getValue().equals(gs.sets.get(entry.getKey()))) {
@@ -84,13 +90,13 @@ public class MysqlGTIDSet implements GTIDSet {
         Map<String, UUIDSet> m;
 
         if (gtidData == null || gtidData.length() < 1) {
-            m = new HashMap<String, UUIDSet>();
+            m = new HashMap<>();
         } else {
             // 存在多个GTID时会有回车符
             String[] uuidStrs = gtidData.replaceAll("\n", "").split(",");
-            m = new HashMap<String, UUIDSet>(uuidStrs.length);
-            for (int i = 0; i < uuidStrs.length; i++) {
-                UUIDSet uuidSet = UUIDSet.parse(uuidStrs[i]);
+            m = new HashMap<>(uuidStrs.length);
+            for (String uuidStr : uuidStrs) {
+                UUIDSet uuidSet = UUIDSet.parse(uuidStr);
                 m.put(uuidSet.SID.toString(), uuidSet);
             }
         }
@@ -105,12 +111,12 @@ public class MysqlGTIDSet implements GTIDSet {
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
-        for (Map.Entry<String, UUIDSet> entry : sets.entrySet()) {
+        sets.entrySet().forEach(entry -> {
             if (sb.length() > 0) {
                 sb.append(",");
             }
             sb.append(entry.getValue().toString());
-        }
+        });
 
         return sb.toString();
     }

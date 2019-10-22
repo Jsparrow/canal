@@ -20,7 +20,7 @@ public class RdsItem {
 
     @Override
     public String toString() {
-        return "RdsItem [BinLogFile=" + BinLogFile + "]";
+        return new StringBuilder().append("RdsItem [BinLogFile=").append(BinLogFile).append("]").toString();
     }
 
 }

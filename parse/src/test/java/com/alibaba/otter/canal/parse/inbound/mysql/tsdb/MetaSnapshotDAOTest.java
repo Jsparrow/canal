@@ -10,6 +10,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaSnapshotDAO;
 import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaSnapshotDO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by wanshao Date: 2017/9/20 Time: 下午5:00
@@ -18,7 +20,8 @@ import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaSnapshotDO;
 @ContextConfiguration(locations = { "/tsdb/h2-tsdb.xml" })
 public class MetaSnapshotDAOTest {
 
-    @Resource
+    private static final Logger logger = LoggerFactory.getLogger(MetaSnapshotDAOTest.class);
+	@Resource
     MetaSnapshotDAO metaSnapshotDAO;
 
     @Ignore
@@ -34,10 +37,10 @@ public class MetaSnapshotDAOTest {
         metaSnapshotDAO.insert(metaSnapshotDO);
 
         MetaSnapshotDO snapshotDO = metaSnapshotDAO.findByTimestamp("test", System.currentTimeMillis());
-        System.out.println(snapshotDO);
+        logger.info(String.valueOf(snapshotDO));
 
         int count = metaSnapshotDAO.deleteByTimestamp("test", 7200);
-        System.out.println(count);
+        logger.info(String.valueOf(count));
     }
 
 }

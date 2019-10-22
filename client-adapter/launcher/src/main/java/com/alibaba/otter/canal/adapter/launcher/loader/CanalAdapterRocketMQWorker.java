@@ -9,6 +9,8 @@ import com.alibaba.otter.canal.client.adapter.OuterAdapter;
 import com.alibaba.otter.canal.client.adapter.support.CanalClientConfig;
 import com.alibaba.otter.canal.client.adapter.support.Util;
 import com.alibaba.otter.canal.client.rocketmq.RocketMQCanalConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * rocketmq对应的client适配器工作线程
@@ -17,7 +19,8 @@ import com.alibaba.otter.canal.client.rocketmq.RocketMQCanalConnector;
  */
 public class CanalAdapterRocketMQWorker extends AbstractCanalAdapterWorker {
 
-    private RocketMQCanalConnector connector;
+    private static final Logger logger = LoggerFactory.getLogger(CanalAdapterRocketMQWorker.class);
+	private RocketMQCanalConnector connector;
     private String                 topic;
     private boolean                flatMessage;
 
@@ -70,6 +73,7 @@ public class CanalAdapterRocketMQWorker extends AbstractCanalAdapterWorker {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
             }
         }
 
@@ -114,6 +118,7 @@ public class CanalAdapterRocketMQWorker extends AbstractCanalAdapterWorker {
         try {
             connector.unsubscribe();
         } catch (WakeupException e) {
+			logger.error(e.getMessage(), e);
             // No-op. Continue process
         }
         connector.disconnect();

@@ -26,25 +26,24 @@ public class AviaterRegexFilter implements CanalEventFilter<String> {
     private static final String             PATTERN_SPLIT     = "|";
     private static final String             FILTER_EXPRESSION = "regex(pattern,target)";
     private static final RegexFunction      regexFunction     = new RegexFunction();
-    private final Expression                exp               = AviatorEvaluator.compile(FILTER_EXPRESSION, true);
     static {
         AviatorEvaluator.addFunction(regexFunction);
     }
 
-    private static final Comparator<String> COMPARATOR        = new StringComparator();
+	private static final Comparator<String> COMPARATOR        = new StringComparator();
+	private final Expression                exp               = AviatorEvaluator.compile(FILTER_EXPRESSION, true);
+	private final String                    pattern;
+	private final boolean                   defaultEmptyValue;
 
-    final private String                    pattern;
-    final private boolean                   defaultEmptyValue;
-
-    public AviaterRegexFilter(String pattern){
+	public AviaterRegexFilter(String pattern){
         this(pattern, true);
     }
 
-    public AviaterRegexFilter(String pattern, boolean defaultEmptyValue){
+	public AviaterRegexFilter(String pattern, boolean defaultEmptyValue){
         this.defaultEmptyValue = defaultEmptyValue;
         List<String> list = null;
         if (StringUtils.isEmpty(pattern)) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         } else {
             String[] ss = StringUtils.split(pattern, SPLIT);
             list = Arrays.asList(ss);
@@ -53,13 +52,14 @@ public class AviaterRegexFilter implements CanalEventFilter<String> {
         // 对pattern按照从长到短的排序
         // 因为 foo|foot 匹配 foot 会出错，原因是 foot 匹配了 foo 之后，会返回 foo，但是 foo 的长度和 foot
         // 的长度不一样
-        Collections.sort(list, COMPARATOR);
+        list.sort(COMPARATOR);
         // 对pattern进行头尾完全匹配
         list = completionPattern(list);
         this.pattern = StringUtils.join(list, PATTERN_SPLIT);
     }
 
-    public boolean filter(String filtered) throws CanalFilterException {
+	@Override
+	public boolean filter(String filtered) {
         if (StringUtils.isEmpty(pattern)) {
             return defaultEmptyValue;
         }
@@ -68,13 +68,43 @@ public class AviaterRegexFilter implements CanalEventFilter<String> {
             return defaultEmptyValue;
         }
 
-        Map<String, Object> env = new HashMap<String, Object>();
+        Map<String, Object> env = new HashMap<>();
         env.put("pattern", pattern);
         env.put("target", filtered.toLowerCase());
         return (Boolean) exp.execute(env);
     }
 
-    /**
+	/**
+     * 修复正则表达式匹配的问题，即使按照长度递减排序，还是会出现以下问题：
+     * 
+     * <pre>
+     * foooo|f.*t 匹配 fooooot 出错，原因是 fooooot 匹配了 foooo 之后，会将 fooo 和数据进行匹配，但是 foooo 的长度和 fooooot 的长度不一样
+     * </pre>
+     * 
+     * 因此此类对正则表达式进行头尾完全匹配
+     * 
+     * @author simon
+     * @version 1.0.0
+     */
+
+    private List<String> completionPattern(List<String> patterns) {
+        List<String> result = new ArrayList<>();
+        patterns.forEach(pattern -> {
+            StringBuilder stringBuffer = new StringBuilder();
+            stringBuffer.append("^");
+            stringBuffer.append(pattern);
+            stringBuffer.append("$");
+            result.add(stringBuffer.toString());
+        });
+        return result;
+    }
+
+	@Override
+    public String toString() {
+        return pattern;
+    }
+
+	/**
      * 修复正则表达式匹配的问题，因为使用了 oro 的 matches，会出现：
      * 
      * <pre>
@@ -98,36 +128,6 @@ public class AviaterRegexFilter implements CanalEventFilter<String> {
                 return 0;
             }
         }
-    }
-
-    /**
-     * 修复正则表达式匹配的问题，即使按照长度递减排序，还是会出现以下问题：
-     * 
-     * <pre>
-     * foooo|f.*t 匹配 fooooot 出错，原因是 fooooot 匹配了 foooo 之后，会将 fooo 和数据进行匹配，但是 foooo 的长度和 fooooot 的长度不一样
-     * </pre>
-     * 
-     * 因此此类对正则表达式进行头尾完全匹配
-     * 
-     * @author simon
-     * @version 1.0.0
-     */
-
-    private List<String> completionPattern(List<String> patterns) {
-        List<String> result = new ArrayList<String>();
-        for (String pattern : patterns) {
-            StringBuffer stringBuffer = new StringBuffer();
-            stringBuffer.append("^");
-            stringBuffer.append(pattern);
-            stringBuffer.append("$");
-            result.add(stringBuffer.toString());
-        }
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return pattern;
     }
 
 }

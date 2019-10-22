@@ -71,7 +71,8 @@ public class DirectLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#fetch()
      */
-    public boolean fetch() throws IOException {
+    @Override
+	public boolean fetch() throws IOException {
         try {
             // Fetching packet header from input.
             if (!fetch0(0, NET_HEADER_SIZE)) {
@@ -83,7 +84,7 @@ public class DirectLogFetcher extends LogFetcher {
             int netlen = getUint24(PACKET_LEN_OFFSET);
             int netnum = getUint8(PACKET_SEQ_OFFSET);
             if (!fetch0(NET_HEADER_SIZE, netlen)) {
-                logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
+                logger.warn(new StringBuilder().append("Reached end of input stream: packet #").append(netnum).append(", len = ").append(netlen).toString());
                 return false;
             }
 
@@ -99,8 +100,8 @@ public class DirectLogFetcher extends LogFetcher {
                     final int errno = getInt16();
                     String sqlstate = forward(1).getFixString(SQLSTATE_LENGTH);
                     String errmsg = getFixString(limit - position);
-                    throw new IOException("Received error packet:" + " errno = " + errno + ", sqlstate = " + sqlstate
-                                          + " errmsg = " + errmsg);
+                    throw new IOException(new StringBuilder().append("Received error packet:").append(" errno = ").append(errno).append(", sqlstate = ").append(sqlstate).append(" errmsg = ")
+							.append(errmsg).toString());
                 } else if (mark == 254) {
                     // Indicates end of stream. It's not clear when this would
                     // be sent.
@@ -109,8 +110,8 @@ public class DirectLogFetcher extends LogFetcher {
                     return false;
                 } else {
                     // Should not happen.
-                    throw new IOException("Unexpected response " + mark + " while fetching binlog: packet #" + netnum
-                                          + ", len = " + netlen);
+                    throw new IOException(new StringBuilder().append("Unexpected response ").append(mark).append(" while fetching binlog: packet #").append(netnum).append(", len = ").append(netlen)
+							.toString());
                 }
             }
 
@@ -132,7 +133,7 @@ public class DirectLogFetcher extends LogFetcher {
                 netlen = getUint24(PACKET_LEN_OFFSET);
                 netnum = getUint8(PACKET_SEQ_OFFSET);
                 if (!fetch0(limit, netlen)) {
-                    logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
+                    logger.warn(new StringBuilder().append("Reached end of input stream: packet #").append(netnum).append(", len = ").append(netlen).toString());
                     return false;
                 }
             }
@@ -150,11 +151,7 @@ public class DirectLogFetcher extends LogFetcher {
             close(); /* Do cleanup */
             logger.error("Socket timeout expired, closing connection", e);
             throw e;
-        } catch (InterruptedIOException e) {
-            close(); /* Do cleanup */
-            logger.info("I/O interrupted while reading from client socket", e);
-            throw e;
-        } catch (ClosedByInterruptException e) {
+        } catch (ClosedByInterruptException | InterruptedIOException e) {
             close(); /* Do cleanup */
             logger.info("I/O interrupted while reading from client socket", e);
             throw e;
@@ -183,7 +180,8 @@ public class DirectLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#close()
      */
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         // do nothing
     }
 

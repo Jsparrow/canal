@@ -18,7 +18,8 @@ public abstract class CommandPacket implements IPacket {
         return command;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 }

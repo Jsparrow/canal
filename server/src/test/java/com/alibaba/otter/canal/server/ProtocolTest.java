@@ -15,12 +15,16 @@ import com.google.protobuf.WireFormat;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 public class ProtocolTest {
 
-    @Test(expected = CanalClientException.class)
+    private static final Logger logger = LoggerFactory.getLogger(ProtocolTest.class);
+
+	@Test(expected = CanalClientException.class)
     public void testSimple() throws IOException {
         Header.Builder headerBuilder = Header.newBuilder();
         headerBuilder.setLogfileName("mysql-bin.000001");
@@ -30,13 +34,13 @@ public class ProtocolTest {
         entryBuilder.setHeader(headerBuilder.build());
         entryBuilder.setEntryType(EntryType.ROWDATA);
         Entry entry = entryBuilder.build();
-        Message message = new Message(3, true, Arrays.asList(entry.toByteString()));
+        Message message = new Message(3, true, Collections.singletonList(entry.toByteString()));
 
         byte[] body = buildData(message);
         Packet packet = Packet.parseFrom(body);
         switch (packet.getType()) {
             case MESSAGES: {
-                if (!packet.getCompression().equals(Compression.NONE)) {
+                if (packet.getCompression() != Compression.NONE) {
                     throw new CanalClientException("compression is not supported in this connector");
                 }
 
@@ -46,7 +50,7 @@ public class ProtocolTest {
                     result.addEntry(Entry.parseFrom(byteString));
                 }
 
-                System.out.println(result);
+                logger.info(String.valueOf(result));
                 break;
             }
             default: {
@@ -63,8 +67,8 @@ public class ProtocolTest {
         messageSize += com.google.protobuf.CodedOutputStream.computeInt64Size(1, message.getId());
 
         int dataSize = 0;
-        for (int i = 0; i < rowEntries.size(); i++) {
-            dataSize += com.google.protobuf.CodedOutputStream.computeBytesSizeNoTag(rowEntries.get(i));
+        for (ByteString rowEntrie : rowEntries) {
+            dataSize += com.google.protobuf.CodedOutputStream.computeBytesSizeNoTag(rowEntrie);
         }
         messageSize += dataSize;
         messageSize += 1 * rowEntries.size();
@@ -82,8 +86,8 @@ public class ProtocolTest {
         output.writeRawVarint32(messageSize);
         // message
         output.writeInt64(1, message.getId());
-        for (int i = 0; i < rowEntries.size(); i++) {
-            output.writeBytes(2, rowEntries.get(i));
+        for (ByteString rowEntrie : rowEntries) {
+            output.writeBytes(2, rowEntrie);
         }
         output.checkNoSpaceLeft();
 

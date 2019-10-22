@@ -147,9 +147,7 @@ public class AbstractCanalInstance extends AbstractCanalLifeCycle implements Can
     protected void afterStartEventParser(CanalEventParser eventParser) {
         // 读取一下历史订阅的filter信息
         List<ClientIdentity> clientIdentitys = metaManager.listAllSubscribeInfo(destination);
-        for (ClientIdentity clientIdentity : clientIdentitys) {
-            subscribeChange(clientIdentity);
-        }
+        clientIdentitys.forEach(this::subscribeChange);
     }
 
     // around event parser
@@ -184,19 +182,17 @@ public class AbstractCanalInstance extends AbstractCanalLifeCycle implements Can
             }
         }
 
-        if (eventParser instanceof MysqlEventParser) {
-            MysqlEventParser mysqlEventParser = (MysqlEventParser) eventParser;
-            CanalHAController haController = mysqlEventParser.getHaController();
-
-            if (haController instanceof HeartBeatHAController) {
-                ((HeartBeatHAController) haController).setCanalHASwitchable(mysqlEventParser);
-            }
-
-            if (!haController.isStart()) {
-                haController.start();
-            }
-
-        }
+        if (!(eventParser instanceof MysqlEventParser)) {
+			return;
+		}
+		MysqlEventParser mysqlEventParser = (MysqlEventParser) eventParser;
+		CanalHAController haController = mysqlEventParser.getHaController();
+		if (haController instanceof HeartBeatHAController) {
+		    ((HeartBeatHAController) haController).setCanalHASwitchable(mysqlEventParser);
+		}
+		if (!haController.isStart()) {
+		    haController.start();
+		}
     }
 
     protected void stopEventParserInternal(CanalEventParser eventParser) {
@@ -209,13 +205,14 @@ public class AbstractCanalInstance extends AbstractCanalLifeCycle implements Can
             }
         }
 
-        if (eventParser instanceof MysqlEventParser) {
-            MysqlEventParser mysqlEventParser = (MysqlEventParser) eventParser;
-            CanalHAController haController = mysqlEventParser.getHaController();
-            if (haController.isStart()) {
-                haController.stop();
-            }
-        }
+        if (!(eventParser instanceof MysqlEventParser)) {
+			return;
+		}
+		MysqlEventParser mysqlEventParser = (MysqlEventParser) eventParser;
+		CanalHAController haController = mysqlEventParser.getHaController();
+		if (haController.isStart()) {
+		    haController.stop();
+		}
     }
 
     // ==================getter==================================

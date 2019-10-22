@@ -13,6 +13,8 @@ import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: Document It!!
@@ -37,7 +39,9 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class DirectLogFetcher extends LogFetcher {
 
-    protected static final Log logger                          = LogFactory.getLog(DirectLogFetcher.class);
+    private static final Logger logger1 = LoggerFactory.getLogger(DirectLogFetcher.class);
+
+	protected static final Log logger                          = LogFactory.getLog(DirectLogFetcher.class);
 
     /** Command to dump binlog */
     public static final byte   COM_BINLOG_DUMP                 = 18;
@@ -82,6 +86,7 @@ public final class DirectLogFetcher extends LogFetcher {
                     continue;
                 }
             } catch (ClassNotFoundException e) {
+				logger1.error(e.getMessage(), e);
                 // org.springframework.jdbc.datasource.ConnectionProxy not
                 // found.
             }
@@ -93,6 +98,7 @@ public final class DirectLogFetcher extends LogFetcher {
                     continue;
                 }
             } catch (ClassNotFoundException e) {
+				logger1.error(e.getMessage(), e);
                 // org.apache.commons.dbcp.DelegatingConnection not found.
             }
 
@@ -103,10 +109,11 @@ public final class DirectLogFetcher extends LogFetcher {
                     continue;
                 }
             } catch (ClassNotFoundException e) {
+				logger1.error(e.getMessage(), e);
                 // com.mysql.jdbc.Connection not found.
             } catch (SQLException e) {
-                logger.warn("Unwrap " + conn.getClass().getName() + " to " + connClazz.getName() + " failed: "
-                            + e.getMessage(),
+                logger.warn(new StringBuilder().append("Unwrap ").append(conn.getClass().getName()).append(" to ").append(connClazz.getName()).append(" failed: ")
+						.append(e.getMessage()).toString(),
                     e);
             }
 
@@ -120,11 +127,11 @@ public final class DirectLogFetcher extends LogFetcher {
             Method method = objClazz.getMethod(name, (Class<?>[]) null);
             return method.invoke(obj, (Object[]) null);
         } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("No such method: \'" + name + "\' @ " + objClazz.getName(), e);
+            throw new IllegalArgumentException(new StringBuilder().append("No such method: \'").append(name).append("\' @ ").append(objClazz.getName()).toString(), e);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Cannot invoke method: \'" + name + "\' @ " + objClazz.getName(), e);
+            throw new IllegalArgumentException(new StringBuilder().append("Cannot invoke method: \'").append(name).append("\' @ ").append(objClazz.getName()).toString(), e);
         } catch (InvocationTargetException e) {
-            throw new IllegalArgumentException("Invoke method failed: \'" + name + "\' @ " + objClazz.getName(),
+            throw new IllegalArgumentException(new StringBuilder().append("Invoke method failed: \'").append(name).append("\' @ ").append(objClazz.getName()).toString(),
                 e.getTargetException());
         }
     }
@@ -135,9 +142,9 @@ public final class DirectLogFetcher extends LogFetcher {
             field.setAccessible(true);
             return field.get(obj);
         } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException("No such field: \'" + name + "\' @ " + objClazz.getName(), e);
+            throw new IllegalArgumentException(new StringBuilder().append("No such field: \'").append(name).append("\' @ ").append(objClazz.getName()).toString(), e);
         } catch (IllegalAccessException e) {
-            throw new IllegalArgumentException("Cannot get field: \'" + name + "\' @ " + objClazz.getName(), e);
+            throw new IllegalArgumentException(new StringBuilder().append("Cannot get field: \'").append(name).append("\' @ ").append(objClazz.getName()).toString(), e);
         }
     }
 
@@ -172,24 +179,25 @@ public final class DirectLogFetcher extends LogFetcher {
             Class<?> connClazz = Class.forName("com.mysql.jdbc.ConnectionImpl");
             Object unwrapConn = unwrapConnection(conn, connClazz);
             if (unwrapConn == null) {
-                throw new IOException("Unable to unwrap " + conn.getClass().getName()
-                                      + " to com.mysql.jdbc.ConnectionImpl");
+                throw new IOException(new StringBuilder().append("Unable to unwrap ").append(conn.getClass().getName()).append(" to com.mysql.jdbc.ConnectionImpl").toString());
             }
 
             // Get underlying IO streams for network communications.
             Object connIo = getDeclaredField(unwrapConn, connClazz, "io");
             if (connIo == null) {
-                throw new IOException("Get null field:" + conn.getClass().getName() + "#io");
+                throw new IOException(new StringBuilder().append("Get null field:").append(conn.getClass().getName()).append("#io").toString());
             }
             mysqlOutput = (OutputStream) getDeclaredField(connIo, connIo.getClass(), "mysqlOutput");
             mysqlInput = (InputStream) getDeclaredField(connIo, connIo.getClass(), "mysqlInput");
 
-            if (filePosition == 0) filePosition = BIN_LOG_HEADER_SIZE;
+            if (filePosition == 0) {
+				filePosition = BIN_LOG_HEADER_SIZE;
+			}
             sendBinlogDump(fileName, filePosition, serverId, nonBlocking);
             position = 0;
         } catch (IOException e) {
             close(); /* Do cleanup */
-            logger.error("Error on COM_BINLOG_DUMP: file = " + fileName + ", position = " + filePosition);
+            logger.error(new StringBuilder().append("Error on COM_BINLOG_DUMP: file = ").append(fileName).append(", position = ").append(filePosition).toString());
             throw e;
         } catch (ClassNotFoundException e) {
             close(); /* Do cleanup */
@@ -276,7 +284,8 @@ public final class DirectLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#fetch()
      */
-    public boolean fetch() throws IOException {
+    @Override
+	public boolean fetch() throws IOException {
         try {
             // Fetching packet header from input.
             if (!fetch0(0, NET_HEADER_SIZE)) {
@@ -288,7 +297,7 @@ public final class DirectLogFetcher extends LogFetcher {
             int netlen = getUint24(PACKET_LEN_OFFSET);
             int netnum = getUint8(PACKET_SEQ_OFFSET);
             if (!fetch0(NET_HEADER_SIZE, netlen)) {
-                logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
+                logger.warn(new StringBuilder().append("Reached end of input stream: packet #").append(netnum).append(", len = ").append(netlen).toString());
                 return false;
             }
 
@@ -304,8 +313,8 @@ public final class DirectLogFetcher extends LogFetcher {
                     final int errno = getInt16();
                     String sqlstate = forward(1).getFixString(SQLSTATE_LENGTH);
                     String errmsg = getFixString(limit - position);
-                    throw new IOException("Received error packet:" + " errno = " + errno + ", sqlstate = " + sqlstate
-                                          + " errmsg = " + errmsg);
+                    throw new IOException(new StringBuilder().append("Received error packet:").append(" errno = ").append(errno).append(", sqlstate = ").append(sqlstate).append(" errmsg = ")
+							.append(errmsg).toString());
                 } else if (mark == 254) {
                     // Indicates end of stream. It's not clear when this would
                     // be sent.
@@ -313,8 +322,8 @@ public final class DirectLogFetcher extends LogFetcher {
                     return false;
                 } else {
                     // Should not happen.
-                    throw new IOException("Unexpected response " + mark + " while fetching binlog: packet #" + netnum
-                                          + ", len = " + netlen);
+                    throw new IOException(new StringBuilder().append("Unexpected response ").append(mark).append(" while fetching binlog: packet #").append(netnum).append(", len = ").append(netlen)
+							.toString());
                 }
             }
 
@@ -328,7 +337,7 @@ public final class DirectLogFetcher extends LogFetcher {
                 netlen = getUint24(PACKET_LEN_OFFSET);
                 netnum = getUint8(PACKET_SEQ_OFFSET);
                 if (!fetch0(limit, netlen)) {
-                    logger.warn("Reached end of input stream: packet #" + netnum + ", len = " + netlen);
+                    logger.warn(new StringBuilder().append("Reached end of input stream: packet #").append(netnum).append(", len = ").append(netlen).toString());
                     return false;
                 }
             }
@@ -363,7 +372,9 @@ public final class DirectLogFetcher extends LogFetcher {
             }
         }
 
-        if (limit < off + len) limit = off + len;
+        if (limit < off + len) {
+			limit = off + len;
+		}
         return true;
     }
 
@@ -372,9 +383,12 @@ public final class DirectLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#close()
      */
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         try {
-            if (conn != null) conn.close();
+            if (conn != null) {
+				conn.close();
+			}
 
             conn = null;
             mysqlInput = null;

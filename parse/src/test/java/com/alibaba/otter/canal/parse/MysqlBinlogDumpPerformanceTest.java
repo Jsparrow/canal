@@ -16,11 +16,15 @@ import com.alibaba.otter.canal.protocol.position.LogPosition;
 import com.alibaba.otter.canal.sink.CanalEventSink;
 import com.alibaba.otter.canal.sink.exception.CanalSinkException;
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class MysqlBinlogDumpPerformanceTest {
 
-    public static void main(String args[]) {
+    private static final Logger logger = LoggerFactory.getLogger(MysqlBinlogDumpPerformanceTest.class);
+
+	public static void main(String args[]) {
         final MysqlEventParser controller = new MysqlEventParser();
         final EntryPosition startPosition = new EntryPosition("mysql-bin.000007", 89796293L, 100L);
         controller.setConnectionCharset(Charset.forName("UTF-8"));
@@ -45,16 +49,17 @@ public class MysqlBinlogDumpPerformanceTest {
         final AtomicLong end = new AtomicLong(0);
         controller.setEventSink(new AbstractCanalEventSinkTest<List<CanalEntry.Entry>>() {
 
-            public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                                   throws CanalSinkException,
-                                                                                                                   InterruptedException {
+            @Override
+			public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
+                                                                                                                   throws InterruptedException {
 
                 sum.addAndGet(entrys.size());
                 long current = sum.get();
                 if (current - last.get() >= 100000) {
                     end.set(System.currentTimeMillis());
                     long tps = ((current - last.get()) * 1000) / (end.get() - start.get());
-                    System.out.println(" total : " + sum + " , cost : " + (end.get() - start.get()) + " , tps : " + tps);
+                    logger.info(new StringBuilder().append(" total : ").append(sum).append(" , cost : ").append(end.get() - start.get()).append(" , tps : ")
+							.append(tps).toString());
                     last.set(current);
                     start.set(end.get());
                 }
@@ -70,7 +75,7 @@ public class MysqlBinlogDumpPerformanceTest {
             }
 
             @Override
-            public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+            public void persistLogPosition(String destination, LogPosition logPosition) {
             }
         });
 
@@ -79,13 +84,15 @@ public class MysqlBinlogDumpPerformanceTest {
         try {
             Thread.sleep(100 * 1000 * 1000L);
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
         controller.stop();
     }
 
-    public static abstract class AbstractCanalEventSinkTest<T> extends AbstractCanalLifeCycle implements CanalEventSink<T> {
+    public abstract static class AbstractCanalEventSinkTest<T> extends AbstractCanalLifeCycle implements CanalEventSink<T> {
 
-        public void interrupt() {
+        @Override
+		public void interrupt() {
         }
     }
 }

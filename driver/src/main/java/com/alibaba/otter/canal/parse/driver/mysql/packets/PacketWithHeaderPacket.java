@@ -25,7 +25,8 @@ public abstract class PacketWithHeaderPacket implements IPacket {
         return header;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 

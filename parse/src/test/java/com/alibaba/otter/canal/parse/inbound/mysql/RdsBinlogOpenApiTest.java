@@ -10,6 +10,8 @@ import org.junit.Test;
 import com.alibaba.otter.canal.parse.inbound.mysql.rds.RdsBinlogOpenApi;
 import com.alibaba.otter.canal.parse.inbound.mysql.rds.data.BinlogFile;
 import com.alibaba.otter.canal.parse.inbound.mysql.rds.data.RdsBackupPolicy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author agapple 2017年10月15日 下午2:14:34
@@ -18,7 +20,9 @@ import com.alibaba.otter.canal.parse.inbound.mysql.rds.data.RdsBackupPolicy;
 @Ignore
 public class RdsBinlogOpenApiTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(RdsBinlogOpenApiTest.class);
+
+	@Test
     public void testSimple() throws Throwable {
         Date startTime = DateUtils.parseDate("2018-08-10 12:00:00", new String[] { "yyyy-MM-dd HH:mm:ss" });
         Date endTime = DateUtils.parseDate("2018-08-11 12:00:00", new String[] { "yyyy-MM-dd HH:mm:ss" });
@@ -28,9 +32,9 @@ public class RdsBinlogOpenApiTest {
         String dbInstanceId = "";
 
         RdsBackupPolicy backupPolicy = RdsBinlogOpenApi.queryBinlogBackupPolicy(url, ak, sk, dbInstanceId);
-        System.out.println(backupPolicy);
+        logger.info(String.valueOf(backupPolicy));
 
         List<BinlogFile> binlogFiles = RdsBinlogOpenApi.listBinlogFiles(url, ak, sk, dbInstanceId, startTime, endTime);
-        System.out.println(binlogFiles);
+        logger.info(String.valueOf(binlogFiles));
     }
 }

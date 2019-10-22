@@ -26,7 +26,8 @@ public class ClientAuthenticationPacket extends PacketWithHeaderPacket {
     private byte[] scrumbleBuff;
     private byte[] authPluginName;
 
-    public void fromBytes(byte[] data) {
+    @Override
+	public void fromBytes(byte[] data) {
         // bypass since nowhere to use.
     }
 
@@ -47,7 +48,8 @@ public class ClientAuthenticationPacket extends PacketWithHeaderPacket {
      * 
      * @throws IOException
      */
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // 1. write client_flags
         ByteHelper.writeUnsignedIntLittleEndian(clientCapability, out); // remove

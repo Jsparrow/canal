@@ -78,13 +78,13 @@ public class CanalAdapterService {
                 adapterLoader.destroy();
                 adapterLoader = null;
             }
-            for (DruidDataSource druidDataSource : DatasourceConfig.DATA_SOURCES.values()) {
+            DatasourceConfig.DATA_SOURCES.values().forEach(druidDataSource -> {
                 try {
                     druidDataSource.close();
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
-            }
+            });
             DatasourceConfig.DATA_SOURCES.clear();
         } catch (Throwable e) {
             logger.warn("## something goes wrong when stopping canal client adapters:", e);

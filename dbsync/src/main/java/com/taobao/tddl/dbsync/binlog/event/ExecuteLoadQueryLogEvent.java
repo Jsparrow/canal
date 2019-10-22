@@ -23,36 +23,41 @@ import com.taobao.tddl.dbsync.binlog.LogBuffer;
  */
 public final class ExecuteLoadQueryLogEvent extends QueryLogEvent {
 
-    /** file_id of temporary file */
-    private long            fileId;
-
-    /** pointer to the part of the query that should be substituted */
-    private int             fnPosStart;
-
-    /** pointer to the end of this part of query */
-    private int             fnPosEnd;
-
     /*
      * Elements of this enum describe how LOAD DATA handles duplicates.
      */
     public static final int LOAD_DUP_ERROR          = 0;
-    public static final int LOAD_DUP_IGNORE         = LOAD_DUP_ERROR + 1;
-    public static final int LOAD_DUP_REPLACE        = LOAD_DUP_IGNORE + 1;
 
-    /**
+	public static final int LOAD_DUP_IGNORE         = LOAD_DUP_ERROR + 1;
+
+	public static final int LOAD_DUP_REPLACE        = LOAD_DUP_IGNORE + 1;
+
+	/* ELQ = "Execute Load Query" */
+    public static final int ELQ_FILE_ID_OFFSET      = QUERY_HEADER_LEN;
+
+	public static final int ELQ_FN_POS_START_OFFSET = ELQ_FILE_ID_OFFSET + 4;
+
+	public static final int ELQ_FN_POS_END_OFFSET   = ELQ_FILE_ID_OFFSET + 8;
+
+	public static final int ELQ_DUP_HANDLING_OFFSET = ELQ_FILE_ID_OFFSET + 12;
+
+	/** file_id of temporary file */
+    private long            fileId;
+
+	/** pointer to the part of the query that should be substituted */
+    private int             fnPosStart;
+
+	/** pointer to the end of this part of query */
+    private int             fnPosEnd;
+
+	/**
      * We have to store type of duplicate handling explicitly, because for LOAD
      * DATA it also depends on LOCAL option. And this part of query will be
      * rewritten during replication so this information may be lost...
      */
     private int             dupHandling;
 
-    /* ELQ = "Execute Load Query" */
-    public static final int ELQ_FILE_ID_OFFSET      = QUERY_HEADER_LEN;
-    public static final int ELQ_FN_POS_START_OFFSET = ELQ_FILE_ID_OFFSET + 4;
-    public static final int ELQ_FN_POS_END_OFFSET   = ELQ_FILE_ID_OFFSET + 8;
-    public static final int ELQ_DUP_HANDLING_OFFSET = ELQ_FILE_ID_OFFSET + 12;
-
-    public ExecuteLoadQueryLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
+	public ExecuteLoadQueryLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
                                                                                                                    throws IOException{
         super(header, buffer, descriptionEvent);
 
@@ -70,21 +75,23 @@ public final class ExecuteLoadQueryLogEvent extends QueryLogEvent {
         }
     }
 
-    public final int getFilenamePosStart() {
+	public final int getFilenamePosStart() {
         return fnPosStart;
     }
 
-    public final int getFilenamePosEnd() {
+	public final int getFilenamePosEnd() {
         return fnPosEnd;
     }
 
-    public final String getFilename() {
-        if (query != null) return query.substring(fnPosStart, fnPosEnd).trim();
+	public final String getFilename() {
+        if (query != null) {
+			return query.substring(fnPosStart, fnPosEnd).trim();
+		}
 
         return null;
     }
 
-    public final long getFileId() {
+	public final long getFileId() {
         return fileId;
     }
 }

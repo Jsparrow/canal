@@ -50,7 +50,7 @@ public class RoleSyncJoinOne2Test {
 
         String database = dml.getDatabase();
         String table = dml.getTable();
-        Map<String, ESSyncConfig> esSyncConfigs = esAdapter.getDbTableEsSyncConfig().get(database + "-" + table);
+        Map<String, ESSyncConfig> esSyncConfigs = esAdapter.getDbTableEsSyncConfig().get(new StringBuilder().append(database).append("-").append(table).toString());
 
         esAdapter.getEsSyncService().sync(esSyncConfigs.values(), dml);
 
@@ -90,7 +90,7 @@ public class RoleSyncJoinOne2Test {
 
         String database = dml.getDatabase();
         String table = dml.getTable();
-        Map<String, ESSyncConfig> esSyncConfigs = esAdapter.getDbTableEsSyncConfig().get(database + "-" + table);
+        Map<String, ESSyncConfig> esSyncConfigs = esAdapter.getDbTableEsSyncConfig().get(new StringBuilder().append(database).append("-").append(table).toString());
 
         esAdapter.getEsSyncService().sync(esSyncConfigs.values(), dml);
 

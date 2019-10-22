@@ -73,10 +73,11 @@ public final class RowsLogBuffer {
         if (hasOneRow) {
             int column = 0;
 
-            for (int i = 0; i < columnLen; i++)
-                if (columns.get(i)) {
+            for (int i = 0; i < columnLen; i++) {
+				if (columns.get(i)) {
                     column++;
                 }
+			}
 
             if (after && partial) {
                 partialBits.clear();
@@ -115,15 +116,15 @@ public final class RowsLogBuffer {
                                         boolean isBinary) {
         fNull = nullBits.get(nullBitIndex++);
 
-        if (fNull) {
-            value = null;
-            javaType = mysqlToJavaType(type, meta, isBinary);
-            length = 0;
-            return null;
-        } else {
-            // Extracting field value from packed buffer.
+        // Extracting field value from packed buffer.
+		if (!fNull) {
+			// Extracting field value from packed buffer.
             return fetchValue(columName, columnIndex, type, meta, isBinary);
-        }
+		}
+		value = null;
+		javaType = mysqlToJavaType(type, meta, isBinary);
+		length = 0;
+		return null;
     }
 
     /**
@@ -132,22 +133,21 @@ public final class RowsLogBuffer {
     static int mysqlToJavaType(int type, final int meta, boolean isBinary) {
         int javaType;
 
-        if (type == LogEvent.MYSQL_TYPE_STRING) {
-            if (meta >= 256) {
-                int byte0 = meta >> 8;
-                if ((byte0 & 0x30) != 0x30) {
-                    /* a long CHAR() field: see #37426 */
-                    type = byte0 | 0x30;
-                } else {
-                    switch (byte0) {
-                        case LogEvent.MYSQL_TYPE_SET:
-                        case LogEvent.MYSQL_TYPE_ENUM:
-                        case LogEvent.MYSQL_TYPE_STRING:
-                            type = byte0;
-                    }
-                }
-            }
-        }
+        boolean condition = type == LogEvent.MYSQL_TYPE_STRING && meta >= 256;
+		if (condition) {
+		    int byte0 = meta >> 8;
+		    if ((byte0 & 0x30) != 0x30) {
+		        /* a long CHAR() field: see #37426 */
+		        type = byte0 | 0x30;
+		    } else {
+		        switch (byte0) {
+		            case LogEvent.MYSQL_TYPE_SET:
+		            case LogEvent.MYSQL_TYPE_ENUM:
+		            case LogEvent.MYSQL_TYPE_STRING:
+		                type = byte0;
+		        }
+		    }
+		}
 
         switch (type) {
             case LogEvent.MYSQL_TYPE_LONG:
@@ -482,7 +482,7 @@ public final class RowsLogBuffer {
                 if (meta >= 1) {
                     String microSecond = usecondsToStr(tv_usec, meta);
                     microSecond = microSecond.substring(0, meta);
-                    value = second + '.' + microSecond;
+                    value = new StringBuilder().append(second).append('.').append(microSecond).toString();
                 } else {
                     value = second;
                 }
@@ -606,7 +606,7 @@ public final class RowsLogBuffer {
                 if (meta >= 1) {
                     String microSecond = usecondsToStr(frac, meta);
                     microSecond = microSecond.substring(0, meta);
-                    value = second + '.' + microSecond;
+                    value = new StringBuilder().append(second).append('.').append(microSecond).toString();
                 } else {
                     value = second;
                 }
@@ -699,7 +699,7 @@ public final class RowsLogBuffer {
                             frac -= 0x100; /* -(0x100 - frac) */
                             // fraclong = frac * 10000;
                         }
-                        frac = frac * 10000;
+                        frac *= 10000;
                         ltime = intpart << 24;
                         break;
                     case 3:
@@ -716,7 +716,7 @@ public final class RowsLogBuffer {
                             frac -= 0x10000; /* -(0x10000-frac) */
                             // fraclong = frac * 100;
                         }
-                        frac = frac * 100;
+                        frac *= 100;
                         ltime = intpart << 24;
                         break;
                     case 5:
@@ -771,7 +771,7 @@ public final class RowsLogBuffer {
                 if (meta >= 1) {
                     String microSecond = usecondsToStr(Math.abs(frac), meta);
                     microSecond = microSecond.substring(0, meta);
-                    value = second + '.' + microSecond;
+                    value = new StringBuilder().append(second).append('.').append(microSecond).toString();
                 } else {
                     value = second;
                 }

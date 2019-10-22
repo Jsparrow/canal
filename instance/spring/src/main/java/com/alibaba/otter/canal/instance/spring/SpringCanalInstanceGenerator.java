@@ -21,7 +21,8 @@ public class SpringCanalInstanceGenerator implements CanalInstanceGenerator {
     private String              defaultName = "instance";
     private BeanFactory         beanFactory;
 
-    public CanalInstance generate(String destination) {
+    @Override
+	public CanalInstance generate(String destination) {
         synchronized (CanalInstanceGenerator.class) {
             try {
                 // 设置当前正在加载的通道，加载spring查找文件时会用到该变量

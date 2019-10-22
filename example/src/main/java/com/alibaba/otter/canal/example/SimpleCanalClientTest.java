@@ -32,7 +32,8 @@ public class SimpleCanalClientTest extends AbstractCanalClientTest {
         clientTest.start();
         Runtime.getRuntime().addShutdownHook(new Thread() {
 
-            public void run() {
+            @Override
+			public void run() {
                 try {
                     logger.info("## stop the canal client");
                     clientTest.stop();

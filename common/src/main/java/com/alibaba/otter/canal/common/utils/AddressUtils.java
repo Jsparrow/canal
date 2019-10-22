@@ -24,19 +24,23 @@ public class AddressUtils {
             ss.bind(null);
             return true;
         } catch (IOException e) {
-            return false;
+            logger.error(e.getMessage(), e);
+			return false;
         } finally {
             if (ss != null) {
                 try {
                     ss.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
         }
     }
 
     private static boolean isValidHostAddress(InetAddress address) {
-        if (address == null || address.isLoopbackAddress()) return false;
+        if (address == null || address.isLoopbackAddress()) {
+			return false;
+		}
         String name = address.getHostAddress();
         return (name != null && !EMPTY_IP.equals(name) && !LOCALHOST_IP.equals(name) && IP_PATTERN.matcher(name)
             .matches());

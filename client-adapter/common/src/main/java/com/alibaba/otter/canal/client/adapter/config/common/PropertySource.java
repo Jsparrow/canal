@@ -143,10 +143,10 @@ public abstract class PropertySource<T> {
     @Override
     public String toString() {
         if (logger.isDebugEnabled()) {
-            return getClass().getSimpleName() + "@" + System.identityHashCode(this) + " {name='" + this.name
-                   + "', properties=" + this.source + "}";
+            return new StringBuilder().append(getClass().getSimpleName()).append("@").append(System.identityHashCode(this)).append(" {name='").append(this.name)
+					.append("', properties=").append(this.source).append("}").toString();
         } else {
-            return getClass().getSimpleName() + " {name='" + this.name + "'}";
+            return new StringBuilder().append(getClass().getSimpleName()).append(" {name='").append(this.name).append("'}").toString();
         }
     }
 

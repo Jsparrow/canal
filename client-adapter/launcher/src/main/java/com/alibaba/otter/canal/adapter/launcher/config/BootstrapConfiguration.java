@@ -25,11 +25,12 @@ public class BootstrapConfiguration {
     @PostConstruct
     public void loadRemoteConfig() {
         remoteConfigLoader = RemoteConfigLoaderFactory.getRemoteConfigLoader(env);
-        if (remoteConfigLoader != null) {
-            remoteConfigLoader.loadRemoteConfig();
-            remoteConfigLoader.loadRemoteAdapterConfigs();
-            remoteConfigLoader.startMonitor(); // 启动监听
-        }
+        if (remoteConfigLoader == null) {
+			return;
+		}
+		remoteConfigLoader.loadRemoteConfig();
+		remoteConfigLoader.loadRemoteAdapterConfigs();
+		remoteConfigLoader.startMonitor(); // 启动监听
     }
 
     @PreDestroy

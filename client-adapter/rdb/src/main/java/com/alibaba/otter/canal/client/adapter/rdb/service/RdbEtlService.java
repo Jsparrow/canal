@@ -39,21 +39,22 @@ public class RdbEtlService extends AbstractEtlService {
      */
     public EtlResult importData(List<String> params) {
         DbMapping dbMapping = config.getDbMapping();
-        String sql = "SELECT * FROM " + dbMapping.getDatabase() + "." + dbMapping.getTable();
+        String sql = new StringBuilder().append("SELECT * FROM ").append(dbMapping.getDatabase()).append(".").append(dbMapping.getTable()).toString();
         return importData(sql, params);
     }
 
     /**
      * 执行导入
      */
-    protected boolean executeSqlImport(DataSource srcDS, String sql, List<Object> values,
+    @Override
+	protected boolean executeSqlImport(DataSource srcDS, String sql, List<Object> values,
                                        AdapterConfig.AdapterMapping mapping, AtomicLong impCount, List<String> errMsg) {
         try {
             DbMapping dbMapping = (DbMapping) mapping;
             Map<String, String> columnsMap = new LinkedHashMap<>();
             Map<String, Integer> columnType = new LinkedHashMap<>();
 
-            Util.sqlRS(targetDS, "SELECT * FROM " + SyncUtil.getDbTableName(dbMapping) + " LIMIT 1 ", rs -> {
+            Util.sqlRS(targetDS, new StringBuilder().append("SELECT * FROM ").append(SyncUtil.getDbTableName(dbMapping)).append(" LIMIT 1 ").toString(), rs -> {
                 try {
 
                     ResultSetMetaData rsd = rs.getMetaData();
@@ -103,7 +104,7 @@ public class RdbEtlService extends AbstractEtlService {
                             // 删除数据
                             Map<String, Object> pkVal = new LinkedHashMap<>();
                             StringBuilder deleteSql = new StringBuilder(
-                                "DELETE FROM " + SyncUtil.getDbTableName(dbMapping) + " WHERE ");
+                                new StringBuilder().append("DELETE FROM ").append(SyncUtil.getDbTableName(dbMapping)).append(" WHERE ").toString());
                             appendCondition(dbMapping, deleteSql, pkVal, rs);
                             try (PreparedStatement pstmt2 = connTarget.prepareStatement(deleteSql.toString())) {
                                 int k = 1;
@@ -154,8 +155,8 @@ public class RdbEtlService extends AbstractEtlService {
                     }
 
                 } catch (Exception e) {
-                    logger.error(dbMapping.getTable() + " etl failed! ==>" + e.getMessage(), e);
-                    errMsg.add(dbMapping.getTable() + " etl failed! ==>" + e.getMessage());
+                    logger.error(new StringBuilder().append(dbMapping.getTable()).append(" etl failed! ==>").append(e.getMessage()).toString(), e);
+                    errMsg.add(new StringBuilder().append(dbMapping.getTable()).append(" etl failed! ==>").append(e.getMessage()).toString());
                 }
                 return idx;
             });

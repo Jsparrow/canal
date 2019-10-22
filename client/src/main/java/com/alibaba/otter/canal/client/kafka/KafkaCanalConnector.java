@@ -80,11 +80,11 @@ public class KafkaCanalConnector implements CanalMQConnector {
 
         connected = true;
         if (kafkaConsumer == null && !flatMessage) {
-            kafkaConsumer = new KafkaConsumer<String, Message>(properties);
+            kafkaConsumer = new KafkaConsumer<>(properties);
 
         }
         if (kafkaConsumer2 == null && flatMessage) {
-            kafkaConsumer2 = new KafkaConsumer<String, String>(properties);
+            kafkaConsumer2 = new KafkaConsumer<>(properties);
         }
     }
 
@@ -161,7 +161,7 @@ public class KafkaCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<Message> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getList(Long timeout, TimeUnit unit) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -175,7 +175,7 @@ public class KafkaCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -184,22 +184,20 @@ public class KafkaCanalConnector implements CanalMQConnector {
         ConsumerRecords<String, Message> records = kafkaConsumer.poll(unit.toMillis(timeout));
 
         currentOffsets.clear();
-        for (TopicPartition topicPartition : records.partitions()) {
-            currentOffsets.put(topicPartition.partition(), kafkaConsumer.position(topicPartition));
-        }
+        records.partitions().forEach(topicPartition -> currentOffsets.put(topicPartition.partition(), kafkaConsumer.position(topicPartition)));
 
-        if (!records.isEmpty()) {
-            List<Message> messages = new ArrayList<>();
-            for (ConsumerRecord<String, Message> record : records) {
-                messages.add(record.value());
-            }
-            return messages;
-        }
-        return Lists.newArrayList();
+        if (records.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		List<Message> messages = new ArrayList<>();
+		for (ConsumerRecord<String, Message> record : records) {
+		    messages.add(record.value());
+		}
+		return messages;
     }
 
     @Override
-    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -213,7 +211,7 @@ public class KafkaCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -222,21 +220,18 @@ public class KafkaCanalConnector implements CanalMQConnector {
         ConsumerRecords<String, String> records = kafkaConsumer2.poll(unit.toMillis(timeout));
 
         currentOffsets.clear();
-        for (TopicPartition topicPartition : records.partitions()) {
-            currentOffsets.put(topicPartition.partition(), kafkaConsumer2.position(topicPartition));
-        }
+        records.partitions().forEach(topicPartition -> currentOffsets.put(topicPartition.partition(), kafkaConsumer2.position(topicPartition)));
 
-        if (!records.isEmpty()) {
-            List<FlatMessage> flatMessages = new ArrayList<>();
-            for (ConsumerRecord<String, String> record : records) {
-                String flatMessageJson = record.value();
-                FlatMessage flatMessage = JSON.parseObject(flatMessageJson, FlatMessage.class);
-                flatMessages.add(flatMessage);
-            }
-
-            return flatMessages;
-        }
-        return Lists.newArrayList();
+        if (records.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		List<FlatMessage> flatMessages = new ArrayList<>();
+		for (ConsumerRecord<String, String> record : records) {
+		    String flatMessageJson = record.value();
+		    FlatMessage flatMessage = JSON.parseObject(flatMessageJson, FlatMessage.class);
+		    flatMessages.add(flatMessage);
+		}
+		return flatMessages;
     }
 
     @Override
@@ -247,14 +242,10 @@ public class KafkaCanalConnector implements CanalMQConnector {
         }
         // 回滚所有分区
         if (kafkaConsumer != null) {
-            for (Map.Entry<Integer, Long> entry : currentOffsets.entrySet()) {
-                kafkaConsumer.seek(new TopicPartition(topic, entry.getKey()), entry.getValue() - 1);
-            }
+            currentOffsets.entrySet().forEach(entry -> kafkaConsumer.seek(new TopicPartition(topic, entry.getKey()), entry.getValue() - 1));
         }
         if (kafkaConsumer2 != null) {
-            for (Map.Entry<Integer, Long> entry : currentOffsets.entrySet()) {
-                kafkaConsumer2.seek(new TopicPartition(topic, entry.getKey()), entry.getValue() - 1);
-            }
+            currentOffsets.entrySet().forEach(entry -> kafkaConsumer2.seek(new TopicPartition(topic, entry.getKey()), entry.getValue() - 1));
         }
     }
 
@@ -277,37 +268,37 @@ public class KafkaCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void subscribe(String filter) throws CanalClientException {
+    public void subscribe(String filter) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message get(int batchSize) throws CanalClientException {
+    public Message get(int batchSize) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message get(int batchSize, Long timeout, TimeUnit unit) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message getWithoutAck(int batchSize) throws CanalClientException {
+    public Message getWithoutAck(int batchSize) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void ack(long batchId) throws CanalClientException {
+    public void ack(long batchId) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void rollback(long batchId) throws CanalClientException {
+    public void rollback(long batchId) {
         throw new CanalClientException("mq not support this method");
     }
 

@@ -142,7 +142,8 @@ public abstract class YamlProcessor {
                 }
                 if (logger.isDebugEnabled()) {
                     logger.debug(
-                        "Loaded " + count + " document" + (count > 1 ? "s" : "") + " from YAML resource: " + resource);
+                        new StringBuilder().append("Loaded ").append(count).append(" document").append(count > 1 ? "s" : "")
+								.append(" from YAML resource: ").append(resource).toString());
                 }
             } finally {
                 reader.close();
@@ -159,14 +160,14 @@ public abstract class YamlProcessor {
             throw new IllegalStateException(ex);
         }
         if (logger.isWarnEnabled()) {
-            logger.warn("Could not load map from " + resource + ": " + ex.getMessage());
+            logger.warn(new StringBuilder().append("Could not load map from ").append(resource).append(": ").append(ex.getMessage()).toString());
         }
     }
 
     @SuppressWarnings("unchecked")
     private Map<String, Object> asMap(Object object) {
         // YAML can have numbers as keys
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        Map<String, Object> result = new LinkedHashMap<>();
         if (!(object instanceof Map)) {
             // A document can be a text literal
             result.put("document", object);
@@ -174,7 +175,7 @@ public abstract class YamlProcessor {
         }
 
         Map<Object, Object> map = (Map<Object, Object>) object;
-        for (Map.Entry<Object, Object> entry : map.entrySet()) {
+        map.entrySet().forEach(entry -> {
             Object value = entry.getValue();
             if (value instanceof Map) {
                 value = asMap(value);
@@ -184,9 +185,9 @@ public abstract class YamlProcessor {
                 result.put(key.toString(), value);
             } else {
                 // It has to be a map key in this case
-                result.put("[" + key.toString() + "]", value);
+                result.put(new StringBuilder().append("[").append(key.toString()).append("]").toString(), value);
             }
-        }
+        });
         return result;
     }
 
@@ -249,7 +250,7 @@ public abstract class YamlProcessor {
      * @since 4.1.3
      */
     protected final Map<String, Object> getFlattenedMap(Map<String, Object> source) {
-        Map<String, Object> result = new LinkedHashMap<String, Object>();
+        Map<String, Object> result = new LinkedHashMap<>();
         buildFlattenedMap(result, source, null);
         return result;
     }
@@ -265,13 +266,13 @@ public abstract class YamlProcessor {
     }
 
     private void buildFlattenedMap(Map<String, Object> result, Map<String, Object> source, String path) {
-        for (Map.Entry<String, Object> entry : source.entrySet()) {
+        source.entrySet().forEach(entry -> {
             String key = entry.getKey();
             if (path != null && !path.isEmpty() && containsText(path)) {
                 if (key.startsWith("[")) {
                     key = path + key;
                 } else {
-                    key = path + '.' + key;
+                    key = new StringBuilder().append(path).append('.').append(key).toString();
                 }
             }
             Object value = entry.getValue();
@@ -288,42 +289,12 @@ public abstract class YamlProcessor {
                 Collection<Object> collection = (Collection<Object>) value;
                 int count = 0;
                 for (Object object : collection) {
-                    buildFlattenedMap(result, Collections.singletonMap("[" + (count++) + "]", object), key);
+                    buildFlattenedMap(result, Collections.singletonMap(new StringBuilder().append("[").append(count++).append("]").toString(), object), key);
                 }
             } else {
                 result.put(key, (value != null ? value : ""));
             }
-        }
-    }
-
-    /**
-     * Callback interface used to process the YAML parsing results.
-     */
-    public interface MatchCallback {
-
-        /**
-         * Process the given representation of the parsing results.
-         *
-         * @param properties the properties to process (as a flattened representation
-         *     with indexed keys in case of a collection or map)
-         * @param map the result map (preserving the original value structure in the
-         *     YAML document)
-         */
-        void process(Properties properties, Map<String, Object> map);
-    }
-
-    /**
-     * Strategy interface used to test if properties match.
-     */
-    public interface DocumentMatcher {
-
-        /**
-         * Test if the given properties match.
-         *
-         * @param properties the properties to test
-         * @return the status of the match
-         */
-        MatchStatus matches(Properties properties);
+        });
     }
 
     /**
@@ -354,7 +325,7 @@ public abstract class YamlProcessor {
         }
     }
 
-    /**
+	/**
      * Method to use for resolving resources.
      */
     public enum ResolutionMethod {
@@ -375,6 +346,36 @@ public abstract class YamlProcessor {
                                   FIRST_FOUND
     }
 
+	/**
+     * Callback interface used to process the YAML parsing results.
+     */
+    public interface MatchCallback {
+
+        /**
+         * Process the given representation of the parsing results.
+         *
+         * @param properties the properties to process (as a flattened representation
+         *     with indexed keys in case of a collection or map)
+         * @param map the result map (preserving the original value structure in the
+         *     YAML document)
+         */
+        void process(Properties properties, Map<String, Object> map);
+    }
+
+    /**
+     * Strategy interface used to test if properties match.
+     */
+    public interface DocumentMatcher {
+
+        /**
+         * Test if the given properties match.
+         *
+         * @param properties the properties to test
+         * @return the status of the match
+         */
+        MatchStatus matches(Properties properties);
+    }
+
     /**
      * A specialized {@link Constructor} that checks for duplicate keys.
      */
@@ -382,7 +383,6 @@ public abstract class YamlProcessor {
 
         // Declared as public for use in subclasses
         public StrictMapAppenderConstructor(){
-            super();
         }
 
         @Override

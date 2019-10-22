@@ -41,7 +41,8 @@ public class MQMessageUtils {
     private static Map<String, List<PartitionData>>    partitionDatas    = MigrateMap.makeComputingMap(new MapMaker().softValues(),
                                                                              new Function<String, List<PartitionData>>() {
 
-                                                                                 public List<PartitionData> apply(String pkHashConfigs) {
+                                                                                 @Override
+																				public List<PartitionData> apply(String pkHashConfigs) {
                                                                                      List<PartitionData> datas = Lists.newArrayList();
 
                                                                                      String[] pkHashConfigArray = StringUtils.split(StringUtils.replace(pkHashConfigs,
@@ -54,7 +55,7 @@ public class MQMessageUtils {
                                                                                          int i = pkHashConfig.lastIndexOf(":");
                                                                                          if (i > 0) {
                                                                                              String pkStr = pkHashConfig.substring(i + 1);
-                                                                                             if (pkStr.equalsIgnoreCase("$pk$")) {
+                                                                                             if ("$pk$".equalsIgnoreCase(pkStr)) {
                                                                                                  data.hashMode.autoPkHash = true;
                                                                                              } else {
                                                                                                  data.hashMode.pkNames = Lists.newArrayList(StringUtils.split(pkStr,
@@ -83,7 +84,8 @@ public class MQMessageUtils {
     private static Map<String, List<DynamicTopicData>> dynamicTopicDatas = MigrateMap.makeComputingMap(new MapMaker().softValues(),
                                                                              new Function<String, List<DynamicTopicData>>() {
 
-                                                                                 public List<DynamicTopicData> apply(String pkHashConfigs) {
+                                                                                 @Override
+																				public List<DynamicTopicData> apply(String pkHashConfigs) {
                                                                                      List<DynamicTopicData> datas = Lists.newArrayList();
                                                                                      String[] dynamicTopicArray = StringUtils.split(StringUtils.replace(pkHashConfigs,
                                                                                          ",",
@@ -148,17 +150,13 @@ public class MQMessageUtils {
             if (StringUtils.isEmpty(schemaName) || StringUtils.isEmpty(tableName)) {
                 put2MapMessage(messages, message.getId(), defaultTopic, entry);
             } else {
-                Set<String> topics = matchTopics(schemaName + "." + tableName, dynamicTopicConfigs);
+                Set<String> topics = matchTopics(new StringBuilder().append(schemaName).append(".").append(tableName).toString(), dynamicTopicConfigs);
                 if (topics != null) {
-                    for (String topic : topics) {
-                        put2MapMessage(messages, message.getId(), topic, entry);
-                    }
+                    topics.forEach(topic -> put2MapMessage(messages, message.getId(), topic, entry));
                 } else {
                     topics = matchTopics(schemaName, dynamicTopicConfigs);
                     if (topics != null) {
-                        for (String topic : topics) {
-                            put2MapMessage(messages, message.getId(), topic, entry);
-                        }
+                        topics.forEach(topic -> put2MapMessage(messages, message.getId(), topic, entry));
                     } else {
                         put2MapMessage(messages, message.getId(), defaultTopic, entry);
                     }
@@ -180,21 +178,17 @@ public class MQMessageUtils {
             int i = 0;
             for (ByteString byteString : rawEntries) {
                 final int index = i;
-                template.submit(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            Entry entry = Entry.parseFrom(byteString);
-                            CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
-                            datas[index] = new EntryRowData();
-                            datas[index].entry = entry;
-                            datas[index].rowChange = rowChange;
-                        } catch (InvalidProtocolBufferException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+                template.submit(() -> {
+				    try {
+				        Entry entry = Entry.parseFrom(byteString);
+				        CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
+				        datas[index] = new EntryRowData();
+				        datas[index].entry = entry;
+				        datas[index].rowChange = rowChange;
+				    } catch (InvalidProtocolBufferException e) {
+				        throw new RuntimeException(e);
+				    }
+				});
 
                 i++;
             }
@@ -206,20 +200,16 @@ public class MQMessageUtils {
             int i = 0;
             for (Entry entry : message.getEntries()) {
                 final int index = i;
-                template.submit(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        try {
-                            CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
-                            datas[index] = new EntryRowData();
-                            datas[index].entry = entry;
-                            datas[index].rowChange = rowChange;
-                        } catch (InvalidProtocolBufferException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+                template.submit(() -> {
+				    try {
+				        CanalEntry.RowChange rowChange = CanalEntry.RowChange.parseFrom(entry.getStoreValue());
+				        datas[index] = new EntryRowData();
+				        datas[index].entry = entry;
+				        datas[index].rowChange = rowChange;
+				    } catch (InvalidProtocolBufferException e) {
+				        throw new RuntimeException(e);
+				    }
+				});
 
                 i++;
             }
@@ -265,7 +255,7 @@ public class MQMessageUtils {
                 if (rowChange.getRowDatasList() != null && !rowChange.getRowDatasList().isEmpty()) {
                     String database = entry.getHeader().getSchemaName();
                     String table = entry.getHeader().getTableName();
-                    HashMode hashMode = getPartitionHashColumns(database + "." + table, pkHashConfigs);
+                    HashMode hashMode = getPartitionHashColumns(new StringBuilder().append(database).append(".").append(table).toString(), pkHashConfigs);
                     if (hashMode == null) {
                         // 如果都没有匹配，发送到第一个分区
                         partitionEntries[0].add(entry);
@@ -411,15 +401,13 @@ public class MQMessageUtils {
 
                     if (eventType == CanalEntry.EventType.UPDATE) {
                         Map<String, String> rowOld = new LinkedHashMap<>();
-                        for (CanalEntry.Column column : rowData.getBeforeColumnsList()) {
-                            if (updateSet.contains(column.getName())) {
-                                if (column.getIsNull()) {
-                                    rowOld.put(column.getName(), null);
-                                } else {
-                                    rowOld.put(column.getName(), column.getValue());
-                                }
-                            }
-                        }
+                        rowData.getBeforeColumnsList().stream().filter(column -> updateSet.contains(column.getName())).forEach(column -> {
+						    if (column.getIsNull()) {
+						        rowOld.put(column.getName(), null);
+						    } else {
+						        rowOld.put(column.getName(), column.getValue());
+						    }
+						});
                         // update操作将记录修改前的值
                         if (!rowOld.isEmpty()) {
                             old.add(rowOld);
@@ -465,7 +453,7 @@ public class MQMessageUtils {
             if (flatMessage.getData() != null && !flatMessage.getData().isEmpty()) {
                 String database = flatMessage.getDatabase();
                 String table = flatMessage.getTable();
-                HashMode hashMode = getPartitionHashColumns(database + "." + table, pkHashConfigs);
+                HashMode hashMode = getPartitionHashColumns(new StringBuilder().append(database).append(".").append(table).toString(), pkHashConfigs);
                 if (hashMode == null) {
                     // 如果都没有匹配，发送到第一个分区
                     partitionMessages[0] = flatMessage;
@@ -616,13 +604,7 @@ public class MQMessageUtils {
     }
 
     public static boolean checkPkNamesHasContain(List<String> pkNames, String name) {
-        for (String pkName : pkNames) {
-            if (pkName.equalsIgnoreCase(name)) {
-                return true;
-            }
-        }
-
-        return false;
+        return pkNames.stream().anyMatch(pkName -> pkName.equalsIgnoreCase(name));
     }
 
     private static boolean isWildCard(String value) {

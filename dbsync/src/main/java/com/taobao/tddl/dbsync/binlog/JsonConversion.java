@@ -60,20 +60,19 @@ public class JsonConversion {
         buffer = buffer.duplicate(buffer.position(), (int) len);
         switch (type) {
             case JSONB_TYPE_SMALL_OBJECT:
-                return parse_array_or_object(Json_enum_type.OBJECT, buffer, len, false, charsetName);
+                return parse_array_or_object(Json_enum_type.OBJECT, buffer, len, false);
             case JSONB_TYPE_LARGE_OBJECT:
-                return parse_array_or_object(Json_enum_type.OBJECT, buffer, len, true, charsetName);
+                return parse_array_or_object(Json_enum_type.OBJECT, buffer, len, true);
             case JSONB_TYPE_SMALL_ARRAY:
-                return parse_array_or_object(Json_enum_type.ARRAY, buffer, len, false, charsetName);
+                return parse_array_or_object(Json_enum_type.ARRAY, buffer, len, false);
             case JSONB_TYPE_LARGE_ARRAY:
-                return parse_array_or_object(Json_enum_type.ARRAY, buffer, len, true, charsetName);
+                return parse_array_or_object(Json_enum_type.ARRAY, buffer, len, true);
             default:
                 return parse_scalar(type, buffer, len, charsetName);
         }
     }
 
-    private static Json_Value parse_array_or_object(Json_enum_type type, LogBuffer buffer, long len, boolean large,
-                                                    String charsetName) {
+    private static Json_Value parse_array_or_object(Json_enum_type type, LogBuffer buffer, long len, boolean large) {
         long offset_size = large ? LARGE_OFFSET_SIZE : SMALL_OFFSET_SIZE;
         if (len < 2 * offset_size) {
             throw new IllegalArgumentException("illegal json data");
@@ -197,7 +196,26 @@ public class JsonConversion {
         }
     }
 
-    public static class Json_Value {
+    private static StringBuilder escapse(String data) {
+        StringBuilder sb = new StringBuilder(data.length());
+        int endIndex = data.length();
+        for (int i = 0; i < endIndex; ++i) {
+            char c = data.charAt(i);
+            if (c == '"') {
+                sb.append('\\');
+            } else if (c == '\\') {
+                sb.append("\\");
+            }
+            sb.append(c);
+        }
+        return sb;
+    }
+
+	public static enum Json_enum_type {
+        OBJECT, ARRAY, STRING, INT, UINT, DOUBLE, LITERAL_NULL, LITERAL_TRUE, LITERAL_FALSE, OPAQUE, ERROR
+    }
+
+	public static class Json_Value {
 
         Json_enum_type m_type;
         int            m_field_type;
@@ -302,7 +320,7 @@ public class JsonConversion {
                     buf.append("]");
                     break;
                 case DOUBLE:
-                    buf.append(Double.valueOf(m_double_value).toString());
+                    buf.append(Double.toString(m_double_value));
                     break;
                 case INT:
                     buf.append(m_int_value.toString());
@@ -412,25 +430,6 @@ public class JsonConversion {
 
             return buf;
         }
-    }
-
-    private static StringBuilder escapse(String data) {
-        StringBuilder sb = new StringBuilder(data.length());
-        int endIndex = data.length();
-        for (int i = 0; i < endIndex; ++i) {
-            char c = data.charAt(i);
-            if (c == '"') {
-                sb.append('\\');
-            } else if (c == '\\') {
-                sb.append("\\");
-            }
-            sb.append(c);
-        }
-        return sb;
-    }
-
-    public static enum Json_enum_type {
-        OBJECT, ARRAY, STRING, INT, UINT, DOUBLE, LITERAL_NULL, LITERAL_TRUE, LITERAL_FALSE, OPAQUE, ERROR
     }
 
 }

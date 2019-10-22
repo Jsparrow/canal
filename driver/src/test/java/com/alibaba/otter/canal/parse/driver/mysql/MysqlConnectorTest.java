@@ -8,11 +8,15 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.alibaba.otter.canal.parse.driver.mysql.packets.server.ResultSetPacket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class MysqlConnectorTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(MysqlConnectorTest.class);
+
+	@Test
     public void testQuery() {
 
         MysqlConnector connector = new MysqlConnector(new InetSocketAddress("127.0.0.1", 3306), "xxxxx", "xxxxx");
@@ -20,9 +24,9 @@ public class MysqlConnectorTest {
             connector.connect();
             MysqlQueryExecutor executor = new MysqlQueryExecutor(connector);
             ResultSetPacket result = executor.query("show variables like '%char%';");
-            System.out.println(result);
+            logger.info(String.valueOf(result));
             result = executor.query("select * from test.test1");
-            System.out.println(result);
+            logger.info(String.valueOf(result));
         } catch (IOException e) {
             Assert.fail(e.getMessage());
         } finally {

@@ -10,7 +10,7 @@ import com.alibaba.otter.canal.parse.support.AuthenticationInfo;
  */
 public interface CanalHASwitchable {
 
-    public void doSwitch();
+    void doSwitch();
 
-    public void doSwitch(AuthenticationInfo newAuthenticationInfo);
+    void doSwitch(AuthenticationInfo newAuthenticationInfo);
 }

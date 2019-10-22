@@ -65,14 +65,14 @@ public class HttpHelper {
             long end = System.currentTimeMillis();
             long cost = end - start;
             if (logger.isWarnEnabled()) {
-                logger.warn("post " + url + ", cost : " + cost);
+                logger.warn(new StringBuilder().append("post ").append(url).append(", cost : ").append(cost).toString());
             }
             if (statusCode == HttpStatus.SC_OK) {
                 return EntityUtils.toByteArray(response.getEntity());
             } else {
                 String errorMsg = EntityUtils.toString(response.getEntity());
-                throw new RuntimeException("requestGet remote error, url=" + uri.toString() + ", code=" + statusCode
-                                           + ", error msg=" + errorMsg);
+                throw new RuntimeException(new StringBuilder().append("requestGet remote error, url=").append(uri.toString()).append(", code=").append(statusCode).append(", error msg=").append(errorMsg)
+						.toString());
             }
         } finally {
             response.close();
@@ -109,8 +109,8 @@ public class HttpHelper {
                 return EntityUtils.toString(response.getEntity());
             } else {
                 String errorMsg = EntityUtils.toString(response.getEntity());
-                throw new RuntimeException("requestGet remote error, url=" + uri.toString() + ", code=" + statusCode
-                                           + ", error msg=" + errorMsg);
+                throw new RuntimeException(new StringBuilder().append("requestGet remote error, url=").append(uri.toString()).append(", code=").append(statusCode).append(", error msg=").append(errorMsg)
+						.toString());
             }
         } catch (Throwable t) {
             long end = System.currentTimeMillis();
@@ -125,6 +125,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
             httpGet.releaseConnection();
@@ -140,13 +141,7 @@ public class HttpHelper {
         CloseableHttpResponse response = null;
         try {
             // 创建支持忽略证书的https
-            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-                @Override
-                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    return true;
-                }
-            }).build();
+            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true).build();
 
             CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setSSLContext(sslContext)
@@ -172,8 +167,8 @@ public class HttpHelper {
                 return EntityUtils.toString(response.getEntity());
             } else {
                 String errorMsg = EntityUtils.toString(response.getEntity());
-                throw new RuntimeException("requestGet remote error, url=" + uri.toString() + ", code=" + statusCode
-                                           + ", error msg=" + errorMsg);
+                throw new RuntimeException(new StringBuilder().append("requestGet remote error, url=").append(uri.toString()).append(", code=").append(statusCode).append(", error msg=").append(errorMsg)
+						.toString());
             }
         } catch (Throwable t) {
             long end = System.currentTimeMillis();
@@ -188,6 +183,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
             if (httpGet != null) {
@@ -205,13 +201,7 @@ public class HttpHelper {
         CloseableHttpResponse response = null;
         try {
             // 创建支持忽略证书的https
-            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-                @Override
-                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    return true;
-                }
-            }).build();
+            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true).build();
 
             CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setSSLContext(sslContext)
@@ -229,10 +219,7 @@ public class HttpHelper {
                 .build();
             httpPost = new HttpPost(uri);
             List<NameValuePair> parameters = Lists.newArrayList();
-            for (String key : params.keySet()) {
-                NameValuePair nameValuePair = new BasicNameValuePair(key, params.get(key));
-                parameters.add(nameValuePair);
-            }
+            params.keySet().stream().map(key -> new BasicNameValuePair(key, params.get(key))).forEach(parameters::add);
             httpPost.setEntity(new UrlEncodedFormEntity(parameters, Charset.forName("UTF-8")));
             HttpClientContext context = HttpClientContext.create();
             context.setRequestConfig(config);
@@ -249,8 +236,7 @@ public class HttpHelper {
                 long end = System.currentTimeMillis();
                 long cost = end - start;
                 String curlRequest = getCurlRequest(url, cookieStore, params, cost);
-                throw new RuntimeException("requestPost(Https) remote error, request : " + curlRequest
-                                           + ", statusCode=" + statusCode + "");
+                throw new RuntimeException(new StringBuilder().append("requestPost(Https) remote error, request : ").append(curlRequest).append(", statusCode=").append(statusCode).append("").toString());
             }
         } catch (Throwable t) {
             long end = System.currentTimeMillis();
@@ -262,6 +248,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
             if (httpPost != null) {
@@ -291,10 +278,7 @@ public class HttpHelper {
                 .build();
             httpPost = new HttpPost(uri);
             List<NameValuePair> parameters = Lists.newArrayList();
-            for (String key : params.keySet()) {
-                NameValuePair nameValuePair = new BasicNameValuePair(key, params.get(key));
-                parameters.add(nameValuePair);
-            }
+            params.keySet().stream().map(key -> new BasicNameValuePair(key, params.get(key))).forEach(parameters::add);
             httpPost.setEntity(new UrlEncodedFormEntity(parameters, Charset.forName("UTF-8")));
             HttpClientContext context = HttpClientContext.create();
             context.setRequestConfig(config);
@@ -311,8 +295,8 @@ public class HttpHelper {
                 long end = System.currentTimeMillis();
                 long cost = end - start;
                 String curlRequest = getCurlRequest(url, cookieStore, params, cost);
-                throw new RuntimeException("requestPost remote error, request : " + curlRequest + ", statusCode="
-                                           + statusCode + ";" + EntityUtils.toString(response.getEntity()));
+                throw new RuntimeException(new StringBuilder().append("requestPost remote error, request : ").append(curlRequest).append(", statusCode=").append(statusCode).append(";").append(EntityUtils.toString(response.getEntity()))
+						.toString());
             }
         } catch (Throwable t) {
             long end = System.currentTimeMillis();
@@ -324,6 +308,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                 }
             }
             if (httpPost != null) {
@@ -338,31 +323,33 @@ public class HttpHelper {
 
     private static String getCurlRequest(String url, CookieStore cookieStore, Map<String, String> params, long cost) {
         if (params == null) {
-            return "curl '" + url + "'\ncost : " + cost;
+            return new StringBuilder().append("curl '").append(url).append("'\ncost : ").append(cost).toString();
         } else {
             StringBuilder paramsStr = new StringBuilder();
             Iterator<Map.Entry<String, String>> iterator = params.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, String> entry = iterator.next();
-                paramsStr.append(entry.getKey() + "=" + entry.getValue());
+                paramsStr.append(new StringBuilder().append(entry.getKey()).append("=").append(entry.getValue()).toString());
                 if (iterator.hasNext()) {
                     paramsStr.append("&");
                 }
             }
             if (cookieStore == null) {
-                return "curl '" + url + "' -d '" + paramsStr.toString() + "'\ncost : " + cost;
+                return new StringBuilder().append("curl '").append(url).append("' -d '").append(paramsStr.toString()).append("'\ncost : ").append(cost)
+						.toString();
             } else {
                 StringBuilder cookieStr = new StringBuilder();
                 List<Cookie> cookies = cookieStore.getCookies();
                 Iterator<Cookie> iteratorCookie = cookies.iterator();
                 while (iteratorCookie.hasNext()) {
                     Cookie cookie = iteratorCookie.next();
-                    cookieStr.append(cookie.getName() + "=" + cookie.getValue());
+                    cookieStr.append(new StringBuilder().append(cookie.getName()).append("=").append(cookie.getValue()).toString());
                     if (iteratorCookie.hasNext()) {
                         cookieStr.append(";");
                     }
                 }
-                return "curl '" + url + "' -b '" + cookieStr + "' -d '" + paramsStr.toString() + "'\ncost : " + cost;
+                return new StringBuilder().append("curl '").append(url).append("' -b '").append(cookieStr).append("' -d '").append(paramsStr.toString())
+						.append("'\ncost : ").append(cost).toString();
             }
         }
     }

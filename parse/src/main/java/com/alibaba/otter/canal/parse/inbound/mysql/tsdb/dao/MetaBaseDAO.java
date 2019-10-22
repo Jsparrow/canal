@@ -33,7 +33,7 @@ public class MetaBaseDAO extends SqlMapClientDaoSupport {
             }
             input = Thread.currentThread()
                 .getContextClassLoader()
-                .getResourceAsStream("ddl/" + name + "/" + tableName + ".sql");
+                .getResourceAsStream(new StringBuilder().append("ddl/").append(name).append("/").append(tableName).append(".sql").toString());
             if (input == null) {
                 return;
             }
@@ -43,7 +43,7 @@ public class MetaBaseDAO extends SqlMapClientDaoSupport {
             stmt.execute(sql);
             stmt.close();
         } catch (Throwable e) {
-            logger.warn("init " + tableName + " failed", e);
+            logger.warn(new StringBuilder().append("init ").append(tableName).append(" failed").toString(), e);
         } finally {
             IOUtils.closeQuietly(input);
             if (conn != null) {

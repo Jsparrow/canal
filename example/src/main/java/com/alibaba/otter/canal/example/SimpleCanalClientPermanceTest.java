@@ -8,10 +8,14 @@ import com.alibaba.otter.canal.client.CanalConnector;
 import com.alibaba.otter.canal.client.CanalConnectors;
 import com.alibaba.otter.canal.client.impl.SimpleCanalConnector;
 import com.alibaba.otter.canal.protocol.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleCanalClientPermanceTest {
 
-    public static void main(String args[]) {
+    private static final Logger logger = LoggerFactory.getLogger(SimpleCanalClientPermanceTest.class);
+
+	public static void main(String args[]) {
         String destination = "example";
         String ip = "127.0.0.1";
         int batchSize = 1024;
@@ -20,26 +24,23 @@ public class SimpleCanalClientPermanceTest {
         int perSum = 0;
         long start = System.currentTimeMillis();
         long end = 0;
-        final ArrayBlockingQueue<Long> queue = new ArrayBlockingQueue<Long>(100);
+        final ArrayBlockingQueue<Long> queue = new ArrayBlockingQueue<>(100);
         try {
             final CanalConnector connector = CanalConnectors.newSingleConnector(new InetSocketAddress(ip, 11111),
                 destination,
                 "canal",
                 "canal");
 
-            Thread ackThread = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            long batchId = queue.take();
-                            connector.ack(batchId);
-                        } catch (InterruptedException e) {
-                        }
-                    }
-                }
-            });
+            Thread ackThread = new Thread(() -> {
+			    while (true) {
+			        try {
+			            long batchId = queue.take();
+			            connector.ack(batchId);
+			        } catch (InterruptedException e) {
+						logger.error(e.getMessage(), e);
+			        }
+			    }
+			});
             ackThread.start();
 
             ((SimpleCanalConnector) connector).setLazyParseEntry(true);
@@ -57,8 +58,8 @@ public class SimpleCanalClientPermanceTest {
                     end = System.currentTimeMillis();
                     if (end - start != 0) {
                         long tps = (perSum * 1000) / (end - start);
-                        System.out.println(" total : " + sum + " , current : " + perSum + " , cost : " + (end - start)
-                                           + " , tps : " + tps);
+                        logger.info(new StringBuilder().append(" total : ").append(sum).append(" , current : ").append(perSum).append(" , cost : ")
+								.append(end - start).append(" , tps : ").append(tps).toString());
                         start = end;
                         perSum = 0;
                     }

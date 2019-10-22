@@ -5,7 +5,7 @@ import com.alibaba.otter.canal.admin.model.CanalInstanceConfig;
 
 public interface PollingConfigService {
 
-    public boolean autoRegister(String ip, Integer adminPort, String cluster);
+    boolean autoRegister(String ip, Integer adminPort, String cluster);
 
     CanalConfig getChangedConfig(String ip, Integer port, String md5);
 

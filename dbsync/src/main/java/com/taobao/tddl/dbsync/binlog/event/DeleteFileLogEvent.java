@@ -11,12 +11,12 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  */
 public final class DeleteFileLogEvent extends LogEvent {
 
-    private final long      fileId;
-
     /* DF = "Delete File" */
     public static final int DF_FILE_ID_OFFSET = 0;
 
-    public DeleteFileLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	private final long      fileId;
+
+	public DeleteFileLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         super(header);
 
         final int commonHeaderLen = descriptionEvent.commonHeaderLen;
@@ -24,7 +24,7 @@ public final class DeleteFileLogEvent extends LogEvent {
         fileId = buffer.getUint32(); // DF_FILE_ID_OFFSET
     }
 
-    public final long getFileId() {
+	public final long getFileId() {
         return fileId;
     }
 }

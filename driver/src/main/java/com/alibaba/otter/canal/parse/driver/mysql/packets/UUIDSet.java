@@ -29,18 +29,22 @@ public class UUIDSet {
 
         ByteHelper.writeUnsignedInt64LittleEndian(intervals.size(), out);
 
-        for (Interval interval : intervals) {
+        intervals.forEach(interval -> {
             ByteHelper.writeUnsignedInt64LittleEndian(interval.start, out);
             ByteHelper.writeUnsignedInt64LittleEndian(interval.stop, out);
-        }
+        });
 
         return out.toByteArray();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (this == o) return true;
+        if (o == null) {
+			return false;
+		}
+        if (this == o) {
+			return true;
+		}
 
         UUIDSet us = (UUIDSet) o;
         Collections.sort(intervals);
@@ -50,38 +54,6 @@ public class UUIDSet {
         }
 
         return false;
-    }
-
-    public static class Interval implements Comparable<Interval> {
-
-        public long start;
-        public long stop;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Interval interval = (Interval) o;
-
-            if (start != interval.start) return false;
-            return stop == interval.stop;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = (int) (start ^ (start >>> 32));
-            result = 31 * result + (int) (stop ^ (stop >>> 32));
-            return result;
-        }
-
-        @Override
-        public int compareTo(Interval o) {
-            if (equals(o)) {
-                return 1;
-            }
-            return start > o.start ? 1 : (start == o.start ? 0 : -1);
-        }
     }
 
     /**
@@ -105,7 +77,7 @@ public class UUIDSet {
             throw new RuntimeException(String.format("parseUUIDSet failed due to wrong format: %s", str));
         }
 
-        List<Interval> intervals = new ArrayList<Interval>();
+        List<Interval> intervals = new ArrayList<>();
         for (int i = 1; i < ss.length; i++) {
             intervals.add(parseInterval(ss[i]));
         }
@@ -117,12 +89,12 @@ public class UUIDSet {
         return uuidSet;
     }
 
-    @Override
+	@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(SID.toString());
-        for (Interval interval : intervals) {
+        intervals.forEach(interval -> {
             if (interval.start == interval.stop - 1) {
                 sb.append(":");
                 sb.append(interval.start);
@@ -132,12 +104,12 @@ public class UUIDSet {
                 sb.append("-");
                 sb.append(interval.stop - 1);
             }
-        }
+        });
 
         return sb.toString();
     }
 
-    /**
+	/**
      * 解析如下格式字符串为Interval: 1 => Interval{start:1, stop:2} 1-3 =>
      * Interval{start:1, stop:4} 注意！字符串格式表达时[n,m]是两侧都包含的，Interval表达时[n,m)右侧开
      *
@@ -164,7 +136,7 @@ public class UUIDSet {
         return interval;
     }
 
-    /**
+	/**
      * 把{start,stop}连续的合并掉: [{start:1, stop:4},{start:4, stop:5}] => [{start:1,
      * stop:5}]
      *
@@ -172,7 +144,7 @@ public class UUIDSet {
      * @return
      */
     public static List<Interval> combine(List<Interval> intervals) {
-        List<Interval> combined = new ArrayList<Interval>();
+        List<Interval> combined = new ArrayList<>();
         Collections.sort(intervals);
         int len = intervals.size();
         for (int i = 0; i < len; i++) {
@@ -190,5 +162,43 @@ public class UUIDSet {
         }
 
         return combined;
+    }
+
+	public static class Interval implements Comparable<Interval> {
+
+        public long start;
+        public long stop;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+				return true;
+			}
+            if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
+
+            Interval interval = (Interval) o;
+
+            if (start != interval.start) {
+				return false;
+			}
+            return stop == interval.stop;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = (int) (start ^ (start >>> 32));
+            result = 31 * result + (int) (stop ^ (stop >>> 32));
+            return result;
+        }
+
+        @Override
+        public int compareTo(Interval o) {
+            if (equals(o)) {
+                return 1;
+            }
+            return start > o.start ? 1 : (start == o.start ? 0 : -1);
+        }
     }
 }

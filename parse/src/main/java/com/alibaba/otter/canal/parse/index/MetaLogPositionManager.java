@@ -17,7 +17,7 @@ import com.alibaba.otter.canal.store.helper.CanalEventUtils;
  */
 public class MetaLogPositionManager extends AbstractLogPositionManager {
 
-    private final static Logger    logger = LoggerFactory.getLogger(MetaLogPositionManager.class);
+    private static final Logger    logger = LoggerFactory.getLogger(MetaLogPositionManager.class);
 
     private final CanalMetaManager metaManager;
 
@@ -71,7 +71,7 @@ public class MetaLogPositionManager extends AbstractLogPositionManager {
     }
 
     @Override
-    public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+    public void persistLogPosition(String destination, LogPosition logPosition) {
         // do nothing
         logger.info("persist LogPosition:{}", destination, logPosition);
     }

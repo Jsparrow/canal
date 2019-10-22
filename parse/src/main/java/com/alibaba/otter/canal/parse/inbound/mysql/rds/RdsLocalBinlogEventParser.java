@@ -26,7 +26,7 @@ import com.alibaba.otter.canal.protocol.position.LogPosition;
  * @author agapple 2017年10月15日 下午1:27:36
  * @since 1.0.25
  */
-public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements CanalEventParser, LocalBinLogConnection.FileParserListener {
+public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements LocalBinLogConnection.FileParserListener {
 
     private String              url;                // openapi地址
     private String              accesskey;          // 云账号的ak
@@ -41,7 +41,8 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
     public RdsLocalBinlogEventParser(){
     }
 
-    public void start() throws CanalParseException {
+    @Override
+	public void start() {
         try {
             Assert.notNull(accesskey);
             Assert.notNull(secretkey);
@@ -70,7 +71,7 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
                 new Date(startTime),
                 new Date(endTime));
             if (binlogFiles.isEmpty()) {
-                throw new CanalParseException("start timestamp : " + startTimeInMill + " binlog files is empty");
+                throw new CanalParseException(new StringBuilder().append("start timestamp : ").append(startTimeInMill).append(" binlog files is empty").toString());
             }
 
             binlogDownloadQueue = new BinlogDownloadQueue(binlogFiles, batchFileSize, directory);
@@ -82,42 +83,31 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
             logger.error("download binlog failed", e);
             throw new CanalParseException(e);
         }
-        setParserExceptionHandler(new ParserExceptionHandler() {
-
-            @Override
-            public void handle(Throwable e) {
-                handleMysqlParserException(e);
-            }
-        });
+        setParserExceptionHandler(this::handleMysqlParserException);
         super.start();
     }
 
     private void handleMysqlParserException(Throwable throwable) {
-        if (throwable instanceof ServerIdNotMatchException) {
-            logger.error("server id not match, try download another rds binlog!");
-            binlogDownloadQueue.notifyNotMatch();
-            try {
-                binlogDownloadQueue.cleanDir();
-                binlogDownloadQueue.tryOne();
-                binlogDownloadQueue.prepare();
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-
-            try {
-                binlogDownloadQueue.execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        RdsLocalBinlogEventParser.super.stop();
-                        RdsLocalBinlogEventParser.super.start();
-                    }
-                });
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
-        }
+        if (!(throwable instanceof ServerIdNotMatchException)) {
+			return;
+		}
+		logger.error("server id not match, try download another rds binlog!");
+		binlogDownloadQueue.notifyNotMatch();
+		try {
+		    binlogDownloadQueue.cleanDir();
+		    binlogDownloadQueue.tryOne();
+		    binlogDownloadQueue.prepare();
+		} catch (Throwable e) {
+		    throw new RuntimeException(e);
+		}
+		try {
+		    binlogDownloadQueue.execute(() -> {
+			    RdsLocalBinlogEventParser.super.stop();
+			    RdsLocalBinlogEventParser.super.start();
+			});
+		} catch (InterruptedException e) {
+		    throw new RuntimeException(e);
+		}
     }
 
     @Override
@@ -166,7 +156,7 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
     public void onFinish(String fileName) {
         try {
             binlogDownloadQueue.downOne();
-            File needDeleteFile = new File(directory + File.separator + fileName);
+            File needDeleteFile = new File(new StringBuilder().append(directory).append(File.separator).append(fileName).toString());
             if (needDeleteFile.exists()) {
                 needDeleteFile.delete();
             }
@@ -181,8 +171,7 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
                 int sepIdx = journalName.indexOf(".");
                 String fileIndex = journalName.substring(sepIdx + 1);
                 int index = NumberUtils.toInt(fileIndex) + 1;
-                String newJournalName = journalName.substring(0, sepIdx) + "."
-                                        + StringUtils.leftPad(String.valueOf(index), fileIndex.length(), "0");
+                String newJournalName = new StringBuilder().append(journalName.substring(0, sepIdx)).append(".").append(StringUtils.leftPad(String.valueOf(index), fileIndex.length(), "0")).toString();
                 newLogPosition.setPostion(new EntryPosition(newJournalName,
                     4L,
                     position.getTimestamp(),
@@ -192,13 +181,11 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
             }
 
             if (binlogDownloadQueue.isLastFile(fileName)) {
-                logger.warn("last file : " + fileName + " , timestamp : " + timestamp
-                            + " , all file parse complete, switch to mysql parser!");
+                logger.warn(new StringBuilder().append("last file : ").append(fileName).append(" , timestamp : ").append(timestamp).append(" , all file parse complete, switch to mysql parser!").toString());
                 finishListener.onFinish();
                 return;
             } else {
-                logger.warn("parse local binlog file : " + fileName + " , timestamp : " + timestamp
-                            + " , try the next binlog !");
+                logger.warn(new StringBuilder().append("parse local binlog file : ").append(fileName).append(" , timestamp : ").append(timestamp).append(" , try the next binlog !").toString());
             }
             binlogDownloadQueue.prepare();
         } catch (Exception e) {
@@ -217,12 +204,12 @@ public class RdsLocalBinlogEventParser extends LocalBinlogEventParser implements
         this.finishListener = finishListener;
     }
 
-    public interface ParseFinishListener {
-
-        void onFinish();
-    }
-
     public void setBatchFileSize(int batchFileSize) {
         this.batchFileSize = batchFileSize;
+    }
+
+	public interface ParseFinishListener {
+
+        void onFinish();
     }
 }

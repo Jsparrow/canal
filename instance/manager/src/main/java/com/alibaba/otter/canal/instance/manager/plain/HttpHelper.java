@@ -42,7 +42,7 @@ import com.alibaba.fastjson.JSON;
  */
 public class HttpHelper {
 
-    private final static Logger logger                   = LoggerFactory.getLogger(HttpHelper.class);
+    private static final Logger logger                   = LoggerFactory.getLogger(HttpHelper.class);
 
     public static final Integer REST_STATE_OK            = 20000;
     public static final Integer REST_STATE_TOKEN_INVALID = 50014;
@@ -57,13 +57,7 @@ public class HttpHelper {
 
         // 创建支持忽略证书的https
         try {
-            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-                @Override
-                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    return true;
-                }
-            }).build();
+            SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true).build();
 
             httpclient = HttpClientBuilder.create()
                 .setSSLContext(sslContext)
@@ -73,6 +67,7 @@ public class HttpHelper {
                     .build()))
                 .build();
         } catch (Throwable e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
     }
@@ -102,8 +97,8 @@ public class HttpHelper {
                 return EntityUtils.toString(response.getEntity());
             } else {
                 String errorMsg = EntityUtils.toString(response.getEntity());
-                throw new RuntimeException("requestGet remote error, url=" + uri.toString() + ", code=" + statusCode
-                                           + ", error msg=" + errorMsg);
+                throw new RuntimeException(new StringBuilder().append("requestGet remote error, url=").append(uri.toString()).append(", code=").append(statusCode).append(", error msg=").append(errorMsg)
+						.toString());
             }
         } catch (Throwable t) {
             throw new RuntimeException("requestGet remote error, request : " + url, t);
@@ -112,6 +107,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }
@@ -153,8 +149,8 @@ public class HttpHelper {
             if (statusCode == HttpStatus.SC_OK) {
                 return EntityUtils.toString(response.getEntity());
             } else {
-                throw new RuntimeException("requestPost remote error, request : " + url + ", statusCode=" + statusCode
-                                           + ";" + EntityUtils.toString(response.getEntity()));
+                throw new RuntimeException(new StringBuilder().append("requestPost remote error, request : ").append(url).append(", statusCode=").append(statusCode).append(";").append(EntityUtils.toString(response.getEntity()))
+						.toString());
             }
         } catch (Throwable t) {
             throw new RuntimeException("requestPost remote error, request : " + url, t);
@@ -163,6 +159,7 @@ public class HttpHelper {
                 try {
                     response.close();
                 } catch (IOException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }

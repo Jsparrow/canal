@@ -27,11 +27,14 @@ import com.taobao.tddl.dbsync.binlog.event.TableMapLogEvent.ColumnInfo;
 import com.taobao.tddl.dbsync.binlog.event.UpdateRowsLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.WriteRowsLogEvent;
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class MysqlBinlogParsePerformanceTest {
 
-    protected static Charset charset = Charset.forName("utf-8");
+    private static final Logger logger = LoggerFactory.getLogger(MysqlBinlogParsePerformanceTest.class);
+	protected static Charset charset = Charset.forName("utf-8");
 
     public static void main(String args[]) {
         DirectLogFetcher fetcher = new DirectLogFetcher();
@@ -41,20 +44,14 @@ public class MysqlBinlogParsePerformanceTest {
             updateSettings(connector);
             sendBinlogDump(connector, "mysql-bin.000006", 120L, 3);
             fetcher.start(connector.getChannel());
-            final BlockingQueue<LogBuffer> buffer = new ArrayBlockingQueue<LogBuffer>(1024);
-            Thread thread = new Thread(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        consumer(buffer);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            final BlockingQueue<LogBuffer> buffer = new ArrayBlockingQueue<>(1024);
+            Thread thread = new Thread(() -> {
+			    try {
+			        consumer(buffer);
+			    } catch (InterruptedException | IOException e) {
+			        logger.error(e.getMessage(), e);
+			    }
+			});
             thread.start();
 
             while (fetcher.fetch()) {
@@ -62,11 +59,12 @@ public class MysqlBinlogParsePerformanceTest {
                 fetcher.consume(fetcher.limit());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             try {
                 fetcher.close();
             } catch (IOException e) {
+				logger.error(e.getMessage(), e);
             }
         }
     }
@@ -113,7 +111,8 @@ public class MysqlBinlogParsePerformanceTest {
             if (current - last >= 100000) {
                 end = System.currentTimeMillis();
                 long tps = ((current - last) * 1000) / (end - start);
-                System.out.println(" total : " + sum + " , cost : " + (end - start) + " , tps : " + tps);
+                logger.info(new StringBuilder().append(" total : ").append(sum).append(" , cost : ").append(end - start).append(" , tps : ")
+						.append(tps).toString());
                 last = current;
                 start = end;
             }
@@ -136,7 +135,7 @@ public class MysqlBinlogParsePerformanceTest {
 
     private static void updateSettings(MysqlConnector connector) throws IOException {
         update("set @master_binlog_checksum= '@@global.binlog_checksum'", connector);
-        update("SET @mariadb_slave_capability='" + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + "'", connector);
+        update(new StringBuilder().append("SET @mariadb_slave_capability='").append(LogEvent.MARIA_SLAVE_CAPABILITY_MINE).append("'").toString(), connector);
     }
 
     public static void update(String cmd, MysqlConnector connector) throws IOException {

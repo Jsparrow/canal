@@ -21,7 +21,7 @@ import com.alibaba.otter.canal.protocol.position.LogPosition;
  * @author jianghang 2012-6-21 下午04:07:33
  * @version 1.0.0
  */
-public class LocalBinlogEventParser extends AbstractMysqlEventParser implements CanalEventParser {
+public class LocalBinlogEventParser extends AbstractMysqlEventParser {
 
     // 数据库信息
     protected AuthenticationInfo masterInfo;
@@ -51,7 +51,7 @@ public class LocalBinlogEventParser extends AbstractMysqlEventParser implements 
             throw new CanalParseException(e);
         }
 
-        if (tableMetaTSDB != null && tableMetaTSDB instanceof DatabaseTableMeta) {
+        if (tableMetaTSDB instanceof DatabaseTableMeta) {
             ((DatabaseTableMeta) tableMetaTSDB).setConnection(metaConnection);
             ((DatabaseTableMeta) tableMetaTSDB).setFilter(eventFilter);
             ((DatabaseTableMeta) tableMetaTSDB).setBlackFilter(eventBlackFilter);
@@ -76,7 +76,8 @@ public class LocalBinlogEventParser extends AbstractMysqlEventParser implements 
         }
     }
 
-    public void start() throws CanalParseException {
+    @Override
+	public void start() {
         if (runningInfo == null) { // 第一次链接主库
             runningInfo = masterInfo;
         }
@@ -134,33 +135,33 @@ public class LocalBinlogEventParser extends AbstractMysqlEventParser implements 
         // // b. 存在机器切换，按最后一条记录的stamptime进行查找
         // 3. 不存在最后一条记录，则从默认的位置开始启动
         LogPosition logPosition = logPositionManager.getLatestIndexBy(destination);
-        if (logPosition == null) {// 找不到历史成功记录
-            EntryPosition entryPosition = masterPosition;
-
-            // 判断一下是否需要按时间订阅
-            if (StringUtils.isEmpty(entryPosition.getJournalName())) {
-                // 如果没有指定binlogName，尝试按照timestamp进行查找
-                if (entryPosition.getTimestamp() != null) {
-                    return new EntryPosition(entryPosition.getTimestamp());
-                }
-            } else {
-                if (entryPosition.getPosition() != null) {
-                    // 如果指定binlogName + offest，直接返回
-                    return entryPosition;
-                } else {
-                    return new EntryPosition(entryPosition.getTimestamp());
-                }
-            }
-        } else {
-            return logPosition.getPostion();
-        }
+        // 找不到历史成功记录
+		if (logPosition != null) {
+			return logPosition.getPostion();
+		}
+		EntryPosition entryPosition = masterPosition;
+		// 判断一下是否需要按时间订阅
+		if (StringUtils.isEmpty(entryPosition.getJournalName())) {
+		    // 如果没有指定binlogName，尝试按照timestamp进行查找
+		    if (entryPosition.getTimestamp() != null) {
+		        return new EntryPosition(entryPosition.getTimestamp());
+		    }
+		} else {
+		    if (entryPosition.getPosition() != null) {
+		        // 如果指定binlogName + offest，直接返回
+		        return entryPosition;
+		    } else {
+		        return new EntryPosition(entryPosition.getTimestamp());
+		    }
+		}
 
         return null;
     }
 
     // ========================= setter / getter =========================
 
-    public void setLogPositionManager(CanalLogPositionManager logPositionManager) {
+    @Override
+	public void setLogPositionManager(CanalLogPositionManager logPositionManager) {
         this.logPositionManager = logPositionManager;
     }
 

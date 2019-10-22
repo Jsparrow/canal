@@ -27,41 +27,33 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 public class BaseCanalClientTest {
 
-    protected final static Logger             logger             = LoggerFactory.getLogger(AbstractCanalClientTest.class);
+    protected static final Logger             logger             = LoggerFactory.getLogger(AbstractCanalClientTest.class);
     protected static final String             SEP                = SystemUtils.LINE_SEPARATOR;
     protected static final String             DATE_FORMAT        = "yyyy-MM-dd HH:mm:ss";
-    protected volatile boolean                running            = false;
-    protected Thread.UncaughtExceptionHandler handler            = new Thread.UncaughtExceptionHandler() {
+	protected static String                   context_format     = null;
+	protected static String                   row_format         = null;
+	protected static String                   transaction_format = null;
 
-                                                                     public void uncaughtException(Thread t, Throwable e) {
-                                                                         logger.error("parse events has an error", e);
-                                                                     }
-                                                                 };
-    protected Thread                          thread             = null;
-    protected CanalConnector                  connector;
-    protected static String                   context_format     = null;
-    protected static String                   row_format         = null;
-    protected static String                   transaction_format = null;
-    protected String                          destination;
-
-    static {
-        context_format = SEP + "****************************************************" + SEP;
+	static {
+        context_format = new StringBuilder().append(SEP).append("****************************************************").append(SEP).toString();
         context_format += "* Batch Id: [{}] ,count : [{}] , memsize : [{}] , Time : {}" + SEP;
         context_format += "* Start : [{}] " + SEP;
         context_format += "* End : [{}] " + SEP;
         context_format += "****************************************************" + SEP;
 
-        row_format = SEP
-                     + "----------------> binlog[{}:{}] , name[{},{}] , eventType : {} , executeTime : {}({}) , gtid : ({}) , delay : {} ms"
-                     + SEP;
+        row_format = new StringBuilder().append(SEP).append("----------------> binlog[{}:{}] , name[{},{}] , eventType : {} , executeTime : {}({}) , gtid : ({}) , delay : {} ms").append(SEP).toString();
 
-        transaction_format = SEP
-                             + "================> binlog[{}:{}] , executeTime : {}({}) , gtid : ({}) , delay : {}ms"
-                             + SEP;
+        transaction_format = new StringBuilder().append(SEP).append("================> binlog[{}:{}] , executeTime : {}({}) , gtid : ({}) , delay : {}ms").append(SEP).toString();
 
     }
 
-    protected void printSummary(Message message, long batchId, int size) {
+	protected volatile boolean                running            = false;
+	protected Thread.UncaughtExceptionHandler handler            = (Thread t, Throwable e) -> logger.error("parse events has an error", e);
+	protected Thread                          thread             = null;
+	protected CanalConnector                  connector;
+	protected String                          destination;
+
+	protected void printSummary(Message message, long batchId, int size) {
         long memsize = 0;
         for (Entry entry : message.getEntries()) {
             memsize += entry.getHeader().getEventLength();
@@ -79,19 +71,19 @@ public class BaseCanalClientTest {
                 endPosition });
     }
 
-    protected String buildPositionForDump(Entry entry) {
+	protected String buildPositionForDump(Entry entry) {
         long time = entry.getHeader().getExecuteTime();
         Date date = new Date(time);
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        String position = entry.getHeader().getLogfileName() + ":" + entry.getHeader().getLogfileOffset() + ":"
-                          + entry.getHeader().getExecuteTime() + "(" + format.format(date) + ")";
+        String position = new StringBuilder().append(entry.getHeader().getLogfileName()).append(":").append(entry.getHeader().getLogfileOffset()).append(":").append(entry.getHeader().getExecuteTime()).append("(")
+				.append(format.format(date)).append(")").toString();
         if (StringUtils.isNotEmpty(entry.getHeader().getGtid())) {
-            position += " gtid(" + entry.getHeader().getGtid() + ")";
+            position += new StringBuilder().append(" gtid(").append(entry.getHeader().getGtid()).append(")").toString();
         }
         return position;
     }
 
-    protected void printEntry(List<Entry> entrys) {
+	protected void printEntry(List<Entry> entrys) {
         for (Entry entry : entrys) {
             long executeTime = entry.getHeader().getExecuteTime();
             long delayTime = new Date().getTime() - executeTime;
@@ -153,12 +145,12 @@ public class BaseCanalClientTest {
                             entry.getHeader().getGtid(), String.valueOf(delayTime) });
 
                 if (eventType == EventType.QUERY || rowChage.getIsDdl()) {
-                    logger.info(" sql ----> " + rowChage.getSql() + SEP);
+                    logger.info(new StringBuilder().append(" sql ----> ").append(rowChage.getSql()).append(SEP).toString());
                     continue;
                 }
 
                 printXAInfo(rowChage.getPropsList());
-                for (RowData rowData : rowChage.getRowDatasList()) {
+                rowChage.getRowDatasList().forEach(rowData -> {
                     if (eventType == EventType.DELETE) {
                         printColumn(rowData.getBeforeColumnsList());
                     } else if (eventType == EventType.INSERT) {
@@ -166,24 +158,24 @@ public class BaseCanalClientTest {
                     } else {
                         printColumn(rowData.getAfterColumnsList());
                     }
-                }
+                });
             }
         }
     }
 
-    protected void printColumn(List<Column> columns) {
-        for (Column column : columns) {
+	protected void printColumn(List<Column> columns) {
+        columns.forEach(column -> {
             StringBuilder builder = new StringBuilder();
             try {
                 if (StringUtils.containsIgnoreCase(column.getMysqlType(), "BLOB")
                     || StringUtils.containsIgnoreCase(column.getMysqlType(), "BINARY")) {
                     // get value bytes
-                    builder.append(column.getName() + " : "
-                                   + new String(column.getValue().getBytes("ISO-8859-1"), "UTF-8"));
+                    builder.append(new StringBuilder().append(column.getName()).append(" : ").append(new String(column.getValue().getBytes("ISO-8859-1"), "UTF-8")).toString());
                 } else {
-                    builder.append(column.getName() + " : " + column.getValue());
+                    builder.append(new StringBuilder().append(column.getName()).append(" : ").append(column.getValue()).toString());
                 }
             } catch (UnsupportedEncodingException e) {
+				logger.error(e.getMessage(), e);
             }
             builder.append("    type=" + column.getMysqlType());
             if (column.getUpdated()) {
@@ -191,10 +183,10 @@ public class BaseCanalClientTest {
             }
             builder.append(SEP);
             logger.info(builder.toString());
-        }
+        });
     }
 
-    protected void printXAInfo(List<Pair> pairs) {
+	protected void printXAInfo(List<Pair> pairs) {
         if (pairs == null) {
             return;
         }
@@ -211,15 +203,15 @@ public class BaseCanalClientTest {
         }
 
         if (xaType != null && xaXid != null) {
-            logger.info(" ------> " + xaType + " " + xaXid);
+            logger.info(new StringBuilder().append(" ------> ").append(xaType).append(" ").append(xaXid).toString());
         }
     }
 
-    public void setConnector(CanalConnector connector) {
+	public void setConnector(CanalConnector connector) {
         this.connector = connector;
     }
 
-    /**
+	/**
      * 获取当前Entry的 GTID信息示例
      * 
      * @param header
@@ -237,7 +229,7 @@ public class BaseCanalClientTest {
         return "";
     }
 
-    /**
+	/**
      * 获取当前Entry的 GTID Sequence No信息示例
      * 
      * @param header
@@ -255,7 +247,7 @@ public class BaseCanalClientTest {
         return "";
     }
 
-    /**
+	/**
      * 获取当前Entry的 GTID Last Committed信息示例
      * 
      * @param header

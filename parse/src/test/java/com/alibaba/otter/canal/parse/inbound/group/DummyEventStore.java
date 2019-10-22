@@ -2,7 +2,6 @@ package com.alibaba.otter.canal.parse.inbound.group;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -13,78 +12,98 @@ import com.alibaba.otter.canal.store.CanalEventStore;
 import com.alibaba.otter.canal.store.CanalStoreException;
 import com.alibaba.otter.canal.store.model.Event;
 import com.alibaba.otter.canal.store.model.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 public class DummyEventStore implements CanalEventStore<Event> {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final Logger logger = LoggerFactory.getLogger(DummyEventStore.class);
+	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String messgae     = "{0} [{1}:{2}:{3}]";
 
-    public void ack(Position position) throws CanalStoreException {
+    @Override
+	public void ack(Position position) {
 
     }
 
-    public void ack(Position position, Long seqId) throws CanalStoreException {
+    @Override
+	public void ack(Position position, Long seqId) {
 
     }
 
-    public Events get(Position start, int batchSize) throws InterruptedException, CanalStoreException {
+    @Override
+	public Events get(Position start, int batchSize) throws InterruptedException {
         return null;
     }
 
-    public Events get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException,
-                                                                                 CanalStoreException {
+    @Override
+	public Events get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException {
         return null;
     }
 
-    public Position getFirstPosition() throws CanalStoreException {
+    @Override
+	public Position getFirstPosition() {
         return null;
     }
 
-    public Position getLatestPosition() throws CanalStoreException {
+    @Override
+	public Position getLatestPosition() {
         return null;
     }
 
-    public void rollback() throws CanalStoreException {
+    @Override
+	public void rollback() {
 
     }
 
-    public Events tryGet(Position start, int batchSize) throws CanalStoreException {
+    @Override
+	public Events tryGet(Position start, int batchSize) {
         return null;
     }
 
-    public boolean isStart() {
+    @Override
+	public boolean isStart() {
         return false;
     }
 
-    public void start() {
+    @Override
+	public void start() {
 
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
 
     }
 
-    public void cleanAll() throws CanalStoreException {
+    @Override
+	public void cleanAll() {
     }
 
-    public void cleanUntil(Position position) throws CanalStoreException {
+    @Override
+	public void cleanUntil(Position position) {
 
     }
 
-    public void put(Event data) throws InterruptedException, CanalStoreException {
-        put(Arrays.asList(data));
+    @Override
+	public void put(Event data) throws InterruptedException {
+        put(Collections.singletonList(data));
     }
 
-    public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
-        return put(Arrays.asList(data), timeout, unit);
+    @Override
+	public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException {
+        return put(Collections.singletonList(data), timeout, unit);
     }
 
-    public boolean tryPut(Event data) throws CanalStoreException {
-        return tryPut(Arrays.asList(data));
+    @Override
+	public boolean tryPut(Event data) {
+        return tryPut(Collections.singletonList(data));
     }
 
-    public void put(List<Event> datas) throws InterruptedException, CanalStoreException {
-        for (Event data : datas) {
+    @Override
+	public void put(List<Event> datas) throws InterruptedException {
+        datas.forEach(data -> {
             Date date = new Date(data.getExecuteTime());
             SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
             if (data.getEntryType() == EntryType.TRANSACTIONBEGIN || data.getEntryType() == EntryType.TRANSACTIONEND) {
@@ -93,18 +112,19 @@ public class DummyEventStore implements CanalEventStore<Event> {
                 // header.getLogfilename(), header.getLogfileoffset(),
                 // format.format(date),
                 // data.getEntry().getEntryType(), "" }));
-                System.out.println(data.getEntryType());
+                logger.info(String.valueOf(data.getEntryType()));
 
             } else {
-                System.out.println(MessageFormat.format(messgae,
+                logger.info(MessageFormat.format(messgae,
                     new Object[] { Thread.currentThread().getName(), data.getJournalName(),
                             String.valueOf(data.getPosition()), format.format(date) }));
             }
-        }
+        });
     }
 
-    public boolean put(List<Event> datas, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
-        for (Event data : datas) {
+    @Override
+	public boolean put(List<Event> datas, long timeout, TimeUnit unit) throws InterruptedException {
+        datas.forEach(data -> {
             Date date = new Date(data.getExecuteTime());
             SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
             if (data.getEntryType() == EntryType.TRANSACTIONBEGIN || data.getEntryType() == EntryType.TRANSACTIONEND) {
@@ -113,20 +133,21 @@ public class DummyEventStore implements CanalEventStore<Event> {
                 // header.getLogfilename(), header.getLogfileoffset(),
                 // format.format(date),
                 // data.getEntry().getEntryType(), "" }));
-                System.out.println(data.getEntryType());
+                logger.info(String.valueOf(data.getEntryType()));
 
             } else {
-                System.out.println(MessageFormat.format(messgae,
+                logger.info(MessageFormat.format(messgae,
                     new Object[] { Thread.currentThread().getName(), data.getJournalName(),
                             String.valueOf(data.getPosition()), format.format(date) }));
             }
-        }
+        });
         return true;
     }
 
-    public boolean tryPut(List<Event> datas) throws CanalStoreException {
-        System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        for (Event data : datas) {
+    @Override
+	public boolean tryPut(List<Event> datas) {
+        logger.info("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        datas.forEach(data -> {
 
             Date date = new Date(data.getExecuteTime());
             SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
@@ -136,16 +157,16 @@ public class DummyEventStore implements CanalEventStore<Event> {
                 // header.getLogfilename(), header.getLogfileoffset(),
                 // format.format(date),
                 // data.getEntry().getEntryType(), "" }));
-                System.out.println(data.getEntryType());
+                logger.info(String.valueOf(data.getEntryType()));
 
             } else {
-                System.out.println(MessageFormat.format(messgae,
+                logger.info(MessageFormat.format(messgae,
                     new Object[] { Thread.currentThread().getName(), data.getJournalName(),
                             String.valueOf(data.getPosition()), format.format(date) }));
             }
 
-        }
-        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+        });
+        logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
         return true;
     }
 

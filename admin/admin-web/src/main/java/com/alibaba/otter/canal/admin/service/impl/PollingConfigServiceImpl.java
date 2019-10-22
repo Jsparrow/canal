@@ -18,17 +18,22 @@ import com.alibaba.otter.canal.admin.service.NodeServerService;
 import com.alibaba.otter.canal.admin.service.PollingConfigService;
 import com.alibaba.otter.canal.protocol.SecurityUtil;
 import com.google.common.base.Joiner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PollingConfigServiceImpl implements PollingConfigService {
 
-    @Autowired
+    private static final Logger logger = LoggerFactory.getLogger(PollingConfigServiceImpl.class);
+
+	@Autowired
     NodeServerService   nodeServerService;
 
     @Autowired
     CanalClusterService canalClusterService;
 
-    public boolean autoRegister(String ip, Integer adminPort, String cluster) {
+    @Override
+	public boolean autoRegister(String ip, Integer adminPort, String cluster) {
         NodeServer server = NodeServer.find.query().where().eq("ip", ip).eq("adminPort", adminPort).findOne();
         if (server == null) {
             server = new NodeServer();
@@ -40,7 +45,7 @@ public class PollingConfigServiceImpl implements PollingConfigService {
             if (StringUtils.isNotEmpty(cluster)) {
                 CanalCluster clusterConfig = CanalCluster.find.query().where().eq("name", cluster).findOne();
                 if (clusterConfig == null) {
-                    throw new ServiceException("auto cluster : " + cluster + " is not found.");
+                    throw new ServiceException(new StringBuilder().append("auto cluster : ").append(cluster).append(" is not found.").toString());
                 }
 
                 server.setClusterId(clusterConfig.getId());
@@ -51,7 +56,8 @@ public class PollingConfigServiceImpl implements PollingConfigService {
         return true;
     }
 
-    public CanalConfig getChangedConfig(String ip, Integer port, String md5) {
+    @Override
+	public CanalConfig getChangedConfig(String ip, Integer port, String md5) {
         NodeServer server = NodeServer.find.query().where().eq("ip", ip).eq("adminPort", port).findOne();
         if (server == null) {
             return null;
@@ -72,7 +78,8 @@ public class PollingConfigServiceImpl implements PollingConfigService {
         return null;
     }
 
-    public CanalInstanceConfig getInstancesConfig(String ip, Integer port, String md5) {
+    @Override
+	public CanalInstanceConfig getInstancesConfig(String ip, Integer port, String md5) {
         NodeServer server = NodeServer.find.query().where().eq("ip", ip).eq("adminPort", port).findOne();
         if (server == null) {
             return null;
@@ -105,13 +112,15 @@ public class PollingConfigServiceImpl implements PollingConfigService {
                     canalInstanceConfig.setContent(null);
                 }
             } catch (NoSuchAlgorithmException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
         return canalInstanceConfig;
     }
 
-    public CanalInstanceConfig getInstanceConfig(String destination, String md5) {
+    @Override
+	public CanalInstanceConfig getInstanceConfig(String destination, String md5) {
         CanalInstanceConfig instanceConfig = CanalInstanceConfig.find.query().where().eq("name", destination).findOne();
         if (instanceConfig == null) {
             return null;
@@ -125,6 +134,7 @@ public class PollingConfigServiceImpl implements PollingConfigService {
                     instanceConfig.setContent(null);
                 }
             } catch (NoSuchAlgorithmException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
 

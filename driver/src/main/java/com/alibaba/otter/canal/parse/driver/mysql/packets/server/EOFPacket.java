@@ -22,7 +22,8 @@ public class EOFPacket extends PacketWithHeaderPacket {
      *  2                     Status Flags
      * </pre>
      */
-    public void fromBytes(byte[] data) {
+    @Override
+	public void fromBytes(byte[] data) {
         int index = 0;
         // 1. read field count
         fieldCount = data[index];
@@ -35,7 +36,8 @@ public class EOFPacket extends PacketWithHeaderPacket {
         // end read
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream(5);
         out.write(this.fieldCount);
         ByteHelper.writeUnsignedShortLittleEndian(this.warningCount, out);

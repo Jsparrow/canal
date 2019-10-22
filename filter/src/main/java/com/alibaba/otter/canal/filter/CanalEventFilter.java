@@ -9,5 +9,5 @@ import com.alibaba.otter.canal.filter.exception.CanalFilterException;
  */
 public interface CanalEventFilter<T> {
 
-    boolean filter(T event) throws CanalFilterException;
+    boolean filter(T event);
 }

@@ -15,11 +15,12 @@ public class MappingConfigsLoader {
         Map<String, String> configContentMap = new HashMap<>();
 
         // 先取本地文件，再取类路径
-        File configDir = new File(".." + File.separator + Constant.CONF_DIR + File.separator + name);
+        File configDir = new File(new StringBuilder().append("..").append(File.separator).append(Constant.CONF_DIR).append(File.separator)
+				.append(name).toString());
         if (!configDir.exists()) {
             URL url = MappingConfigsLoader.class.getClassLoader().getResource("");
             if (url != null) {
-                configDir = new File(url.getPath() + name + File.separator);
+                configDir = new File(new StringBuilder().append(url.getPath()).append(name).append(File.separator).toString());
             }
         }
 
@@ -36,7 +37,7 @@ public class MappingConfigsLoader {
                     String configContent = new String(bytes, StandardCharsets.UTF_8);
                     configContentMap.put(fileName, configContent);
                 } catch (IOException e) {
-                    throw new RuntimeException("Read " + name + "mapping config: " + fileName + " error. ", e);
+                    throw new RuntimeException(new StringBuilder().append("Read ").append(name).append("mapping config: ").append(fileName).append(" error. ").toString(), e);
                 }
             }
         }
@@ -46,7 +47,8 @@ public class MappingConfigsLoader {
 
     public static String loadConfig(String name) {
         // 先取本地文件，再取类路径
-        File filePath = new File(".." + File.separator + Constant.CONF_DIR + File.separator + name);
+        File filePath = new File(new StringBuilder().append("..").append(File.separator).append(Constant.CONF_DIR).append(File.separator)
+				.append(name).toString());
         if (!filePath.exists()) {
             URL url = MappingConfigsLoader.class.getClassLoader().getResource("");
             if (url != null) {
@@ -63,7 +65,7 @@ public class MappingConfigsLoader {
                 in.read(bytes);
                 return new String(bytes, StandardCharsets.UTF_8);
             } catch (IOException e) {
-                throw new RuntimeException("Read mapping config: " + filePath.getAbsolutePath() + " error. ", e);
+                throw new RuntimeException(new StringBuilder().append("Read mapping config: ").append(filePath.getAbsolutePath()).append(" error. ").toString(), e);
             }
         }
         return null;

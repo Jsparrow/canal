@@ -37,6 +37,8 @@ import com.taobao.tddl.dbsync.binlog.event.FormatDescriptionLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.RowsLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.UpdateRowsLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.WriteRowsLogEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 针对解析器提供一个多阶段协同的处理
@@ -53,7 +55,8 @@ import com.taobao.tddl.dbsync.binlog.event.WriteRowsLogEvent;
  */
 public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implements MultiStageCoprocessor {
 
-    private static final int                  maxFullTimes = 10;
+    private static final Logger logger = LoggerFactory.getLogger(MysqlMultiStageCoprocessor.class);
+	private static final int                  maxFullTimes = 10;
     private LogEventConvert                   logEventConvert;
     private EventTransactionBuffer            transactionBuffer;
     private ErosaConnection                   connection;
@@ -98,7 +101,7 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
         ExceptionHandler exceptionHandler = new SimpleFatalExceptionHandler();
         // stage 2
         this.logContext = new LogContext();
-        simpleParserStage = new BatchEventProcessor<MessageEvent>(disruptorMsgBuffer,
+        simpleParserStage = new BatchEventProcessor<>(disruptorMsgBuffer,
             sequenceBarrier,
             new SimpleParserStage(logContext));
         simpleParserStage.setExceptionHandler(exceptionHandler);
@@ -110,7 +113,7 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
         for (int i = 0; i < tc; i++) {
             workHandlers[i] = new DmlParserStage();
         }
-        workerPool = new WorkerPool<MessageEvent>(disruptorMsgBuffer,
+        workerPool = new WorkerPool<>(disruptorMsgBuffer,
             dmlParserSequenceBarrier,
             exceptionHandler,
             workHandlers);
@@ -119,7 +122,7 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
 
         // stage 4
         SequenceBarrier sinkSequenceBarrier = disruptorMsgBuffer.newBarrier(sequence);
-        sinkStoreStage = new BatchEventProcessor<MessageEvent>(disruptorMsgBuffer,
+        sinkStoreStage = new BatchEventProcessor<>(disruptorMsgBuffer,
             sinkSequenceBarrier,
             new SinkStoreStage());
         sinkStoreStage.setExceptionHandler(exceptionHandler);
@@ -153,6 +156,7 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
                 parserExecutor.shutdownNow();
             }
         } catch (Throwable e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
@@ -166,19 +170,22 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
                 stageExecutor.shutdownNow();
             }
         } catch (Throwable e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
         super.stop();
     }
 
-    public boolean publish(LogBuffer buffer) {
+    @Override
+	public boolean publish(LogBuffer buffer) {
         return this.publish(buffer, null);
     }
 
     /**
      * 网络数据投递
      */
-    public boolean publish(LogEvent event) {
+    @Override
+	public boolean publish(LogEvent event) {
         return this.publish(null, event);
     }
 
@@ -215,7 +222,8 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
                 }
                 break;
             } catch (InsufficientCapacityException e) {
-                if (fullTimes == 0) {
+                logger.error(e.getMessage(), e);
+				if (fullTimes == 0) {
                     blockingStart = System.nanoTime();
                 }
                 // park
@@ -243,7 +251,27 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
 
     }
 
-    private class SimpleParserStage implements EventHandler<MessageEvent>, LifecycleAware {
+    public void setLogEventConvert(LogEventConvert logEventConvert) {
+        this.logEventConvert = logEventConvert;
+    }
+
+	public void setTransactionBuffer(EventTransactionBuffer transactionBuffer) {
+        this.transactionBuffer = transactionBuffer;
+    }
+
+	public void setConnection(ErosaConnection connection) {
+        this.connection = connection;
+    }
+
+	public void setEventsPublishBlockingTime(AtomicLong eventsPublishBlockingTime) {
+        this.eventsPublishBlockingTime = eventsPublishBlockingTime;
+    }
+
+	public void setGtidSet(GTIDSet gtidSet) {
+        this.gtidSet = gtidSet;
+    }
+
+	private class SimpleParserStage implements EventHandler<MessageEvent>, LifecycleAware {
 
         private LogDecoder decoder;
         private LogContext context;
@@ -256,7 +284,8 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
             }
         }
 
-        public void onEvent(MessageEvent event, long sequence, boolean endOfBatch) throws Exception {
+        @Override
+		public void onEvent(MessageEvent event, long sequence, boolean endOfBatch) throws Exception {
             try {
                 LogEvent logEvent = event.getEvent();
                 if (logEvent == null) {
@@ -351,7 +380,8 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
 
     private class SinkStoreStage implements EventHandler<MessageEvent>, LifecycleAware {
 
-        public void onEvent(MessageEvent event, long sequence, boolean endOfBatch) throws Exception {
+        @Override
+		public void onEvent(MessageEvent event, long sequence, boolean endOfBatch) throws Exception {
             try {
                 if (event.getEntry() != null) {
                     transactionBuffer.add(event.getEntry());
@@ -456,29 +486,10 @@ public class MysqlMultiStageCoprocessor extends AbstractCanalLifeCycle implement
 
     class MessageEventFactory implements EventFactory<MessageEvent> {
 
-        public MessageEvent newInstance() {
+        @Override
+		public MessageEvent newInstance() {
             return new MessageEvent();
         }
-    }
-
-    public void setLogEventConvert(LogEventConvert logEventConvert) {
-        this.logEventConvert = logEventConvert;
-    }
-
-    public void setTransactionBuffer(EventTransactionBuffer transactionBuffer) {
-        this.transactionBuffer = transactionBuffer;
-    }
-
-    public void setConnection(ErosaConnection connection) {
-        this.connection = connection;
-    }
-
-    public void setEventsPublishBlockingTime(AtomicLong eventsPublishBlockingTime) {
-        this.eventsPublishBlockingTime = eventsPublishBlockingTime;
-    }
-
-    public void setGtidSet(GTIDSet gtidSet) {
-        this.gtidSet = gtidSet;
     }
 
 }

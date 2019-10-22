@@ -22,72 +22,71 @@ public interface CanalMetaManager extends CanalLifeCycle {
      * 增加一个 client订阅 <br/>
      * 如果 client已经存在，则不做任何修改
      */
-    void subscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    void subscribe(ClientIdentity clientIdentity);
 
     /**
      * 判断是否订阅
      */
-    boolean hasSubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    boolean hasSubscribe(ClientIdentity clientIdentity);
 
     /**
      * 取消client订阅
      */
-    void unsubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    void unsubscribe(ClientIdentity clientIdentity);
 
     /**
      * 获取 cursor 游标
      */
-    Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    Position getCursor(ClientIdentity clientIdentity);
 
     /**
      * 更新 cursor 游标
      */
-    void updateCursor(ClientIdentity clientIdentity, Position position) throws CanalMetaManagerException;
+    void updateCursor(ClientIdentity clientIdentity, Position position);
 
     /**
      * 根据指定的destination列出当前所有的clientIdentity信息
      */
-    List<ClientIdentity> listAllSubscribeInfo(String destination) throws CanalMetaManagerException;
+    List<ClientIdentity> listAllSubscribeInfo(String destination);
 
     /**
      * 获得该client最新的一个位置
      */
-    PositionRange getFirstBatch(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    PositionRange getFirstBatch(ClientIdentity clientIdentity);
 
     /**
      * 获得该clientId最新的一个位置
      */
-    PositionRange getLastestBatch(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    PositionRange getLastestBatch(ClientIdentity clientIdentity);
 
     /**
      * 为 client 产生一个唯一、递增的id
      */
-    Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange) throws CanalMetaManagerException;
+    Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange);
 
     /**
      * 指定batchId，插入batch数据
      */
-    void addBatch(ClientIdentity clientIdentity, PositionRange positionRange, Long batchId)
-                                                                                           throws CanalMetaManagerException;
+    void addBatch(ClientIdentity clientIdentity, PositionRange positionRange, Long batchId);
 
     /**
      * 根据唯一messageId，查找对应的数据起始信息
      */
-    PositionRange getBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException;
+    PositionRange getBatch(ClientIdentity clientIdentity, Long batchId);
 
     /**
      * 对一个batch的确认
      */
-    PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException;
+    PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId);
 
     /**
      * 查询当前的所有batch信息
      */
-    Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity);
 
     /**
      * 清除对应的batch信息
      */
-    void clearAllBatchs(ClientIdentity clientIdentity) throws CanalMetaManagerException;
+    void clearAllBatchs(ClientIdentity clientIdentity);
 
 }

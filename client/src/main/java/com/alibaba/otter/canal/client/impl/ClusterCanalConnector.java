@@ -39,7 +39,8 @@ public class ClusterCanalConnector implements CanalConnector {
         this.accessStrategy = accessStrategy;
     }
 
-    public void connect() throws CanalClientException {
+    @Override
+	public void connect() {
         while (currentConnector == null) {
             int times = 0;
             while (true) {
@@ -69,7 +70,7 @@ public class ClusterCanalConnector implements CanalConnector {
                     currentConnector = null;
                     // retry for #retryTimes for each node when trying to
                     // connect to it.
-                    times = times + 1;
+                    times += 1;
                     if (times >= retryTimes) {
                         throw new CanalClientException(e);
                     } else {
@@ -85,22 +86,27 @@ public class ClusterCanalConnector implements CanalConnector {
         }
     }
 
-    public boolean checkValid() {
+    @Override
+	public boolean checkValid() {
         return currentConnector != null && currentConnector.checkValid();
     }
 
-    public void disconnect() throws CanalClientException {
-        if (currentConnector != null) {
-            currentConnector.disconnect();
-            currentConnector = null;
-        }
+    @Override
+	public void disconnect() {
+        if (currentConnector == null) {
+			return;
+		}
+		currentConnector.disconnect();
+		currentConnector = null;
     }
 
-    public void subscribe() throws CanalClientException {
+    @Override
+	public void subscribe() {
         subscribe(""); // 传递空字符即可
     }
 
-    public void subscribe(String filter) throws CanalClientException {
+    @Override
+	public void subscribe(String filter) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -122,10 +128,11 @@ public class ClusterCanalConnector implements CanalConnector {
             }
         }
 
-        throw new CanalClientException("failed to subscribe after " + times + " times retry.");
+        throw new CanalClientException(new StringBuilder().append("failed to subscribe after ").append(times).append(" times retry.").toString());
     }
 
-    public void unsubscribe() throws CanalClientException {
+    @Override
+	public void unsubscribe() {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -139,10 +146,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to unsubscribe after " + times + " times retry.");
+        throw new CanalClientException(new StringBuilder().append("failed to unsubscribe after ").append(times).append(" times retry.").toString());
     }
 
-    public Message get(int batchSize) throws CanalClientException {
+    @Override
+	public Message get(int batchSize) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -156,10 +164,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to fetch the data after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to fetch the data after ").append(times).append(" times retry").toString());
     }
 
-    public Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    @Override
+	public Message get(int batchSize, Long timeout, TimeUnit unit) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -173,10 +182,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to fetch the data after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to fetch the data after ").append(times).append(" times retry").toString());
     }
 
-    public Message getWithoutAck(int batchSize) throws CanalClientException {
+    @Override
+	public Message getWithoutAck(int batchSize) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -190,10 +200,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to fetch the data after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to fetch the data after ").append(times).append(" times retry").toString());
     }
 
-    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    @Override
+	public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -207,10 +218,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to fetch the data after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to fetch the data after ").append(times).append(" times retry").toString());
     }
 
-    public void rollback(long batchId) throws CanalClientException {
+    @Override
+	public void rollback(long batchId) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -224,10 +236,11 @@ public class ClusterCanalConnector implements CanalConnector {
                 logger.info("restart the connector for next round retry.");
             }
         }
-        throw new CanalClientException("failed to rollback after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to rollback after ").append(times).append(" times retry").toString());
     }
 
-    public void rollback() throws CanalClientException {
+    @Override
+	public void rollback() {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -242,10 +255,11 @@ public class ClusterCanalConnector implements CanalConnector {
             }
         }
 
-        throw new CanalClientException("failed to rollback after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to rollback after ").append(times).append(" times retry").toString());
     }
 
-    public void ack(long batchId) throws CanalClientException {
+    @Override
+	public void ack(long batchId) {
         int times = 0;
         while (times < retryTimes) {
             try {
@@ -260,10 +274,10 @@ public class ClusterCanalConnector implements CanalConnector {
             }
         }
 
-        throw new CanalClientException("failed to ack after " + times + " times retry");
+        throw new CanalClientException(new StringBuilder().append("failed to ack after ").append(times).append(" times retry").toString());
     }
 
-    private void restart() throws CanalClientException {
+    private void restart() {
         disconnect();
         try {
             Thread.sleep(retryInterval);

@@ -29,8 +29,36 @@ import com.google.common.cache.LoadingCache;
 public class Util {
 
     private static final Logger logger = LoggerFactory.getLogger(Util.class);
+	public static final String  timeZone;    // 当前时区
+	private static DateTimeZone dateTimeZone;
 
-    /**
+	static {
+        TimeZone localTimeZone = TimeZone.getDefault();
+        int rawOffset = localTimeZone.getRawOffset();
+        String symbol = "+";
+        if (rawOffset < 0) {
+            symbol = "-";
+        }
+        rawOffset = Math.abs(rawOffset);
+        int offsetHour = rawOffset / 3600000;
+        int offsetMinute = rawOffset % 3600000 / 60000;
+        String hour = String.format("%1$02d", offsetHour);
+        String minute = String.format("%1$02d", offsetMinute);
+        timeZone = new StringBuilder().append(symbol).append(hour).append(":").append(minute).toString();
+        dateTimeZone = DateTimeZone.forID(timeZone);
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT" + timeZone));
+    }
+
+	private static LoadingCache<String, DateTimeFormatter> dateFormatterCache = CacheBuilder.newBuilder()
+        .build(new CacheLoader<String, DateTimeFormatter>() {
+
+            @Override
+            public DateTimeFormatter load(String key) {
+                return DateTimeFormatter.ofPattern(key);
+            }
+        });
+
+	/**
      * 通过DS执行sql
      */
     public static Object sqlRS(DataSource ds, String sql, Function<ResultSet, Object> fun) {
@@ -46,7 +74,7 @@ public class Util {
         }
     }
 
-    public static Object sqlRS(DataSource ds, String sql, List<Object> values, Function<ResultSet, Object> fun) {
+	public static Object sqlRS(DataSource ds, String sql, List<Object> values, Function<ResultSet, Object> fun) {
         try (Connection conn = ds.getConnection()) {
             try (PreparedStatement pstmt = conn
                 .prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
@@ -66,7 +94,7 @@ public class Util {
         }
     }
 
-    /**
+	/**
      * sql执行获取resultSet
      *
      * @param conn sql connection
@@ -81,11 +109,11 @@ public class Util {
         }
     }
 
-    public static File getConfDirPath() {
+	public static File getConfDirPath() {
         return getConfDirPath("");
     }
 
-    public static File getConfDirPath(String subConf) {
+	public static File getConfDirPath(String subConf) {
         URL url = Util.class.getClassLoader().getResource("");
         String path;
         if (url != null) {
@@ -96,7 +124,8 @@ public class Util {
         File file = null;
         if (path != null) {
             file = new File(
-                path + ".." + File.separator + Constant.CONF_DIR + File.separator + StringUtils.trimToEmpty(subConf));
+                new StringBuilder().append(path).append("..").append(File.separator).append(Constant.CONF_DIR)
+						.append(File.separator).append(StringUtils.trimToEmpty(subConf)).toString());
             if (!file.exists()) {
                 file = new File(path + StringUtils.trimToEmpty(subConf));
             }
@@ -108,7 +137,7 @@ public class Util {
         return file;
     }
 
-    public static String cleanColumn(String column) {
+	public static String cleanColumn(String column) {
         if (column == null) {
             return null;
         }
@@ -127,7 +156,7 @@ public class Util {
         return column;
     }
 
-    public static ThreadPoolExecutor newFixedThreadPool(int nThreads, long keepAliveTime) {
+	public static ThreadPoolExecutor newFixedThreadPool(int nThreads, long keepAliveTime) {
         return new ThreadPoolExecutor(nThreads,
             nThreads,
             keepAliveTime,
@@ -138,13 +167,14 @@ public class Util {
                     try {
                         exe.getQueue().put(r);
                     } catch (InterruptedException e) {
+						logger.error(e.getMessage(), e);
                         // ignore
                     }
                 }
             });
     }
 
-    public static ThreadPoolExecutor newSingleThreadExecutor(long keepAliveTime) {
+	public static ThreadPoolExecutor newSingleThreadExecutor(long keepAliveTime) {
         return new ThreadPoolExecutor(1,
             1,
             keepAliveTime,
@@ -155,33 +185,14 @@ public class Util {
                     try {
                         exe.getQueue().put(r);
                     } catch (InterruptedException e) {
+						logger.error(e.getMessage(), e);
                         // ignore
                     }
                 }
             });
     }
 
-    public final static String  timeZone;    // 当前时区
-    private static DateTimeZone dateTimeZone;
-
-    static {
-        TimeZone localTimeZone = TimeZone.getDefault();
-        int rawOffset = localTimeZone.getRawOffset();
-        String symbol = "+";
-        if (rawOffset < 0) {
-            symbol = "-";
-        }
-        rawOffset = Math.abs(rawOffset);
-        int offsetHour = rawOffset / 3600000;
-        int offsetMinute = rawOffset % 3600000 / 60000;
-        String hour = String.format("%1$02d", offsetHour);
-        String minute = String.format("%1$02d", offsetMinute);
-        timeZone = symbol + hour + ":" + minute;
-        dateTimeZone = DateTimeZone.forID(timeZone);
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT" + timeZone));
-    }
-
-    /**
+	/**
      * 通用日期时间字符解析
      *
      * @param datetimeStr 日期时间字符串
@@ -205,16 +216,7 @@ public class Util {
         return dateTime.toDate();
     }
 
-    private static LoadingCache<String, DateTimeFormatter> dateFormatterCache = CacheBuilder.newBuilder()
-        .build(new CacheLoader<String, DateTimeFormatter>() {
-
-            @Override
-            public DateTimeFormatter load(String key) {
-                return DateTimeFormatter.ofPattern(key);
-            }
-        });
-
-    public static Date parseDate2(String datetimeStr) {
+	public static Date parseDate2(String datetimeStr) {
         if (StringUtils.isEmpty(datetimeStr)) {
             return null;
         }

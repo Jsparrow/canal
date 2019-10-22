@@ -69,7 +69,7 @@ public class ESConfigMonitor {
             super.onFileCreate(file);
             try {
                 // 加载新增的配置文件
-                String configContent = MappingConfigsLoader.loadConfig(adapterName + File.separator + file.getName());
+                String configContent = MappingConfigsLoader.loadConfig(new StringBuilder().append(adapterName).append(File.separator).append(file.getName()).toString());
                 ESSyncConfig config = YmlConfigBinder
                     .bindYmlToObj(null, configContent, ESSyncConfig.class, null, envProperties);
                 if (config != null) {
@@ -90,7 +90,7 @@ public class ESConfigMonitor {
                 if (esAdapter.getEsSyncConfig().containsKey(file.getName())) {
                     // 加载配置文件
                     String configContent = MappingConfigsLoader
-                        .loadConfig(adapterName + File.separator + file.getName());
+                        .loadConfig(new StringBuilder().append(adapterName).append(File.separator).append(file.getName()).toString());
                     if (configContent == null) {
                         onFileDelete(file);
                         return;
@@ -136,11 +136,7 @@ public class ESConfigMonitor {
 
         private void deleteConfigFromCache(File file) {
             esAdapter.getEsSyncConfig().remove(file.getName());
-            for (Map<String, ESSyncConfig> configMap : esAdapter.getDbTableEsSyncConfig().values()) {
-                if (configMap != null) {
-                    configMap.remove(file.getName());
-                }
-            }
+            esAdapter.getDbTableEsSyncConfig().values().stream().filter(configMap -> configMap != null).forEach(configMap -> configMap.remove(file.getName()));
 
         }
     }

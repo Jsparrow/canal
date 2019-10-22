@@ -14,9 +14,10 @@ import com.alibaba.otter.canal.parse.CanalEventParser;
  */
 public class GroupEventParser extends AbstractCanalLifeCycle implements CanalEventParser {
 
-    private List<CanalEventParser> eventParsers = new ArrayList<CanalEventParser>();
+    private List<CanalEventParser> eventParsers = new ArrayList<>();
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         // 统一启动
         for (CanalEventParser eventParser : eventParsers) {
@@ -26,7 +27,8 @@ public class GroupEventParser extends AbstractCanalLifeCycle implements CanalEve
         }
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
         // 统一关闭
         for (CanalEventParser eventParser : eventParsers) {

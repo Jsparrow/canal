@@ -25,7 +25,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
-public class CanalRabbitMQProducer extends AbstractMQProducer implements CanalMQProducer {
+public class CanalRabbitMQProducer extends AbstractMQProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(CanalRabbitMQProducer.class);
     private MQProperties        mqProperties;
@@ -68,18 +68,12 @@ public class CanalRabbitMQProducer extends AbstractMQProducer implements CanalMQ
                     canalDestination.getTopic(),
                     canalDestination.getDynamicTopic());
 
-                for (Map.Entry<String, com.alibaba.otter.canal.protocol.Message> entry : messageMap.entrySet()) {
+                messageMap.entrySet().forEach(entry -> {
                     final String topicName = entry.getKey().replace('.', '_');
                     final com.alibaba.otter.canal.protocol.Message messageSub = entry.getValue();
 
-                    template.submit(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            send(canalDestination, topicName, messageSub);
-                        }
-                    });
-                }
+                    template.submit(() -> send(canalDestination, topicName, messageSub));
+                });
 
                 template.waitForResult();
             } else {
@@ -107,7 +101,7 @@ public class CanalRabbitMQProducer extends AbstractMQProducer implements CanalMQ
             // 串行分区
             List<FlatMessage> flatMessages = MQMessageUtils.messageConverter(datas, messageSub.getId());
             if (flatMessages != null) {
-                for (FlatMessage flatMessage : flatMessages) {
+                flatMessages.forEach(flatMessage -> {
                     byte[] message = JSON.toJSONBytes(flatMessage, SerializerFeature.WriteMapNullValue);
                     if (logger.isDebugEnabled()) {
                         logger.debug("send message:{} to destination:{}",
@@ -115,7 +109,7 @@ public class CanalRabbitMQProducer extends AbstractMQProducer implements CanalMQ
                             canalDestination.getCanalDestination());
                     }
                     sendMessage(topicName, message);
-                }
+                });
             }
         }
 

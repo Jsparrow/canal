@@ -27,11 +27,12 @@ public class TemplateConfigLoader {
     }
 
     private static String loadFile(String fileName) {
-        File configFile = new File(".." + File.separator + CONF_DIR + File.separator + fileName);
+        File configFile = new File(new StringBuilder().append("..").append(File.separator).append(CONF_DIR).append(File.separator).append(fileName)
+				.toString());
         if (!configFile.exists()) {
             URL url = TemplateConfigLoader.class.getClassLoader().getResource("");
             if (url != null) {
-                configFile = new File(url.getPath() + fileName + File.separator);
+                configFile = new File(new StringBuilder().append(url.getPath()).append(fileName).append(File.separator).toString());
             }
         }
         if (!configFile.exists()) {
@@ -42,7 +43,7 @@ public class TemplateConfigLoader {
             in.read(bytes);
             return new String(bytes, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            logger.error("Read " + fileName + " error", e);
+            logger.error(new StringBuilder().append("Read ").append(fileName).append(" error").toString(), e);
         }
 
         return null;

@@ -27,26 +27,21 @@ import com.alibaba.otter.canal.client.kafka.protocol.KafkaMessage;
  */
 public class CanalKafkaOffsetClientExample {
 
-    protected final static Logger           logger  = LoggerFactory.getLogger(CanalKafkaOffsetClientExample.class);
+    protected static final Logger           logger  = LoggerFactory.getLogger(CanalKafkaOffsetClientExample.class);
 
-    private KafkaOffsetCanalConnector       connector;
+	private static volatile boolean         running = false;
 
-    private static volatile boolean         running = false;
+	private KafkaOffsetCanalConnector       connector;
 
-    private Thread                          thread  = null;
+	private Thread                          thread  = null;
 
-    private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+	private Thread.UncaughtExceptionHandler handler = (Thread t, Throwable e) -> logger.error("parse events has an error", e);
 
-                                                        public void uncaughtException(Thread t, Throwable e) {
-                                                            logger.error("parse events has an error", e);
-                                                        }
-                                                    };
-
-    public CanalKafkaOffsetClientExample(String servers, String topic, Integer partition, String groupId){
+	public CanalKafkaOffsetClientExample(String servers, String topic, Integer partition, String groupId){
         connector = new KafkaOffsetCanalConnector(servers, topic, partition, groupId, false);
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         try {
             final CanalKafkaOffsetClientExample kafkaCanalClientExample = new CanalKafkaOffsetClientExample(AbstractKafkaTest.servers,
                 AbstractKafkaTest.topic,
@@ -57,7 +52,8 @@ public class CanalKafkaOffsetClientExample {
             logger.info("## the canal kafka consumer is running now ......");
             Runtime.getRuntime().addShutdownHook(new Thread() {
 
-                public void run() {
+                @Override
+				public void run() {
                     try {
                         logger.info("## stop the kafka consumer");
                         kafkaCanalClientExample.stop();
@@ -69,28 +65,23 @@ public class CanalKafkaOffsetClientExample {
                 }
 
             });
-            while (running)
-                ;
+            while (running) {
+			}
         } catch (Throwable e) {
             logger.error("## Something goes wrong when starting up the kafka consumer:", e);
             System.exit(0);
         }
     }
 
-    public void start() {
+	public void start() {
         Assert.notNull(connector, "connector is null");
-        thread = new Thread(new Runnable() {
-
-            public void run() {
-                process();
-            }
-        });
+        thread = new Thread(() -> process());
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
         running = true;
     }
 
-    public void stop() {
+	public void stop() {
         if (!running) {
             return;
         }
@@ -99,16 +90,18 @@ public class CanalKafkaOffsetClientExample {
             try {
                 thread.join();
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
     }
 
-    private void process() {
+	private void process() {
         while (!running) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
             }
         }
 

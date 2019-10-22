@@ -13,11 +13,11 @@ public interface ClientRunningListener {
     /**
      * 触发现在轮到自己做为active，需要载入上一个active的上下文数据
      */
-    public InetSocketAddress processActiveEnter();
+    InetSocketAddress processActiveEnter();
 
     /**
      * 触发一下当前active模式失败
      */
-    public void processActiveExit();
+    void processActiveExit();
 
 }

@@ -11,6 +11,6 @@ public interface CanalLogPositionManager extends CanalLifeCycle {
 
     LogPosition getLatestIndexBy(String destination);
 
-    void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException;
+    void persistLogPosition(String destination, LogPosition logPosition);
 
 }

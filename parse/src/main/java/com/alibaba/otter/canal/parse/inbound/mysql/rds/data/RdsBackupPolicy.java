@@ -70,9 +70,8 @@ public class RdsBackupPolicy {
 
     @Override
     public String toString() {
-        return "RdsBackupPolicy [BackupRetentionPeriod=" + BackupRetentionPeriod + ", PreferredBackupTime="
-               + PreferredBackupTime + ", PreferredBackupPeriod=" + PreferredBackupPeriod + ", BackupLog=" + BackupLog
-               + ", LogBackupRetentionPeriod=" + LogBackupRetentionPeriod + "]";
+        return new StringBuilder().append("RdsBackupPolicy [BackupRetentionPeriod=").append(BackupRetentionPeriod).append(", PreferredBackupTime=").append(PreferredBackupTime).append(", PreferredBackupPeriod=").append(PreferredBackupPeriod).append(", BackupLog=")
+				.append(BackupLog).append(", LogBackupRetentionPeriod=").append(LogBackupRetentionPeriod).append("]").toString();
     }
 
 }

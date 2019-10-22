@@ -27,6 +27,8 @@ import com.alibaba.otter.canal.admin.model.Pager;
 import com.alibaba.otter.canal.admin.service.CanalInstanceService;
 import com.alibaba.otter.canal.protocol.SecurityUtil;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Canal实例配置信息业务层
@@ -37,7 +39,10 @@ import com.google.common.collect.Lists;
 @Service
 public class CanalInstanceServiceImpl implements CanalInstanceService {
 
-    public Pager<CanalInstanceConfig> findList(CanalInstanceConfig canalInstanceConfig, Pager<CanalInstanceConfig> pager) {
+    private static final Logger logger = LoggerFactory.getLogger(CanalInstanceServiceImpl.class);
+
+	@Override
+	public Pager<CanalInstanceConfig> findList(CanalInstanceConfig canalInstanceConfig, Pager<CanalInstanceConfig> pager) {
         Query<CanalInstanceConfig> query = CanalInstanceConfig.find.query()
             .setDisableLazyLoading(true)
             .select("clusterId, serverId, name, modifiedTime")
@@ -45,7 +50,7 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
             .fetch("nodeServer", "name,ip,adminPort");
         if (canalInstanceConfig != null) {
             if (StringUtils.isNotEmpty(canalInstanceConfig.getName())) {
-                query.where().like("name", "%" + canalInstanceConfig.getName() + "%");
+                query.where().like("name", new StringBuilder().append("%").append(canalInstanceConfig.getName()).append("%").toString());
             }
             if (StringUtils.isNotEmpty(canalInstanceConfig.getClusterServerId())) {
                 if (canalInstanceConfig.getClusterServerId().startsWith("cluster:")) {
@@ -113,9 +118,11 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
             try {
                 f.get(3, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             } catch (TimeoutException e){
-                break;
+                logger.error(e.getMessage(), e);
+				break;
             }
         }
         return pager;
@@ -126,7 +133,8 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
      *
      * @param serverId server id
      */
-    public List<CanalInstanceConfig> findActiveInstanceByServerId(Long serverId) {
+    @Override
+	public List<CanalInstanceConfig> findActiveInstanceByServerId(Long serverId) {
         NodeServer nodeServer = NodeServer.find.byId(serverId);
         if (nodeServer == null) {
             return null;
@@ -161,16 +169,13 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
                 .eq("serverId", serverId)
                 .findList();
             List<String> instanceList = Arrays.asList(instances);
-            list.forEach(config -> {
-                if (instanceList.contains(config.getName())) {
-                    config.setRunningStatus("1");
-                }
-            });
+            list.stream().filter(config -> instanceList.contains(config.getName())).forEach(config -> config.setRunningStatus("1"));
             return list;
         }
     }
 
-    public void save(CanalInstanceConfig canalInstanceConfig) {
+    @Override
+	public void save(CanalInstanceConfig canalInstanceConfig) {
         if (StringUtils.isEmpty(canalInstanceConfig.getClusterServerId())) {
             throw new ServiceException("empty cluster or server id");
         }
@@ -186,13 +191,15 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
             String contentMd5 = SecurityUtil.md5String(canalInstanceConfig.getContent());
             canalInstanceConfig.setContentMd5(contentMd5);
         } catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
         canalInstanceConfig.insert();
     }
 
-    public CanalInstanceConfig detail(Long id) {
+    @Override
+	public CanalInstanceConfig detail(Long id) {
         CanalInstanceConfig canalInstanceConfig = CanalInstanceConfig.find.byId(id);
         if (canalInstanceConfig != null) {
             if (canalInstanceConfig.getClusterId() != null) {
@@ -204,7 +211,8 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
         return canalInstanceConfig;
     }
 
-    public void updateContent(CanalInstanceConfig canalInstanceConfig) {
+    @Override
+	public void updateContent(CanalInstanceConfig canalInstanceConfig) {
         if (StringUtils.isEmpty(canalInstanceConfig.getClusterServerId())) {
             throw new ServiceException("empty cluster or server id");
         }
@@ -222,20 +230,23 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
             String contentMd5 = SecurityUtil.md5String(canalInstanceConfig.getContent());
             canalInstanceConfig.setContentMd5(contentMd5);
         } catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
         canalInstanceConfig.update("content", "contentMd5", "clusterId", "serverId");
     }
 
-    public void delete(Long id) {
+    @Override
+	public void delete(Long id) {
         CanalInstanceConfig canalInstanceConfig = CanalInstanceConfig.find.byId(id);
         if (canalInstanceConfig != null) {
             canalInstanceConfig.delete();
         }
     }
 
-    public Map<String, String> remoteInstanceLog(Long id, Long nodeId) {
+    @Override
+	public Map<String, String> remoteInstanceLog(Long id, Long nodeId) {
         Map<String, String> result = new HashMap<>();
 
         NodeServer nodeServer = NodeServer.find.byId(nodeId);
@@ -256,7 +267,8 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
         return result;
     }
 
-    public boolean remoteOperation(Long id, Long nodeId, String option) {
+    @Override
+	public boolean remoteOperation(Long id, Long nodeId, String option) {
         NodeServer nodeServer = null;
         if ("start".equals(option)) {
             if (nodeId != null) {
@@ -303,7 +315,8 @@ public class CanalInstanceServiceImpl implements CanalInstanceService {
         return result;
     }
 
-    public boolean instanceOperation(Long id, String option) {
+    @Override
+	public boolean instanceOperation(Long id, String option) {
         CanalInstanceConfig canalInstanceConfig = CanalInstanceConfig.find.byId(id);
         if (canalInstanceConfig == null) {
             return false;

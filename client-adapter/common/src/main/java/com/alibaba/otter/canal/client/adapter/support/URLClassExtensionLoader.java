@@ -5,9 +5,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.NoSuchElementException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class URLClassExtensionLoader extends URLClassLoader {
-    public URLClassExtensionLoader(URL[] urls) {
+    private static final Logger logger = LoggerFactory.getLogger(URLClassExtensionLoader.class);
+
+	public URLClassExtensionLoader(URL[] urls) {
         super(urls);
     }
 
@@ -25,13 +29,16 @@ public class URLClassExtensionLoader extends URLClassLoader {
             // {
             c = super.loadClass(name);
         }
-        if (c != null) return c;
+        if (c != null) {
+			return c;
+		}
 
         try {
             // 先加载jar内的class，可避免jar冲突
             c = findClass(name);
         } catch (ClassNotFoundException e) {
-            c = null;
+            logger.error(e.getMessage(), e);
+			c = null;
         }
         if (c != null) {
             return c;
@@ -73,11 +80,13 @@ public class URLClassExtensionLoader extends URLClassLoader {
             return false;
         }
 
-        public boolean hasMoreElements() {
+        @Override
+		public boolean hasMoreElements() {
             return this.next();
         }
 
-        public E nextElement() {
+        @Override
+		public E nextElement() {
             if (!this.next()) {
                 throw new NoSuchElementException();
             } else {

@@ -17,6 +17,8 @@ import com.alibaba.otter.canal.client.adapter.config.common.CompositePropertySou
 import com.alibaba.otter.canal.client.adapter.config.common.EnumerablePropertySource;
 import com.alibaba.otter.canal.client.adapter.config.common.PropertySource;
 import com.alibaba.otter.canal.client.adapter.config.common.PropertySources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link PropertyValues} implementation backed by a {@link PropertySources},
@@ -28,7 +30,9 @@ import com.alibaba.otter.canal.client.adapter.config.common.PropertySources;
  */
 public class PropertySourcesPropertyValues implements PropertyValues {
 
-    private static final Pattern                               COLLECTION_PROPERTY = Pattern
+    private static final Logger logger = LoggerFactory.getLogger(PropertySourcesPropertyValues.class);
+
+	private static final Pattern                               COLLECTION_PROPERTY = Pattern
         .compile("\\[(\\d+)\\](\\.\\S+)?");
 
     private final PropertySources                              propertySources;
@@ -37,9 +41,9 @@ public class PropertySourcesPropertyValues implements PropertyValues {
 
     private final PropertyNamePatternsMatcher                  includes;
 
-    private final Map<String, PropertyValue>                   propertyValues      = new LinkedHashMap<String, PropertyValue>();
+    private final Map<String, PropertyValue>                   propertyValues      = new LinkedHashMap<>();
 
-    private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners    = new ConcurrentHashMap<String, PropertySource<?>>();
+    private final ConcurrentHashMap<String, PropertySource<?>> collectionOwners    = new ConcurrentHashMap<>();
 
     private final boolean                                      resolvePlaceholders;
 
@@ -142,6 +146,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
                 return resolver.getProperty(propertyName, Object.class);
             }
         } catch (RuntimeException ex) {
+			logger.error(ex.getMessage(), ex);
             // Probably could not resolve placeholders, ignore it here
         }
         return source.getProperty(propertyName);
@@ -162,6 +167,7 @@ public class PropertySourcesPropertyValues implements PropertyValues {
             try {
                 value = resolver.getProperty(propertyName, Object.class);
             } catch (RuntimeException ex) {
+				logger.error(ex.getMessage(), ex);
                 // Probably could not convert to Object, weird, but ignorable
             }
             if (value == null) {

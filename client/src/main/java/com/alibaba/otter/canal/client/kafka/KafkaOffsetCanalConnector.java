@@ -40,7 +40,7 @@ public class KafkaOffsetCanalConnector extends KafkaCanalConnector {
      * @return
      * @throws CanalClientException
      */
-    public List<KafkaMessage> getListWithoutAck(Long timeout, TimeUnit unit, long offset) throws CanalClientException {
+    public List<KafkaMessage> getListWithoutAck(Long timeout, TimeUnit unit, long offset) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -53,15 +53,15 @@ public class KafkaOffsetCanalConnector extends KafkaCanalConnector {
 
         ConsumerRecords<String, Message> records = kafkaConsumer.poll(unit.toMillis(timeout));
 
-        if (!records.isEmpty()) {
-            List<KafkaMessage> messages = new ArrayList<>();
-            for (ConsumerRecord<String, Message> record : records) {
-                KafkaMessage message = new KafkaMessage(record.value(), record.offset());
-                messages.add(message);
-            }
-            return messages;
-        }
-        return Lists.newArrayList();
+        if (records.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		List<KafkaMessage> messages = new ArrayList<>();
+		for (ConsumerRecord<String, Message> record : records) {
+		    KafkaMessage message = new KafkaMessage(record.value(), record.offset());
+		    messages.add(message);
+		}
+		return messages;
     }
 
     /**
@@ -73,7 +73,7 @@ public class KafkaOffsetCanalConnector extends KafkaCanalConnector {
      * @return
      * @throws CanalClientException
      */
-    public List<KafkaFlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit, long offset) throws CanalClientException {
+    public List<KafkaFlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit, long offset) {
         waitClientRunning();
         if (!running) {
             return Lists.newArrayList();
@@ -85,18 +85,17 @@ public class KafkaOffsetCanalConnector extends KafkaCanalConnector {
         }
 
         ConsumerRecords<String, String> records = kafkaConsumer2.poll(unit.toMillis(timeout));
-        if (!records.isEmpty()) {
-            List<KafkaFlatMessage> flatMessages = new ArrayList<>();
-            for (ConsumerRecord<String, String> record : records) {
-                String flatMessageJson = record.value();
-                FlatMessage flatMessage = JSON.parseObject(flatMessageJson, FlatMessage.class);
-                KafkaFlatMessage message = new KafkaFlatMessage(flatMessage, record.offset());
-                flatMessages.add(message);
-            }
-
-            return flatMessages;
-        }
-        return Lists.newArrayList();
+        if (records.isEmpty()) {
+			return Lists.newArrayList();
+		}
+		List<KafkaFlatMessage> flatMessages = new ArrayList<>();
+		for (ConsumerRecord<String, String> record : records) {
+		    String flatMessageJson = record.value();
+		    FlatMessage flatMessage = JSON.parseObject(flatMessageJson, FlatMessage.class);
+		    KafkaFlatMessage message = new KafkaFlatMessage(flatMessage, record.offset());
+		    flatMessages.add(message);
+		}
+		return flatMessages;
     }
 
     /**

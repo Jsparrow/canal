@@ -50,9 +50,8 @@ public abstract class AbstractCanalAdapterWorker {
     protected void writeOut(final Message message) {
         List<Future<Boolean>> futures = new ArrayList<>();
         // 组间适配器并行运行
-        canalOuterAdapters.forEach(outerAdapters -> {
-            final List<OuterAdapter> adapters = outerAdapters;
-            futures.add(groupInnerExecutorService.submit(() -> {
+        canalOuterAdapters.stream().map(outerAdapters -> outerAdapters).forEach(adapters -> {
+			futures.add(groupInnerExecutorService.submit(() -> {
                 try {
                     // 组内适配器穿行运行，尽量不要配置组内适配器
                     adapters.forEach(adapter -> {
@@ -74,11 +73,10 @@ public abstract class AbstractCanalAdapterWorker {
                     return false;
                 }
             }));
-
-            // 等待所有适配器写入完成
+			// 等待所有适配器写入完成
             // 由于是组间并发操作，所以将阻塞直到耗时最久的工作组操作完成
             RuntimeException exception = null;
-            for (Future<Boolean> future : futures) {
+			for (Future<Boolean> future : futures) {
                 try {
                     if (!future.get()) {
                         exception = new RuntimeException("Outer adapter sync failed! ");
@@ -87,10 +85,10 @@ public abstract class AbstractCanalAdapterWorker {
                     exception = new RuntimeException(e);
                 }
             }
-            if (exception != null) {
+			if (exception != null) {
                 throw exception;
             }
-        });
+		});
     }
 
     protected void writeOut(final List<FlatMessage> flatMessages) {
@@ -155,9 +153,7 @@ public abstract class AbstractCanalAdapterWorker {
                         // messages.forEach((message ->
                         // System.out.println(JSON.toJSONString(message))));
                     } else {
-                        for (final Object message : messages) {
-                            writeOut((Message) message);
-                        }
+                        messages.forEach((final Object message) -> writeOut((Message) message));
                     }
                     return true;
                 });
@@ -178,11 +174,12 @@ public abstract class AbstractCanalAdapterWorker {
                 return true;
             } else {
                 connector.rollback();
-                logger.error(e.getMessage() + " Error sync and rollback, execute times: " + (i + 1));
+                logger.error(new StringBuilder().append(e.getMessage()).append(" Error sync and rollback, execute times: ").append(i + 1).toString());
             }
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e1) {
+				logger.error(e1.getMessage(), e1);
                 // ignore
             }
         }
@@ -222,12 +219,13 @@ public abstract class AbstractCanalAdapterWorker {
     }
 
     public void start() {
-        if (!running) {
-            thread = new Thread(this::process);
-            thread.setUncaughtExceptionHandler(handler);
-            thread.start();
-            running = true;
-        }
+        if (running) {
+			return;
+		}
+		thread = new Thread(this::process);
+		thread.setUncaughtExceptionHandler(handler);
+		thread.start();
+		running = true;
     }
 
     protected abstract void process();
@@ -247,12 +245,13 @@ public abstract class AbstractCanalAdapterWorker {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }
             groupInnerExecutorService.shutdown();
             logger.info("destination {} adapters worker thread dead!", canalDestination);
-            canalOuterAdapters.forEach(outerAdapters -> outerAdapters.forEach(OuterAdapter::destroy));
+            canalOuterAdapters.stream().flatMap(List::stream).forEach(OuterAdapter::destroy);
             logger.info("destination {} all adapters destroyed!", canalDestination);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

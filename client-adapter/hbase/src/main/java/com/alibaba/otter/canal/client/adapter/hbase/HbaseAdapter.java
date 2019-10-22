@@ -70,24 +70,21 @@ public class HbaseAdapter implements OuterAdapter {
                     hbaseMapping.put(key, mappingConfig);
                 }
             });
-            for (Map.Entry<String, MappingConfig> entry : hbaseMapping.entrySet()) {
+            hbaseMapping.entrySet().forEach(entry -> {
                 String configName = entry.getKey();
                 MappingConfig mappingConfig = entry.getValue();
                 String k;
                 if (envProperties != null && !"tcp".equalsIgnoreCase(envProperties.getProperty("canal.conf.mode"))) {
-                    k = StringUtils.trimToEmpty(mappingConfig.getDestination()) + "-"
-                        + StringUtils.trimToEmpty(mappingConfig.getGroupId()) + "_"
-                        + mappingConfig.getHbaseMapping().getDatabase() + "-"
-                        + mappingConfig.getHbaseMapping().getTable();
+                    k = new StringBuilder().append(StringUtils.trimToEmpty(mappingConfig.getDestination())).append("-").append(StringUtils.trimToEmpty(mappingConfig.getGroupId())).append("_").append(mappingConfig.getHbaseMapping().getDatabase())
+							.append("-").append(mappingConfig.getHbaseMapping().getTable()).toString();
                 } else {
-                    k = StringUtils.trimToEmpty(mappingConfig.getDestination()) + "_"
-                        + mappingConfig.getHbaseMapping().getDatabase() + "-"
-                        + mappingConfig.getHbaseMapping().getTable();
+                    k = new StringBuilder().append(StringUtils.trimToEmpty(mappingConfig.getDestination())).append("_").append(mappingConfig.getHbaseMapping().getDatabase()).append("-").append(mappingConfig.getHbaseMapping().getTable())
+							.toString();
                 }
                 Map<String, MappingConfig> configMap = mappingConfigCache.computeIfAbsent(k,
                     k1 -> new ConcurrentHashMap<>());
                 configMap.put(configName, mappingConfig);
-            }
+            });
 
             Map<String, String> properties = configuration.getProperties();
 
@@ -108,9 +105,7 @@ public class HbaseAdapter implements OuterAdapter {
         if (dmls == null || dmls.isEmpty()) {
             return;
         }
-        for (Dml dml : dmls) {
-            sync(dml);
-        }
+        dmls.forEach(this::sync);
     }
 
     private void sync(Dml dml) {
@@ -123,25 +118,27 @@ public class HbaseAdapter implements OuterAdapter {
         String table = dml.getTable();
         Map<String, MappingConfig> configMap;
         if (envProperties != null && !"tcp".equalsIgnoreCase(envProperties.getProperty("canal.conf.mode"))) {
-            configMap = mappingConfigCache.get(destination + "-" + groupId + "_" + database + "-" + table);
+            configMap = mappingConfigCache.get(new StringBuilder().append(destination).append("-").append(groupId).append("_").append(database).append("-")
+					.append(table).toString());
         } else {
-            configMap = mappingConfigCache.get(destination + "_" + database + "-" + table);
+            configMap = mappingConfigCache.get(new StringBuilder().append(destination).append("_").append(database).append("-").append(table).toString());
         }
-        if (configMap != null) {
-            List<MappingConfig> configs = new ArrayList<>();
-            configMap.values().forEach(config -> {
-                if (StringUtils.isNotEmpty(config.getGroupId())) {
-                    if (config.getGroupId().equals(dml.getGroupId())) {
-                        configs.add(config);
-                    }
-                } else {
-                    configs.add(config);
-                }
-            });
-            if (!configs.isEmpty()) {
-                configs.forEach(config -> hbaseSyncService.sync(config, dml));
-            }
-        }
+        if (configMap == null) {
+			return;
+		}
+		List<MappingConfig> configs = new ArrayList<>();
+		configMap.values().forEach(config -> {
+		    if (StringUtils.isNotEmpty(config.getGroupId())) {
+		        if (config.getGroupId().equals(dml.getGroupId())) {
+		            configs.add(config);
+		        }
+		    } else {
+		        configs.add(config);
+		    }
+		});
+		if (!configs.isEmpty()) {
+		    configs.forEach(config -> hbaseSyncService.sync(config, dml));
+		}
     }
 
     @Override

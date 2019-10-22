@@ -22,6 +22,8 @@ import com.alibaba.otter.canal.store.memory.MemoryEventStoreWithBuffer;
 import com.alibaba.otter.canal.store.model.BatchMode;
 import com.alibaba.otter.canal.store.model.Event;
 import com.alibaba.otter.canal.store.model.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 多线程的put/get/ack/rollback测试
@@ -31,7 +33,8 @@ import com.alibaba.otter.canal.store.model.Events;
  */
 public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
 
-    private ExecutorService            executor = Executors.newFixedThreadPool(2); // 1
+    private static final Logger logger = LoggerFactory.getLogger(MemoryEventStoreMultiThreadTest.class);
+	private ExecutorService            executor = Executors.newFixedThreadPool(2); // 1
                                                                                    // producer
                                                                                    // ,1
                                                                                    // cousmer
@@ -63,12 +66,14 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
         try {
             Thread.sleep(30 * 1000L);
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
 
         mutex.set(false);
         try {
             latch.await();
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
         executor.shutdown();
 
@@ -83,7 +88,8 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
 
     class Producer implements Runnable {
 
-        private BooleanMutex mutex;
+        private final Logger logger1 = LoggerFactory.getLogger(Producer.class);
+		private BooleanMutex mutex;
         private int          freq;
 
         public Producer(BooleanMutex mutex, int freq){
@@ -91,26 +97,29 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
             this.freq = freq;
         }
 
-        public void run() {
+        @Override
+		public void run() {
             long offest = 0;
             while (true) {
                 try {
                     mutex.get();
                     Thread.sleep(RandomUtils.nextInt(freq));
                 } catch (InterruptedException e) {
-                    return;
+                    logger1.error(e.getMessage(), e);
+					return;
                 }
                 Event event = buildEvent("1", offest++, 1L);
 
                 try {
                     Thread.sleep(RandomUtils.nextInt(freq));
                 } catch (InterruptedException e) {
-                    return;
+                    logger1.error(e.getMessage(), e);
+					return;
                 }
                 try {
                     eventStore.put(event);
-                } catch (CanalStoreException e) {
-                } catch (InterruptedException e) {
+                } catch (InterruptedException | CanalStoreException e) {
+					logger1.error(e.getMessage(), e);
                 }
             }
         }
@@ -118,10 +127,11 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
 
     class Cosumer implements Runnable {
 
-        private CountDownLatch latch;
+        private final Logger logger1 = LoggerFactory.getLogger(Cosumer.class);
+		private CountDownLatch latch;
         private int            freq;
         private int            batchSize;
-        private List<Long>     result = new ArrayList<Long>();
+        private List<Long>     result = new ArrayList<>();
 
         public Cosumer(CountDownLatch latch, int freq, int batchSize){
             this.latch = latch;
@@ -129,13 +139,15 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
             this.batchSize = batchSize;
         }
 
-        public void run() {
+        @Override
+		public void run() {
             Position first = eventStore.getFirstPosition();
             while (first == null) {
                 try {
                     Thread.sleep(RandomUtils.nextInt(freq));
                 } catch (InterruptedException e) {
-                    latch.countDown();
+                    logger1.error(e.getMessage(), e);
+					latch.countDown();
                     return;
                 }
 
@@ -148,6 +160,7 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
                 try {
                     Thread.sleep(RandomUtils.nextInt(freq));
                 } catch (InterruptedException e) {
+					logger1.error(e.getMessage(), e);
                 }
 
                 try {
@@ -156,30 +169,26 @@ public class MemoryEventStoreMultiThreadTest extends MemoryEventStoreBase {
                     // batchSize);
                     if (!CollectionUtils.isEmpty(entrys.getEvents())) {
                         if (entrys.getEvents().size() != batchSize) {
-                            System.out.println("get size:" + entrys.getEvents().size() + " with not full batchSize:"
-                                               + batchSize);
+                            logger1.info(new StringBuilder().append("get size:").append(entrys.getEvents().size()).append(" with not full batchSize:").append(batchSize).toString());
                         }
 
                         first = entrys.getPositionRange().getEnd();
-                        for (Event event : entrys.getEvents()) {
-                            this.result.add(event.getPosition());
-                        }
+                        entrys.getEvents().forEach(event -> this.result.add(event.getPosition()));
                         emptyCount = 0;
 
-                        System.out.println("offest : " + entrys.getEvents().get(0).getPosition() + " , count :"
-                                           + entrys.getEvents().size());
+                        logger1.info(new StringBuilder().append("offest : ").append(entrys.getEvents().get(0).getPosition()).append(" , count :").append(entrys.getEvents().size()).toString());
                         ackCount++;
                         if (ackCount == 1) {
                             eventStore.cleanUntil(entrys.getPositionRange().getEnd());
-                            System.out.println("first position : " + eventStore.getFirstPosition());
+                            logger1.info("first position : " + eventStore.getFirstPosition());
                             ackCount = 0;
                         }
                     } else {
                         emptyCount++;
-                        System.out.println("empty events for " + emptyCount);
+                        logger1.info("empty events for " + emptyCount);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger1.error(e.getMessage(), e);
                 }
             }
 

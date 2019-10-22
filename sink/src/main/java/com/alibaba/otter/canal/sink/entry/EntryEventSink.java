@@ -29,7 +29,7 @@ import com.alibaba.otter.canal.store.model.Event;
  * @author jianghang 2012-7-4 下午03:23:16
  * @version 1.0.0
  */
-public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry>> implements CanalEventSink<List<CanalEntry.Entry>> {
+public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry>> {
 
     private static final Logger    logger                        = LoggerFactory.getLogger(EntryEventSink.class);
     private static final int       maxFullTimes                  = 10;
@@ -50,7 +50,8 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
         addHandler(new HeartBeatEntryEventHandler());
     }
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         Assert.notNull(eventStore);
 
@@ -65,7 +66,8 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
         }
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
 
         for (CanalEventDownStreamHandler handler : getHandlers()) {
@@ -80,9 +82,9 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
         return false;
     }
 
-    public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                           throws CanalSinkException,
-                                                                                                           InterruptedException {
+    @Override
+	public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
+                                                                                                           throws InterruptedException {
         return sinkData(entrys, remoteAddress);
     }
 
@@ -90,7 +92,7 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
                                                                                             throws InterruptedException {
         boolean hasRowData = false;
         boolean hasHeartBeat = false;
-        List<Event> events = new ArrayList<Event>();
+        List<Event> events = new ArrayList<>();
         for (CanalEntry.Entry entry : entrys) {
             if (!doFilter(entry)) {
                 continue;
@@ -137,20 +139,18 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
     }
 
     protected boolean doFilter(CanalEntry.Entry entry) {
-        if (filter != null && entry.getEntryType() == EntryType.ROWDATA) {
-            String name = getSchemaNameAndTableName(entry);
-            boolean need = filter.filter(name);
-            if (!need) {
-                logger.debug("filter name[{}] entry : {}:{}",
-                    name,
-                    entry.getHeader().getLogfileName(),
-                    entry.getHeader().getLogfileOffset());
-            }
-
-            return need;
-        } else {
-            return true;
-        }
+        if (!(filter != null && entry.getEntryType() == EntryType.ROWDATA)) {
+			return true;
+		}
+		String name = getSchemaNameAndTableName(entry);
+		boolean need = filter.filter(name);
+		if (!need) {
+		    logger.debug("filter name[{}] entry : {}:{}",
+		        name,
+		        entry.getHeader().getLogfileName(),
+		        entry.getHeader().getLogfileOffset());
+		}
+		return need;
     }
 
     protected boolean doSink(List<Event> events) {
@@ -200,7 +200,7 @@ public class EntryEventSink extends AbstractCanalEventSink<List<CanalEntry.Entry
     }
 
     private String getSchemaNameAndTableName(CanalEntry.Entry entry) {
-        return entry.getHeader().getSchemaName() + "." + entry.getHeader().getTableName();
+        return new StringBuilder().append(entry.getHeader().getSchemaName()).append(".").append(entry.getHeader().getTableName()).toString();
     }
 
     public void setEventStore(CanalEventStore<Event> eventStore) {

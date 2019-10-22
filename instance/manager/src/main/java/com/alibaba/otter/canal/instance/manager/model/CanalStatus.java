@@ -13,10 +13,10 @@ public enum CanalStatus {
     STOP;
 
     public boolean isStart() {
-        return this.equals(CanalStatus.START);
+        return this == CanalStatus.START;
     }
 
     public boolean isStop() {
-        return this.equals(CanalStatus.STOP);
+        return this == CanalStatus.STOP;
     }
 }

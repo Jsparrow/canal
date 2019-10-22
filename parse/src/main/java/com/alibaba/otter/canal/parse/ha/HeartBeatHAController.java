@@ -26,11 +26,13 @@ public class HeartBeatHAController extends AbstractCanalLifeCycle implements Can
 
     }
 
-    public void onSuccess(long costTime) {
+    @Override
+	public void onSuccess(long costTime) {
         failedTimes = 0;
     }
 
-    public void onFailed(Throwable e) {
+    @Override
+	public void onFailed(Throwable e) {
         failedTimes++;
         // 检查一下是否超过失败次数
         synchronized (this) {

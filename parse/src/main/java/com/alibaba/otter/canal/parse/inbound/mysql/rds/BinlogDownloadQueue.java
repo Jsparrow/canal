@@ -53,8 +53,8 @@ public class BinlogDownloadQueue {
     private static final Logger             logger        = LoggerFactory.getLogger(BinlogDownloadQueue.class);
     private static final int                TIMEOUT       = 10000;
 
-    private LinkedBlockingQueue<BinlogFile> downloadQueue = new LinkedBlockingQueue<BinlogFile>();
-    private LinkedBlockingQueue<Runnable>   taskQueue     = new LinkedBlockingQueue<Runnable>();
+    private LinkedBlockingQueue<BinlogFile> downloadQueue = new LinkedBlockingQueue<>();
+    private LinkedBlockingQueue<Runnable>   taskQueue     = new LinkedBlockingQueue<>();
     private LinkedList<BinlogFile>          binlogList;
     private final int                       batchFileSize;
     private Thread                          downloadThread;
@@ -74,11 +74,11 @@ public class BinlogDownloadQueue {
     }
 
     private void prepareBinlogList() {
-        for (BinlogFile binlog : this.binlogList) {
+        this.binlogList.forEach(binlog -> {
             String fileName = StringUtils.substringBetween(binlog.getDownloadLink(), "mysql-bin.", "?");
             binlog.setFileName(fileName);
-        }
-        Collections.sort(this.binlogList, new Comparator<BinlogFile>() {
+        });
+        this.binlogList.sort(new Comparator<BinlogFile>() {
 
             @Override
             public int compare(BinlogFile o1, BinlogFile o2) {
@@ -170,6 +170,7 @@ public class BinlogDownloadQueue {
             downloadThread.interrupt();
             downloadThread.join();// 等待其结束
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         } finally {
             downloadThread = null;
@@ -187,13 +188,7 @@ public class BinlogDownloadQueue {
             builder.setMaxConnPerRoute(50);
             builder.setMaxConnTotal(100);
             // 创建支持忽略证书的https
-            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
-
-                @Override
-                public boolean isTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-                    return true;
-                }
-            }).build();
+            final SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (X509Certificate[] x509Certificates, String s) -> true).build();
 
             httpClient = HttpClientBuilder.create()
                 .setSSLContext(sslContext)
@@ -216,7 +211,7 @@ public class BinlogDownloadQueue {
         HttpResponse response = httpClient.execute(httpGet);
         int statusCode = response.getStatusLine().getStatusCode();
         if (statusCode != HttpResponseStatus.OK.code()) {
-            throw new RuntimeException("download failed , url:" + downloadLink + " , statusCode:" + statusCode);
+            throw new RuntimeException(new StringBuilder().append("download failed , url:").append(downloadLink).append(" , statusCode:").append(statusCode).toString());
         }
         saveFile(new File(destDir), "mysql-bin." + fileName, response);
     }
@@ -250,7 +245,7 @@ public class BinlogDownloadQueue {
                         while ((read = tais.read(buffer)) != -1) {
                             bos.write(buffer, 0, read);
                         }
-                        logger.info("download file " + tarFile.getName() + " end!");
+                        logger.info(new StringBuilder().append("download file ").append(tarFile.getName()).append(" end!").toString());
                         tarFile.renameTo(new File(parentFile, name));
                     } finally {
                         IOUtils.closeQuietly(bos);
@@ -278,12 +273,12 @@ public class BinlogDownloadQueue {
                         copySize += len;
                         long progress = copySize * 100 / totalSize;
                         if (progress >= nextPrintProgress) {
-                            logger.info("download " + file.getName() + " progress : " + progress
-                                        + "% , download size : " + copySize + ", total size : " + totalSize);
+                            logger.info(new StringBuilder().append("download ").append(file.getName()).append(" progress : ").append(progress).append("% , download size : ")
+									.append(copySize).append(", total size : ").append(totalSize).toString());
                             nextPrintProgress += 10;
                         }
                     }
-                    logger.info("download file " + file.getName() + " end!");
+                    logger.info(new StringBuilder().append("download file ").append(file.getName()).append(" end!").toString());
                     fos.flush();
                 } finally {
                     IOUtils.closeQuietly(fos);
@@ -315,10 +310,10 @@ public class BinlogDownloadQueue {
                                 break;
                             } catch (Throwable e) {
                                 if (retry % 10 == 0) {
-                                    retry = retry + 1;
+                                    retry += 1;
                                     try {
-                                        logger.warn("download failed + " + binlogFile.toString() + "], retry : "
-                                                    + retry, e);
+                                        logger.warn(new StringBuilder().append("download failed + ").append(binlogFile.toString()).append("], retry : ").append(retry)
+												.toString(), e);
                                         // File errorFile = new File(destDir,
                                         // "error.txt");
                                         // FileWriter writer = new
@@ -331,7 +326,7 @@ public class BinlogDownloadQueue {
                                         logger.error("write error failed", e1);
                                     }
                                 } else {
-                                    retry = retry + 1;
+                                    retry += 1;
                                 }
                             }
                         }

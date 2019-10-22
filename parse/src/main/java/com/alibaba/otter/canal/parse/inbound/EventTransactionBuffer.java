@@ -37,7 +37,8 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
         this.flushCallback = flushCallback;
     }
 
-    public void start() throws CanalStoreException {
+    @Override
+	public void start() {
         super.start();
         if (Integer.bitCount(bufferSize) != 1) {
             throw new IllegalArgumentException("bufferSize must be a power of 2");
@@ -48,7 +49,8 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
         entries = new CanalEntry.Entry[bufferSize];
     }
 
-    public void stop() throws CanalStoreException {
+    @Override
+	public void stop() {
         putSequence.set(INIT_SQEUENCE);
         flushSequence.set(INIT_SQEUENCE);
 
@@ -114,15 +116,15 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
         long start = this.flushSequence.get() + 1;
         long end = this.putSequence.get();
 
-        if (start <= end) {
-            List<CanalEntry.Entry> transaction = new ArrayList<CanalEntry.Entry>();
-            for (long next = start; next <= end; next++) {
-                transaction.add(this.entries[getIndex(next)]);
-            }
-
-            flushCallback.flush(transaction);
-            flushSequence.set(end);// flush成功后，更新flush位置
-        }
+        if (start > end) {
+			return;
+		}
+		List<CanalEntry.Entry> transaction = new ArrayList<>();
+		for (long next = start; next <= end; next++) {
+		    transaction.add(this.entries[getIndex(next)]);
+		}
+		flushCallback.flush(transaction);
+		flushSequence.set(end);// flush成功后，更新flush位置
     }
 
     /**
@@ -163,7 +165,7 @@ public class EventTransactionBuffer extends AbstractCanalLifeCycle {
      */
     public static interface TransactionFlushCallback {
 
-        public void flush(List<CanalEntry.Entry> transaction) throws InterruptedException;
+        void flush(List<CanalEntry.Entry> transaction) throws InterruptedException;
     }
 
 }

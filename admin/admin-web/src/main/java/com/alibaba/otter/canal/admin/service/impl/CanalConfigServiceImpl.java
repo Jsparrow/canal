@@ -26,12 +26,14 @@ import com.alibaba.otter.canal.protocol.SecurityUtil;
 @Service
 public class CanalConfigServiceImpl implements CanalConfigService {
 
-    private Logger              logger               = LoggerFactory.getLogger(CanalConfigServiceImpl.class);
-
     private static final String CANAL_GLOBAL_CONFIG  = "canal.properties";
-    private static final String CANAL_ADAPTER_CONFIG = "application.yml";
 
-    public CanalConfig getCanalConfig(Long clusterId, Long serverId) {
+	private static final String CANAL_ADAPTER_CONFIG = "application.yml";
+
+	private Logger              logger               = LoggerFactory.getLogger(CanalConfigServiceImpl.class);
+
+	@Override
+	public CanalConfig getCanalConfig(Long clusterId, Long serverId) {
         CanalConfig config = null;
         if (clusterId != null && clusterId != 0) {
             config = CanalConfig.find.query().where().eq("clusterId", clusterId).findOne();
@@ -49,16 +51,16 @@ public class CanalConfigServiceImpl implements CanalConfigService {
         } else {
             throw new ServiceException("clusterId and serverId are all empty");
         }
-        if (config == null) {
-            config = new CanalConfig();
-            config.setName(CANAL_GLOBAL_CONFIG);
-            return config;
-        }
-
-        return config;
+        if (config != null) {
+			return config;
+		}
+		config = new CanalConfig();
+		config.setName(CANAL_GLOBAL_CONFIG);
+		return config;
     }
 
-    public CanalConfig getCanalConfigSummary() {
+	@Override
+	public CanalConfig getCanalConfigSummary() {
         return CanalConfig.find.query()
             .setDisableLazyLoading(true)
             .select("name, modifiedTime")
@@ -67,31 +69,32 @@ public class CanalConfigServiceImpl implements CanalConfigService {
             .findOne();
     }
 
-    public CanalConfig getAdapterConfig() {
+	@Override
+	public CanalConfig getAdapterConfig() {
         long id = 2L;
         CanalConfig config = CanalConfig.find.byId(id);
-        if (config == null) {
-            String context = loadDefaultConf(CANAL_ADAPTER_CONFIG);
-            if (context == null) {
-                return null;
-            }
-
-            config = new CanalConfig();
-            config.setId(id);
-            config.setName(CANAL_ADAPTER_CONFIG);
-            config.setModifiedTime(new Date());
-            config.setContent(context);
-            return config;
-        }
-
-        return config;
+        if (config != null) {
+			return config;
+		}
+		String context = loadDefaultConf(CANAL_ADAPTER_CONFIG);
+		if (context == null) {
+		    return null;
+		}
+		config = new CanalConfig();
+		config.setId(id);
+		config.setName(CANAL_ADAPTER_CONFIG);
+		config.setModifiedTime(new Date());
+		config.setContent(context);
+		return config;
     }
 
-    public void updateContent(CanalConfig canalConfig) {
+	@Override
+	public void updateContent(CanalConfig canalConfig) {
         try {
             String contentMd5 = SecurityUtil.md5String(canalConfig.getContent());
             canalConfig.setContentMd5(contentMd5);
         } catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
         if (canalConfig.getId() != null) {
@@ -105,7 +108,7 @@ public class CanalConfigServiceImpl implements CanalConfigService {
         }
     }
 
-    private String loadDefaultConf(String confFileName) {
+	private String loadDefaultConf(String confFileName) {
         InputStream input = null;
         try {
             input = Thread.currentThread().getContextClassLoader().getResourceAsStream("conf/" + confFileName);
@@ -115,7 +118,7 @@ public class CanalConfigServiceImpl implements CanalConfigService {
 
             return StringUtils.join(IOUtils.readLines(input), "\n");
         } catch (IOException e) {
-            logger.error("find " + confFileName + " is error!", e);
+            logger.error(new StringBuilder().append("find ").append(confFileName).append(" is error!").toString(), e);
             return null;
         } finally {
             if (input != null) {

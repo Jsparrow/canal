@@ -8,89 +8,111 @@ import com.alibaba.otter.canal.store.CanalEventStore;
 import com.alibaba.otter.canal.store.CanalStoreException;
 import com.alibaba.otter.canal.store.model.Event;
 import com.alibaba.otter.canal.store.model.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DummyEventStore implements CanalEventStore<Event> {
 
-    public void ack(Position position) throws CanalStoreException {
+    private static final Logger logger = LoggerFactory.getLogger(DummyEventStore.class);
+
+	@Override
+	public void ack(Position position) {
 
     }
 
-    public void ack(Position position, Long seqId) throws CanalStoreException {
+    @Override
+	public void ack(Position position, Long seqId) {
 
     }
 
-    public Events get(Position start, int batchSize) throws InterruptedException, CanalStoreException {
+    @Override
+	public Events get(Position start, int batchSize) throws InterruptedException {
         return null;
     }
 
-    public Events get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException,
-                                                                                 CanalStoreException {
+    @Override
+	public Events get(Position start, int batchSize, long timeout, TimeUnit unit) throws InterruptedException {
         return null;
     }
 
-    public Position getFirstPosition() throws CanalStoreException {
+    @Override
+	public Position getFirstPosition() {
         return null;
     }
 
-    public Position getLatestPosition() throws CanalStoreException {
+    @Override
+	public Position getLatestPosition() {
         return null;
     }
 
-    public void rollback() throws CanalStoreException {
+    @Override
+	public void rollback() {
 
     }
 
-    public Events tryGet(Position start, int batchSize) throws CanalStoreException {
+    @Override
+	public Events tryGet(Position start, int batchSize) {
         return null;
     }
 
-    public boolean isStart() {
+    @Override
+	public boolean isStart() {
         return false;
     }
 
-    public void start() {
+    @Override
+	public void start() {
 
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
 
     }
 
-    public void cleanAll() throws CanalStoreException {
+    @Override
+	public void cleanAll() {
     }
 
-    public void cleanUntil(Position position) throws CanalStoreException {
+    @Override
+	public void cleanUntil(Position position) {
 
     }
 
-    public void put(Event data) throws InterruptedException, CanalStoreException {
-        System.out.println("time:" + data.getExecuteTime());
+    @Override
+	public void put(Event data) throws InterruptedException {
+        logger.info("time:" + data.getExecuteTime());
     }
 
-    public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
-        System.out.println("time:" + data.getExecuteTime());
+    @Override
+	public boolean put(Event data, long timeout, TimeUnit unit) throws InterruptedException {
+        logger.info("time:" + data.getExecuteTime());
         return true;
     }
 
-    public boolean tryPut(Event data) throws CanalStoreException {
-        System.out.println("time:" + data.getExecuteTime());
+    @Override
+	public boolean tryPut(Event data) {
+        logger.info("time:" + data.getExecuteTime());
         return true;
     }
 
-    public void put(List<Event> datas) throws InterruptedException, CanalStoreException {
+    @Override
+	public void put(List<Event> datas) throws InterruptedException {
         Event data = datas.get(0);
-        System.out.println("time:" + data.getExecuteTime());
+        logger.info("time:" + data.getExecuteTime());
     }
 
-    public boolean put(List<Event> datas, long timeout, TimeUnit unit) throws InterruptedException, CanalStoreException {
+    @Override
+	public boolean put(List<Event> datas, long timeout, TimeUnit unit) throws InterruptedException {
         Event data = datas.get(0);
-        System.out.println("time:" + data.getExecuteTime());
+        logger.info("time:" + data.getExecuteTime());
         return true;
     }
 
-    public boolean tryPut(List<Event> datas) throws CanalStoreException {
+    @Override
+	public boolean tryPut(List<Event> datas) {
         Event data = datas.get(0);
-        System.out.println("time:" + data.getExecuteTime());
+        logger.info("time:" + data.getExecuteTime());
         return true;
     }
 

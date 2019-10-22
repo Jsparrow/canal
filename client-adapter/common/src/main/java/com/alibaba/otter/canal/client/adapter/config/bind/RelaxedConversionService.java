@@ -12,6 +12,8 @@ import org.springframework.core.convert.converter.ConverterFactory;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Internal {@link ConversionService} used by {@link RelaxedDataBinder} to
@@ -23,7 +25,9 @@ import org.springframework.util.Assert;
  */
 class RelaxedConversionService implements ConversionService {
 
-    private final ConversionService        conversionService;
+    private static final Logger logger = LoggerFactory.getLogger(RelaxedConversionService.class);
+
+	private final ConversionService        conversionService;
 
     private final GenericConversionService additionalConverters;
 
@@ -66,6 +70,7 @@ class RelaxedConversionService implements ConversionService {
             try {
                 return this.conversionService.convert(source, sourceType, targetType);
             } catch (ConversionFailedException ex) {
+				logger.error(ex.getMessage(), ex);
                 // Ignore and try the additional converters
             }
         }
@@ -85,7 +90,7 @@ class RelaxedConversionService implements ConversionService {
             while (enumType != null && !enumType.isEnum()) {
                 enumType = enumType.getSuperclass();
             }
-            Assert.notNull(enumType, "The target type " + targetType.getName() + " does not refer to an enum");
+            Assert.notNull(enumType, new StringBuilder().append("The target type ").append(targetType.getName()).append(" does not refer to an enum").toString());
             return new RelaxedConversionService.StringToEnumIgnoringCaseConverterFactory.StringToEnum(enumType);
         }
 
@@ -117,7 +122,7 @@ class RelaxedConversionService implements ConversionService {
                     }
                 }
                 throw new IllegalArgumentException(
-                    "No enum constant " + this.enumType.getCanonicalName() + "." + source);
+                    new StringBuilder().append("No enum constant ").append(this.enumType.getCanonicalName()).append(".").append(source).toString());
             }
 
         }

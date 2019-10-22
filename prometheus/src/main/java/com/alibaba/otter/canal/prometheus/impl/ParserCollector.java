@@ -44,15 +44,11 @@ public class ParserCollector extends Collector implements InstanceRegistry {
 
     private ParserCollector() {}
 
-    private static class SingletonHolder {
-        private static final ParserCollector SINGLETON = new ParserCollector();
-    }
-
     public static ParserCollector instance() {
         return SingletonHolder.SINGLETON;
     }
 
-    @Override
+	@Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> mfs = new ArrayList<>();
         CounterMetricFamily bytesCounter = new CounterMetricFamily(RECEIVED_BINLOG,
@@ -61,17 +57,15 @@ public class ParserCollector extends Collector implements InstanceRegistry {
                 MODE_HELP, modeLabels);
         CounterMetricFamily blockingCounter = new CounterMetricFamily(PUBLISH_BLOCKING,
                 PUBLISH_BLOCKING_HELP, parserLabels);
-        for (ParserMetricsHolder emh : instances.values()) {
+        instances.values().forEach(emh -> {
             if (emh instanceof GroupParserMetricsHolder) {
                 GroupParserMetricsHolder group = (GroupParserMetricsHolder) emh;
-                for (ParserMetricsHolder semh :  group.holders) {
-                    singleCollect(bytesCounter, blockingCounter, modeGauge, semh);
-                }
+                group.holders.forEach(semh -> singleCollect(bytesCounter, blockingCounter, modeGauge, semh));
             }
             else {
                 singleCollect(bytesCounter, blockingCounter, modeGauge, emh);
             }
-        }
+        });
         mfs.add(bytesCounter);
         mfs.add(modeGauge);
         if (!blockingCounter.samples.isEmpty()) {
@@ -80,7 +74,7 @@ public class ParserCollector extends Collector implements InstanceRegistry {
         return mfs;
     }
 
-    private void singleCollect(CounterMetricFamily bytesCounter, CounterMetricFamily blockingCounter, GaugeMetricFamily modeGauge, ParserMetricsHolder holder) {
+	private void singleCollect(CounterMetricFamily bytesCounter, CounterMetricFamily blockingCounter, GaugeMetricFamily modeGauge, ParserMetricsHolder holder) {
         if (holder.isParallel) {
             blockingCounter.addMetric(holder.parserLabelValues, (holder.eventsPublishBlockingTime.doubleValue() / NANO_PER_MILLI));
         }
@@ -88,7 +82,7 @@ public class ParserCollector extends Collector implements InstanceRegistry {
         bytesCounter.addMetric(holder.parserLabelValues, holder.receivedBinlogBytes.doubleValue());
     }
 
-    @Override
+	@Override
     public void register(CanalInstance instance) {
         final String destination = instance.getDestination();
         ParserMetricsHolder holder;
@@ -107,7 +101,7 @@ public class ParserCollector extends Collector implements InstanceRegistry {
         }
     }
 
-    private ParserMetricsHolder singleHolder(String destination, AbstractMysqlEventParser parser, String id) {
+	private ParserMetricsHolder singleHolder(String destination, AbstractMysqlEventParser parser, String id) {
         ParserMetricsHolder holder = new ParserMetricsHolder();
         holder.parserLabelValues = Arrays.asList(destination, id);
         holder.modeLabelValues = Arrays.asList(destination, Boolean.toString(parser.isParallel()));
@@ -119,7 +113,7 @@ public class ParserCollector extends Collector implements InstanceRegistry {
         return holder;
     }
 
-    private GroupParserMetricsHolder groupHolder(String destination, GroupEventParser group) {
+	private GroupParserMetricsHolder groupHolder(String destination, GroupEventParser group) {
         List<CanalEventParser> parsers = group.getEventParsers();
         GroupParserMetricsHolder groupHolder = new GroupParserMetricsHolder();
         int num = parsers.size();
@@ -135,10 +129,14 @@ public class ParserCollector extends Collector implements InstanceRegistry {
         return groupHolder;
     }
 
-    @Override
+	@Override
     public void unregister(CanalInstance instance) {
         final String destination = instance.getDestination();
         instances.remove(destination);
+    }
+
+	private static class SingletonHolder {
+        private static final ParserCollector SINGLETON = new ParserCollector();
     }
 
     private class ParserMetricsHolder {

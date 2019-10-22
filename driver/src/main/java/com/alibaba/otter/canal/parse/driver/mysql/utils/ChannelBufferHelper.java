@@ -13,7 +13,7 @@ import com.alibaba.otter.canal.parse.driver.mysql.packets.PacketWithHeaderPacket
 
 public class ChannelBufferHelper {
 
-    protected transient final Logger logger = LoggerFactory.getLogger(ChannelBufferHelper.class);
+    protected final transient Logger logger = LoggerFactory.getLogger(ChannelBufferHelper.class);
 
     public final HeaderPacket assembleHeaderPacket(ChannelBuffer buffer) {
         HeaderPacket header = new HeaderPacket();

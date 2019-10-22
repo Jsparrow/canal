@@ -6,6 +6,7 @@ import java.util.List;
 import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.sink.AbstractCanalEventDownStreamHandler;
 import com.alibaba.otter.canal.store.model.Event;
+import java.util.stream.Collectors;
 
 /**
  * 处理一下一下heartbeat数据
@@ -15,7 +16,8 @@ import com.alibaba.otter.canal.store.model.Event;
  */
 public class HeartBeatEntryEventHandler extends AbstractCanalEventDownStreamHandler<List<Event>> {
 
-    public List<Event> before(List<Event> events) {
+    @Override
+	public List<Event> before(List<Event> events) {
         boolean existHeartBeat = false;
         for (Event event : events) {
             if (event.getEntryType() == EntryType.HEARTBEAT) {
@@ -27,12 +29,8 @@ public class HeartBeatEntryEventHandler extends AbstractCanalEventDownStreamHand
             return events;
         } else {
             // 目前heartbeat和其他事件是分离的，保险一点还是做一下检查处理
-            List<Event> result = new ArrayList<Event>();
-            for (Event event : events) {
-                if (event.getEntryType() != EntryType.HEARTBEAT) {
-                    result.add(event);
-                }
-            }
+            List<Event> result = new ArrayList<>();
+            result.addAll(events.stream().filter(event -> event.getEntryType() != EntryType.HEARTBEAT).collect(Collectors.toList()));
 
             return result;
         }

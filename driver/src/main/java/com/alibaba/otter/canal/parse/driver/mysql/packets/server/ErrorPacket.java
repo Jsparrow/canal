@@ -26,7 +26,8 @@ public class ErrorPacket extends PacketWithHeaderPacket {
      * 
      * </pre>
      */
-    public void fromBytes(byte[] data) {
+    @Override
+	public void fromBytes(byte[] data) {
         int index = 0;
         // 1. read field count
         this.fieldCount = data[0];
@@ -45,14 +46,15 @@ public class ErrorPacket extends PacketWithHeaderPacket {
         // end read
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 
     @Override
     public String toString() {
-        return "ErrorPacket [errorNumber=" + errorNumber + ", fieldCount=" + fieldCount + ", message=" + message
-               + ", sqlState=" + sqlStateToString() + ", sqlStateMarker=" + (char) sqlStateMarker + "]";
+        return new StringBuilder().append("ErrorPacket [errorNumber=").append(errorNumber).append(", fieldCount=").append(fieldCount).append(", message=").append(message).append(", sqlState=")
+				.append(sqlStateToString()).append(", sqlStateMarker=").append((char) sqlStateMarker).append("]").toString();
     }
 
     private String sqlStateToString() {

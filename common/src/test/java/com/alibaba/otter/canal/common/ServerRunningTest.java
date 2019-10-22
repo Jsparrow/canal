@@ -16,11 +16,14 @@ import com.alibaba.otter.canal.common.zookeeper.ZookeeperPathUtils;
 import com.alibaba.otter.canal.common.zookeeper.running.ServerRunningData;
 import com.alibaba.otter.canal.common.zookeeper.running.ServerRunningListener;
 import com.alibaba.otter.canal.common.zookeeper.running.ServerRunningMonitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class ServerRunningTest extends AbstractZkTest {
 
-    private ZkClientx zkclientx = new ZkClientx(cluster1 + ";" + cluster2);
+    private static final Logger logger = LoggerFactory.getLogger(ServerRunningTest.class);
+	private ZkClientx zkclientx = new ZkClientx(new StringBuilder().append(cluster1).append(";").append(cluster2).toString());
 
     @Before
     public void setUp() {
@@ -57,82 +60,74 @@ public class ServerRunningTest extends AbstractZkTest {
         final ServerRunningMonitor runningMonitor2 = buildServerRunning(countLatch, "127.0.0.1", 2089);
         final ServerRunningMonitor runningMonitor3 = buildServerRunning(countLatch, "127.0.0.1", 2090);
         final ExecutorService executor = Executors.newFixedThreadPool(3);
-        executor.submit(new Runnable() {
+        executor.submit(() -> {
+		    for (int i = 0; i < 10; i++) {
+		        if (!runningMonitor1.isStart()) {
+		            runningMonitor1.start();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		        if (runningMonitor1.check()) {
+		            runningMonitor1.stop();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		    }
+		});
 
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    if (!runningMonitor1.isStart()) {
-                        runningMonitor1.start();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                    if (runningMonitor1.check()) {
-                        runningMonitor1.stop();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                }
-            }
+        executor.submit(() -> {
+		    for (int i = 0; i < 10; i++) {
+		        if (!runningMonitor2.isStart()) {
+		            runningMonitor2.start();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		        if (runningMonitor2.check()) {
+		            runningMonitor2.stop();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		    }
+		});
 
-        });
-
-        executor.submit(new Runnable() {
-
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    if (!runningMonitor2.isStart()) {
-                        runningMonitor2.start();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                    if (runningMonitor2.check()) {
-                        runningMonitor2.stop();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                }
-            }
-
-        });
-
-        executor.submit(new Runnable() {
-
-            public void run() {
-                for (int i = 0; i < 10; i++) {
-                    if (!runningMonitor3.isStart()) {
-                        runningMonitor3.start();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                    if (runningMonitor3.check()) {
-                        runningMonitor3.stop();
-                    }
-                    sleep(2000L + RandomUtils.nextInt(500));
-                }
-            }
-
-        });
+        executor.submit(() -> {
+		    for (int i = 0; i < 10; i++) {
+		        if (!runningMonitor3.isStart()) {
+		            runningMonitor3.start();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		        if (runningMonitor3.check()) {
+		            runningMonitor3.stop();
+		        }
+		        sleep(2000L + RandomUtils.nextInt(500));
+		    }
+		});
 
         sleep(30000L);
     }
 
     private ServerRunningMonitor buildServerRunning(final CountDownLatch countLatch, final String ip, final int port) {
-        ServerRunningData serverData = new ServerRunningData(ip + ":" + port);
+        ServerRunningData serverData = new ServerRunningData(new StringBuilder().append(ip).append(":").append(port).toString());
         ServerRunningMonitor runningMonitor = new ServerRunningMonitor(serverData);
         runningMonitor.setDestination(destination);
         runningMonitor.setListener(new ServerRunningListener() {
 
-            public void processActiveEnter() {
-                System.out.println(String.format("cid:%s ip:%s:%s has start", ip, port));
+            @Override
+			public void processActiveEnter() {
+                logger.info(String.format("cid:%s ip:%s:%s has start", ip, port));
                 countLatch.countDown();
             }
 
-            public void processActiveExit() {
-                System.out.println(String.format("cid:%s ip:%s:%s has stop", ip, port));
+            @Override
+			public void processActiveExit() {
+                logger.info(String.format("cid:%s ip:%s:%s has stop", ip, port));
                 countLatch.countDown();
             }
 
-            public void processStart() {
-                System.out.println(String.format("cid:%s ip:%s:%s processStart", ip, port));
+            @Override
+			public void processStart() {
+                logger.info(String.format("cid:%s ip:%s:%s processStart", ip, port));
             }
 
-            public void processStop() {
-                System.out.println(String.format("cid:%s ip:%s:%s processStop", ip, port));
+            @Override
+			public void processStop() {
+                logger.info(String.format("cid:%s ip:%s:%s processStop", ip, port));
             }
 
         });

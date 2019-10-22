@@ -24,9 +24,9 @@ import com.alibaba.otter.canal.protocol.SecurityUtil;
  * @author agapple 2019年8月26日 下午7:52:06
  * @since 1.1.4
  */
-public class PlainCanalConfigClient extends AbstractCanalLifeCycle implements CanalLifeCycle {
+public class PlainCanalConfigClient extends AbstractCanalLifeCycle {
 
-    private final static Integer REQUEST_TIMEOUT = 5000;
+    private static final Integer REQUEST_TIMEOUT = 5000;
     private String               configURL;
     private String               user;
     private String               passwd;
@@ -70,8 +70,8 @@ public class PlainCanalConfigClient extends AbstractCanalLifeCycle implements Ca
         if (StringUtils.isEmpty(md5)) {
             md5 = "";
         }
-        String url = configURL + "/api/v1/config/server_polling?ip=" + localIp + "&port=" + adminPort + "&md5=" + md5
-                     + "&register=" + (autoRegister ? 1 : 0) + "&cluster=" + autoCluster;
+        String url = new StringBuilder().append(configURL).append("/api/v1/config/server_polling?ip=").append(localIp).append("&port=").append(adminPort).append("&md5=")
+				.append(md5).append("&register=").append(autoRegister ? 1 : 0).append("&cluster=").append(autoCluster).toString();
         return queryConfig(url);
     }
 
@@ -82,7 +82,7 @@ public class PlainCanalConfigClient extends AbstractCanalLifeCycle implements Ca
         if (StringUtils.isEmpty(md5)) {
             md5 = "";
         }
-        String url = configURL + "/api/v1/config/instance_polling/" + destination + "?md5=" + md5;
+        String url = new StringBuilder().append(configURL).append("/api/v1/config/instance_polling/").append(destination).append("?md5=").append(md5).toString();
         return queryConfig(url);
     }
 
@@ -93,8 +93,8 @@ public class PlainCanalConfigClient extends AbstractCanalLifeCycle implements Ca
         if (StringUtils.isEmpty(md5)) {
             md5 = "";
         }
-        String url = configURL + "/api/v1/config/instances_polling?md5=" + md5 + "&ip=" + localIp + "&port="
-                     + adminPort;
+        String url = new StringBuilder().append(configURL).append("/api/v1/config/instances_polling?md5=").append(md5).append("&ip=").append(localIp).append("&port=")
+				.append(adminPort).toString();
         ResponseModel<CanalConfig> config = doQuery(url);
         if (config.data != null) {
             return config.data.content;
@@ -132,14 +132,14 @@ public class PlainCanalConfigClient extends AbstractCanalLifeCycle implements Ca
         Properties properties = new Properties();
         String md5 = null;
         String status = null;
-        if (config != null && StringUtils.isNotEmpty(config.content)) {
-            md5 = SecurityUtil.md5String(config.content);
-            status = config.status;
-            properties.load(new ByteArrayInputStream(config.content.getBytes(StandardCharsets.UTF_8)));
-        } else {
-            // null代表没有新配置变更
+        // null代表没有新配置变更
+		if (!(config != null && StringUtils.isNotEmpty(config.content))) {
+			// null代表没有新配置变更
             return null;
-        }
+		}
+		md5 = SecurityUtil.md5String(config.content);
+		status = config.status;
+		properties.load(new ByteArrayInputStream(config.content.getBytes(StandardCharsets.UTF_8)));
 
         return new PlainCanal(properties, status, md5);
     }

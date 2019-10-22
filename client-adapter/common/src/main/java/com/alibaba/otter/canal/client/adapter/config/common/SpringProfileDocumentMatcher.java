@@ -31,7 +31,7 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
     }
 
     public void addActiveProfiles(String... profiles) {
-        LinkedHashSet<String> set = new LinkedHashSet<String>(Arrays.asList(this.activeProfiles));
+        LinkedHashSet<String> set = new LinkedHashSet<>(Arrays.asList(this.activeProfiles));
         Collections.addAll(set, profiles);
         this.activeProfiles = set.toArray(new String[set.size()]);
     }
@@ -74,8 +74,8 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
         if (CollectionUtils.isEmpty(profiles)) {
             return null;
         }
-        Set<String> extractedProfiles = new HashSet<String>();
-        for (String candidate : profiles) {
+        Set<String> extractedProfiles = new HashSet<>();
+        profiles.forEach(candidate -> {
             ProfileType candidateType = ProfileType.POSITIVE;
             if (candidate.startsWith("!")) {
                 candidateType = ProfileType.NEGATIVE;
@@ -83,7 +83,7 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
             if (candidateType == type) {
                 extractedProfiles.add(type != ProfileType.POSITIVE ? candidate.substring(1) : candidate);
             }
-        }
+        });
         return extractedProfiles;
     }
 
@@ -129,12 +129,8 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
             if (profiles.isEmpty()) {
                 return YamlProcessor.MatchStatus.NOT_FOUND;
             }
-            for (String activeProfile : this.activeProfiles) {
-                if (profiles.contains(activeProfile)) {
-                    return YamlProcessor.MatchStatus.FOUND;
-                }
-            }
-            return YamlProcessor.MatchStatus.NOT_FOUND;
+            return this.activeProfiles.stream().filter(profiles::contains).findFirst().map(activeProfile -> YamlProcessor.MatchStatus.FOUND)
+					.orElse(YamlProcessor.MatchStatus.NOT_FOUND);
         }
 
     }
@@ -152,12 +148,8 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
             if (springProfiles.isEmpty()) {
                 return YamlProcessor.MatchStatus.FOUND;
             }
-            for (String profile : springProfiles) {
-                if (!StringUtils.hasText(profile)) {
-                    return YamlProcessor.MatchStatus.FOUND;
-                }
-            }
-            return YamlProcessor.MatchStatus.NOT_FOUND;
+            return springProfiles.stream().filter(profile -> !StringUtils.hasText(profile)).findFirst().map(profile -> YamlProcessor.MatchStatus.FOUND)
+					.orElse(YamlProcessor.MatchStatus.NOT_FOUND);
         }
 
     }
@@ -167,7 +159,7 @@ public class SpringProfileDocumentMatcher implements YamlProcessor.DocumentMatch
      */
     static class SpringProperties {
 
-        private List<String> profiles = new ArrayList<String>();
+        private List<String> profiles = new ArrayList<>();
 
         public List<String> getProfiles() {
             return this.profiles;

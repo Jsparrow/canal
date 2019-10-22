@@ -52,7 +52,8 @@ public class ServerRunningData implements Serializable {
         this.active = active;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 

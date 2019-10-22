@@ -87,29 +87,27 @@ public class RdbAdapter implements OuterAdapter {
             throw new RuntimeException("No rdb adapter found for config key: " + configuration.getKey());
         }
 
-        for (Map.Entry<String, MappingConfig> entry : rdbMapping.entrySet()) {
+        rdbMapping.entrySet().forEach(entry -> {
             String configName = entry.getKey();
             MappingConfig mappingConfig = entry.getValue();
             if (!mappingConfig.getDbMapping().getMirrorDb()) {
                 String key;
                 if (envProperties != null && !"tcp".equalsIgnoreCase(envProperties.getProperty("canal.conf.mode"))) {
-                    key = StringUtils.trimToEmpty(mappingConfig.getDestination()) + "-"
-                          + StringUtils.trimToEmpty(mappingConfig.getGroupId()) + "_"
-                          + mappingConfig.getDbMapping().getDatabase() + "-" + mappingConfig.getDbMapping().getTable();
+                    key = new StringBuilder().append(StringUtils.trimToEmpty(mappingConfig.getDestination())).append("-").append(StringUtils.trimToEmpty(mappingConfig.getGroupId())).append("_").append(mappingConfig.getDbMapping().getDatabase())
+							.append("-").append(mappingConfig.getDbMapping().getTable()).toString();
                 } else {
-                    key = StringUtils.trimToEmpty(mappingConfig.getDestination()) + "_"
-                          + mappingConfig.getDbMapping().getDatabase() + "-" + mappingConfig.getDbMapping().getTable();
+                    key = new StringBuilder().append(StringUtils.trimToEmpty(mappingConfig.getDestination())).append("_").append(mappingConfig.getDbMapping().getDatabase()).append("-").append(mappingConfig.getDbMapping().getTable())
+							.toString();
                 }
                 Map<String, MappingConfig> configMap = mappingConfigCache.computeIfAbsent(key,
                     k1 -> new ConcurrentHashMap<>());
                 configMap.put(configName, mappingConfig);
             } else {
                 // mirrorDB
-                String key = StringUtils.trimToEmpty(mappingConfig.getDestination()) + "."
-                             + mappingConfig.getDbMapping().getDatabase();
+                String key = new StringBuilder().append(StringUtils.trimToEmpty(mappingConfig.getDestination())).append(".").append(mappingConfig.getDbMapping().getDatabase()).toString();
                 mirrorDbConfigCache.put(key, MirrorDbConfig.create(configName, mappingConfig));
             }
-        }
+        });
 
         // 初始化连接池
         Map<String, String> properties = configuration.getProperties();

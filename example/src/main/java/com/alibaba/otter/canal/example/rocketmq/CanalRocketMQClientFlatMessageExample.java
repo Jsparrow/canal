@@ -19,26 +19,21 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
  */
 public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest {
 
-    protected final static Logger           logger  = LoggerFactory.getLogger(CanalRocketMQClientFlatMessageExample.class);
+    protected static final Logger           logger  = LoggerFactory.getLogger(CanalRocketMQClientFlatMessageExample.class);
 
-    private RocketMQCanalConnector          connector;
+	private static volatile boolean         running = false;
 
-    private static volatile boolean         running = false;
+	private RocketMQCanalConnector          connector;
 
-    private Thread                          thread  = null;
+	private Thread                          thread  = null;
 
-    private Thread.UncaughtExceptionHandler handler = new Thread.UncaughtExceptionHandler() {
+	private Thread.UncaughtExceptionHandler handler = (Thread t, Throwable e) -> logger.error("parse events has an error", e);
 
-                                                        public void uncaughtException(Thread t, Throwable e) {
-                                                            logger.error("parse events has an error", e);
-                                                        }
-                                                    };
-
-    public CanalRocketMQClientFlatMessageExample(String nameServers, String topic, String groupId){
+	public CanalRocketMQClientFlatMessageExample(String nameServers, String topic, String groupId){
         connector = new RocketMQCanalConnector(nameServers, topic, groupId, 500, true);
     }
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
         try {
             final CanalRocketMQClientFlatMessageExample rocketMQClientExample = new CanalRocketMQClientFlatMessageExample(nameServers,
                 topic,
@@ -48,7 +43,8 @@ public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest 
             logger.info("## The canal rocketmq consumer is running now ......");
             Runtime.getRuntime().addShutdownHook(new Thread() {
 
-                public void run() {
+                @Override
+				public void run() {
                     try {
                         logger.info("## Stop the rocketmq consumer");
                         rocketMQClientExample.stop();
@@ -60,28 +56,23 @@ public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest 
                 }
 
             });
-            while (running)
-                ;
+            while (running) {
+			}
         } catch (Throwable e) {
             logger.error("## Something going wrong when starting up the rocketmq consumer:", e);
             System.exit(0);
         }
     }
 
-    public void start() {
+	public void start() {
         Assert.notNull(connector, "connector is null");
-        thread = new Thread(new Runnable() {
-
-            public void run() {
-                process();
-            }
-        });
+        thread = new Thread(() -> process());
         thread.setUncaughtExceptionHandler(handler);
         thread.start();
         running = true;
     }
 
-    public void stop() {
+	public void stop() {
         if (!running) {
             return;
         }
@@ -90,16 +81,18 @@ public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest 
             try {
                 thread.join();
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
     }
 
-    private void process() {
+	private void process() {
         while (!running) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
             }
         }
 
@@ -109,7 +102,7 @@ public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest 
                 connector.subscribe();
                 while (running) {
                     List<FlatMessage> messages = connector.getFlatList(100L, TimeUnit.MILLISECONDS); // 获取message
-                    for (FlatMessage message : messages) {
+                    messages.forEach(message -> {
                         long batchId = message.getId();
                         if (batchId == -1 || message.getData() == null) {
                             // try {
@@ -119,7 +112,7 @@ public class CanalRocketMQClientFlatMessageExample extends AbstractRocektMQTest 
                         } else {
                             logger.info(message.toString());
                         }
-                    }
+                    });
 
                     connector.ack(); // 提交确认
                 }

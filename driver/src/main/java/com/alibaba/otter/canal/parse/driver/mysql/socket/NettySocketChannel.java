@@ -150,7 +150,8 @@ public class NettySocketChannel implements SocketChannel {
         }
     }
 
-    public void write(byte[]... buf) throws IOException {
+    @Override
+	public void write(byte[]... buf) throws IOException {
         if (channel != null && channel.isWritable()) {
             channel.writeAndFlush(Unpooled.copiedBuffer(buf));
         } else {
@@ -158,11 +159,13 @@ public class NettySocketChannel implements SocketChannel {
         }
     }
 
-    public byte[] read(int readSize) throws IOException {
+    @Override
+	public byte[] read(int readSize) throws IOException {
         return read(readSize, 0);
     }
 
-    public byte[] read(int readSize, int timeout) throws IOException {
+    @Override
+	public byte[] read(int readSize, int timeout) throws IOException {
         int accumulatedWaitTime = 0;
 
         // 若读取内容较长，则自动扩充超时时间，以初始缓存大小为基准计算倍数
@@ -190,7 +193,8 @@ public class NettySocketChannel implements SocketChannel {
                     try {
                         wait(WAIT_PERIOD);
                     } catch (InterruptedException e) {
-                        throw new IOException("socket has Interrupted !");
+                        logger.error(e.getMessage(), e);
+						throw new IOException("socket has Interrupted !");
                     }
                 }
             } else {
@@ -208,19 +212,23 @@ public class NettySocketChannel implements SocketChannel {
         throw new NotImplementedException();
     }
 
-    public boolean isConnected() {
+    @Override
+	public boolean isConnected() {
         return channel != null ? true : false;
     }
 
-    public SocketAddress getRemoteSocketAddress() {
+    @Override
+	public SocketAddress getRemoteSocketAddress() {
         return channel != null ? channel.remoteAddress() : null;
     }
 
-    public SocketAddress getLocalSocketAddress() {
+    @Override
+	public SocketAddress getLocalSocketAddress() {
         return channel != null ? channel.localAddress() : null;
     }
 
-    public void close() {
+    @Override
+	public void close() {
         if (channel != null) {
             channel.close();
         }

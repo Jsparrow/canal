@@ -13,7 +13,6 @@ public class MetaqPosition extends Position {
     private long              offset;
 
     public MetaqPosition(String topic, String msgNewId, long offset){
-        super();
         this.topic = topic;
         this.msgNewId = msgNewId;
         this.offset = offset;

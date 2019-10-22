@@ -14,6 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.otter.canal.parse.inbound.TableMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author agapple 2017年8月1日 下午7:15:54
@@ -23,7 +25,9 @@ import com.alibaba.otter.canal.parse.inbound.TableMeta;
 @Ignore
 public class MemoryTableMetaTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(MemoryTableMetaTest.class);
+
+	@Test
     public void testSimple() throws Throwable {
         MemoryTableMeta memoryTableMeta = new MemoryTableMeta();
         URL url = Thread.currentThread().getContextClassLoader().getResource("dummy.txt");
@@ -33,7 +37,7 @@ public class MemoryTableMetaTest {
         memoryTableMeta.apply(null, "test", sql, null);
 
         TableMeta meta = memoryTableMeta.find("test", "test");
-        System.out.println(meta);
+        logger.info(String.valueOf(meta));
         Assert.assertTrue(meta.getFieldMetaByName("ID").isKey());
     }
 }

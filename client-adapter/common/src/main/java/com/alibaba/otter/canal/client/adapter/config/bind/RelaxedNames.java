@@ -24,7 +24,7 @@ public final class RelaxedNames implements Iterable<String> {
 
     private final String         name;
 
-    private final Set<String>    values                          = new LinkedHashSet<String>();
+    private final Set<String>    values                          = new LinkedHashSet<>();
 
     /**
      * Create a new {@link RelaxedNames} instance.
@@ -58,6 +58,21 @@ public final class RelaxedNames implements Iterable<String> {
     }
 
     /**
+     * Return a {@link RelaxedNames} for the given source camelCase source name.
+     *
+     * @param name the source name in camelCase
+     * @return the relaxed names
+     */
+    public static RelaxedNames forCamelCase(String name) {
+        StringBuilder result = new StringBuilder();
+        for (char c : name.toCharArray()) {
+            result.append(Character.isUpperCase(c) && result.length() > 0
+                          && result.charAt(result.length() - 1) != '-' ? "-" + Character.toLowerCase(c) : c);
+        }
+        return new RelaxedNames(result.toString());
+    }
+
+	/**
      * Name variations.
      */
     enum Variation {
@@ -93,7 +108,7 @@ public final class RelaxedNames implements Iterable<String> {
 
     }
 
-    /**
+	/**
      * Name manipulations.
      */
     enum Manipulation {
@@ -149,7 +164,7 @@ public final class RelaxedNames implements Iterable<String> {
                                StringBuffer result = new StringBuffer();
                                while (matcher.find()) {
                                    matcher.appendReplacement(result,
-                                       matcher.group(1) + '_' + StringUtils.uncapitalize(matcher.group(2)));
+                                       new StringBuilder().append(matcher.group(1)).append('_').append(StringUtils.uncapitalize(matcher.group(2))).toString());
                                }
                                matcher.appendTail(result);
                                return result.toString();
@@ -172,7 +187,7 @@ public final class RelaxedNames implements Iterable<String> {
                                StringBuffer result = new StringBuffer();
                                while (matcher.find()) {
                                    matcher.appendReplacement(result,
-                                       matcher.group(1) + '-' + StringUtils.uncapitalize(matcher.group(2)));
+                                       new StringBuilder().append(matcher.group(1)).append('-').append(StringUtils.uncapitalize(matcher.group(2))).toString());
                                }
                                matcher.appendTail(result);
                                return result.toString();
@@ -221,21 +236,6 @@ public final class RelaxedNames implements Iterable<String> {
             return builder.toString();
         }
 
-    }
-
-    /**
-     * Return a {@link RelaxedNames} for the given source camelCase source name.
-     *
-     * @param name the source name in camelCase
-     * @return the relaxed names
-     */
-    public static RelaxedNames forCamelCase(String name) {
-        StringBuilder result = new StringBuilder();
-        for (char c : name.toCharArray()) {
-            result.append(Character.isUpperCase(c) && result.length() > 0
-                          && result.charAt(result.length() - 1) != '-' ? "-" + Character.toLowerCase(c) : c);
-        }
-        return new RelaxedNames(result.toString());
     }
 
 }

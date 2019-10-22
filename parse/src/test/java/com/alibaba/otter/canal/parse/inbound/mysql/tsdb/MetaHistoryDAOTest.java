@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaHistoryDAO;
 import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaHistoryDO;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by wanshao Date: 2017/9/20 Time: 下午5:00
@@ -21,7 +23,8 @@ import com.alibaba.otter.canal.parse.inbound.mysql.tsdb.dao.MetaHistoryDO;
 @Ignore
 public class MetaHistoryDAOTest {
 
-    @Resource
+    private static final Logger logger = LoggerFactory.getLogger(MetaHistoryDAOTest.class);
+	@Resource
     MetaHistoryDAO metaHistoryDAO;
 
     @Test
@@ -39,12 +42,10 @@ public class MetaHistoryDAOTest {
         metaHistoryDAO.insert(historyDO);
 
         int count = metaHistoryDAO.deleteByTimestamp("test", 7200);
-        System.out.println(count);
+        logger.info(String.valueOf(count));
 
         List<MetaHistoryDO> metaHistoryDOList = metaHistoryDAO.findByTimestamp("test", 0L, System.currentTimeMillis());
-        for (MetaHistoryDO metaHistoryDO : metaHistoryDOList) {
-            System.out.println(metaHistoryDO.getId());
-        }
+        metaHistoryDOList.forEach(metaHistoryDO -> logger.info(String.valueOf(metaHistoryDO.getId())));
     }
 
 }

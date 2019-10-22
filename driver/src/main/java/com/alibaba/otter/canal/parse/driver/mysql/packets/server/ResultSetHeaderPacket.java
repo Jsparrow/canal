@@ -30,7 +30,8 @@ public class ResultSetHeaderPacket extends PacketWithHeaderPacket {
     private long columnCount;
     private long extra;
 
-    public void fromBytes(byte[] data) throws IOException {
+    @Override
+	public void fromBytes(byte[] data) throws IOException {
         int index = 0;
         byte[] colCountBytes = ByteHelper.readBinaryCodedLengthBytes(data, index);
         columnCount = ByteHelper.readLengthCodedBinary(colCountBytes, index);
@@ -40,7 +41,8 @@ public class ResultSetHeaderPacket extends PacketWithHeaderPacket {
         }
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 
@@ -60,8 +62,9 @@ public class ResultSetHeaderPacket extends PacketWithHeaderPacket {
         this.extra = extra;
     }
 
-    public String toString() {
-        return "ResultSetHeaderPacket [columnCount=" + columnCount + ", extra=" + extra + "]";
+    @Override
+	public String toString() {
+        return new StringBuilder().append("ResultSetHeaderPacket [columnCount=").append(columnCount).append(", extra=").append(extra).append("]").toString();
     }
 
 }

@@ -74,13 +74,12 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
         try {
             // 加载远程adapter配置
             ConfigItem configItem = getRemoteAdapterConfig();
-            if (configItem != null) {
-                if (configItem.getModifiedTime() != remoteAdapterConfigHolder.getAdapterConfigTimestamp()) {
-                    remoteAdapterConfigHolder.setAdapterConfigTimestamp(configItem.getModifiedTime());
-                    overrideLocalCanalConfig(configItem.getContent());
-                    logger.info("## Loaded remote adapter config: application.yml");
-                }
-            }
+            boolean condition = configItem != null && configItem.getModifiedTime() != remoteAdapterConfigHolder.getAdapterConfigTimestamp();
+			if (condition) {
+			    remoteAdapterConfigHolder.setAdapterConfigTimestamp(configItem.getModifiedTime());
+			    overrideLocalCanalConfig(configItem.getContent());
+			    logger.info("## Loaded remote adapter config: application.yml");
+			}
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -155,7 +154,7 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
                 configItem.setCategory(rs.getString("category"));
                 configItem.setName(rs.getString("name"));
                 configItem.setModifiedTime(rs.getTimestamp("modified_time").getTime());
-                remoteConfigStatus.put(configItem.getCategory() + "/" + configItem.getName(), configItem);
+                remoteConfigStatus.put(new StringBuilder().append(configItem.getCategory()).append("/").append(configItem.getName()).toString(), configItem);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -164,9 +163,9 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
         if (!remoteConfigStatus.isEmpty()) {
             List<Long> changedIds = new ArrayList<>();
 
-            for (ConfigItem remoteConfigStat : remoteConfigStatus.values()) {
+            remoteConfigStatus.values().forEach(remoteConfigStat -> {
                 ConfigItem currentConfig = remoteAdapterConfigHolder.getAdapterConfigs()
-                    .get(remoteConfigStat.getCategory() + "/" + remoteConfigStat.getName());
+                    .get(new StringBuilder().append(remoteConfigStat.getCategory()).append("/").append(remoteConfigStat.getName()).toString());
                 if (currentConfig == null) {
                     // 新增
                     changedIds.add(remoteConfigStat.getId());
@@ -176,10 +175,9 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
                         changedIds.add(remoteConfigStat.getId());
                     }
                 }
-            }
+            });
             if (!changedIds.isEmpty()) {
-                String contentsSql = "select id, category, name, content, modified_time from canal_adapter_config  where id in ("
-                                     + Joiner.on(",").join(changedIds) + ")";
+                String contentsSql = new StringBuilder().append("select id, category, name, content, modified_time from canal_adapter_config  where id in (").append(Joiner.on(",").join(changedIds)).append(")").toString();
                 try (Connection conn = dataSource.getConnection();
                         Statement stmt = conn.createStatement();
                         ResultSet rs = stmt.executeQuery(contentsSql)) {
@@ -192,7 +190,7 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
                         configItemNew.setModifiedTime(rs.getTimestamp("modified_time").getTime());
 
                         remoteAdapterConfigHolder.getAdapterConfigs()
-                            .put(configItemNew.getCategory() + "/" + configItemNew.getName(), configItemNew);
+                            .put(new StringBuilder().append(configItemNew.getCategory()).append("/").append(configItemNew.getName()).toString(), configItemNew);
                         remoteAdapterMonitor.onModify(configItemNew);
                     }
 
@@ -202,14 +200,12 @@ public class DbRemoteConfigLoader implements RemoteConfigLoader {
             }
         }
 
-        for (ConfigItem configItem : remoteAdapterConfigHolder.getAdapterConfigs().values()) {
-            if (!remoteConfigStatus.containsKey(configItem.getCategory() + "/" + configItem.getName())) {
-                // 删除
-                remoteAdapterConfigHolder.getAdapterConfigs()
-                    .remove(configItem.getCategory() + "/" + configItem.getName());
-                remoteAdapterMonitor.onDelete(configItem.getCategory() + "/" + configItem.getName());
-            }
-        }
+        remoteAdapterConfigHolder.getAdapterConfigs().values().stream().filter(configItem -> !remoteConfigStatus.containsKey(new StringBuilder().append(configItem.getCategory()).append("/").append(configItem.getName()).toString())).forEach(configItem -> {
+		    // 删除
+		    remoteAdapterConfigHolder.getAdapterConfigs()
+		        .remove(new StringBuilder().append(configItem.getCategory()).append("/").append(configItem.getName()).toString());
+		    remoteAdapterMonitor.onDelete(new StringBuilder().append(configItem.getCategory()).append("/").append(configItem.getName()).toString());
+		});
     }
 
     /**

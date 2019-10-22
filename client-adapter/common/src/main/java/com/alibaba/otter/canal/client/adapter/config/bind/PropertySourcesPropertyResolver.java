@@ -65,7 +65,8 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
             for (PropertySource<?> propertySource : this.propertySources) {
                 if (logger.isTraceEnabled()) {
                     logger
-                        .trace("Searching for key '" + key + "' in PropertySource '" + propertySource.getName() + "'");
+                        .trace(new StringBuilder().append("Searching for key '").append(key).append("' in PropertySource '").append(propertySource.getName()).append("'")
+								.toString());
                 }
                 Object value = propertySource.getProperty(key);
                 if (value != null) {
@@ -78,7 +79,7 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
             }
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Could not find key '" + key + "' in any property source");
+            logger.debug(new StringBuilder().append("Could not find key '").append(key).append("' in any property source").toString());
         }
         return null;
     }
@@ -139,8 +140,8 @@ public class PropertySourcesPropertyResolver extends AbstractPropertyResolver {
      */
     protected void logKeyFound(String key, PropertySource<?> propertySource, Object value) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Found key '" + key + "' in PropertySource '" + propertySource.getName()
-                         + "' with value of type " + value.getClass().getSimpleName());
+            logger.debug(new StringBuilder().append("Found key '").append(key).append("' in PropertySource '").append(propertySource.getName()).append("' with value of type ").append(value.getClass().getSimpleName())
+					.toString());
         }
     }
 

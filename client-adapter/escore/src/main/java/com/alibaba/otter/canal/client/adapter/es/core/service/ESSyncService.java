@@ -41,44 +41,44 @@ public class ESSyncService {
 
     public void sync(Collection<ESSyncConfig> esSyncConfigs, Dml dml) {
         long begin = System.currentTimeMillis();
-        if (esSyncConfigs != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Destination: {}, database:{}, table:{}, type:{}, affected index count: {}",
-                    dml.getDestination(),
-                    dml.getDatabase(),
-                    dml.getTable(),
-                    dml.getType(),
-                    esSyncConfigs.size());
-            }
-
-            for (ESSyncConfig config : esSyncConfigs) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Prepared to sync index: {}, destination: {}",
-                        config.getEsMapping().get_index(),
-                        dml.getDestination());
-                }
-                this.sync(config, dml);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Sync completed: {}, destination: {}",
-                        config.getEsMapping().get_index(),
-                        dml.getDestination());
-                }
-            }
-            if (logger.isTraceEnabled()) {
-                logger.trace("Sync elapsed time: {} ms, affected indexes count：{}, destination: {}",
-                    (System.currentTimeMillis() - begin),
-                    esSyncConfigs.size(),
-                    dml.getDestination());
-            }
-            if (logger.isDebugEnabled()) {
-                StringBuilder configIndexes = new StringBuilder();
-                esSyncConfigs
-                    .forEach(esSyncConfig -> configIndexes.append(esSyncConfig.getEsMapping().get_index()).append(" "));
-                logger.debug("DML: {} \nAffected indexes: {}",
-                    JSON.toJSONString(dml, SerializerFeature.WriteMapNullValue),
-                    configIndexes.toString());
-            }
-        }
+        if (esSyncConfigs == null) {
+			return;
+		}
+		if (logger.isTraceEnabled()) {
+		    logger.trace("Destination: {}, database:{}, table:{}, type:{}, affected index count: {}",
+		        dml.getDestination(),
+		        dml.getDatabase(),
+		        dml.getTable(),
+		        dml.getType(),
+		        esSyncConfigs.size());
+		}
+		esSyncConfigs.forEach(config -> {
+		    if (logger.isTraceEnabled()) {
+		        logger.trace("Prepared to sync index: {}, destination: {}",
+		            config.getEsMapping().get_index(),
+		            dml.getDestination());
+		    }
+		    this.sync(config, dml);
+		    if (logger.isTraceEnabled()) {
+		        logger.trace("Sync completed: {}, destination: {}",
+		            config.getEsMapping().get_index(),
+		            dml.getDestination());
+		    }
+		});
+		if (logger.isTraceEnabled()) {
+		    logger.trace("Sync elapsed time: {} ms, affected indexes count：{}, destination: {}",
+		        (System.currentTimeMillis() - begin),
+		        esSyncConfigs.size(),
+		        dml.getDestination());
+		}
+		if (logger.isDebugEnabled()) {
+		    StringBuilder configIndexes = new StringBuilder();
+		    esSyncConfigs
+		        .forEach(esSyncConfig -> configIndexes.append(esSyncConfig.getEsMapping().get_index()).append(" "));
+		    logger.debug("DML: {} \nAffected indexes: {}",
+		        JSON.toJSONString(dml, SerializerFeature.WriteMapNullValue),
+		        configIndexes.toString());
+		}
     }
 
     public void sync(ESSyncConfig config, Dml dml) {
@@ -91,11 +91,11 @@ public class ESSyncService {
             long begin = System.currentTimeMillis();
 
             String type = dml.getType();
-            if (type != null && type.equalsIgnoreCase("INSERT")) {
+            if (type != null && "INSERT".equalsIgnoreCase(type)) {
                 insert(config, dml);
-            } else if (type != null && type.equalsIgnoreCase("UPDATE")) {
+            } else if (type != null && "UPDATE".equalsIgnoreCase(type)) {
                 update(config, dml);
-            } else if (type != null && type.equalsIgnoreCase("DELETE")) {
+            } else if (type != null && "DELETE".equalsIgnoreCase(type)) {
                 delete(config, dml);
             } else {
                 return;
@@ -148,26 +148,20 @@ public class ESSyncService {
                         continue;
                     }
                     // 关联条件出现在主表查询条件是否为简单字段
-                    boolean allFieldsSimple = true;
-                    for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                        if (fieldItem.isMethod() || fieldItem.isBinaryOp()) {
-                            allFieldsSimple = false;
-                            break;
-                        }
-                    }
+                    boolean allFieldsSimple = tableItem.getRelationSelectFieldItems().stream().noneMatch(fieldItem -> fieldItem.isMethod() || fieldItem.isBinaryOp());
                     // 所有查询字段均为简单字段
                     if (allFieldsSimple) {
                         // 不是子查询
                         if (!tableItem.isSubQuery()) {
                             // ------关联表简单字段插入------
                             Map<String, Object> esFieldData = new LinkedHashMap<>();
-                            for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
+                            tableItem.getRelationSelectFieldItems().forEach(fieldItem -> {
                                 Object value = esTemplate.getValFromData(config.getEsMapping(),
                                     data,
                                     fieldItem.getFieldName(),
                                     fieldItem.getColumn().getColumnName());
                                 esFieldData.put(Util.cleanColumn(fieldItem.getFieldName()), value);
-                            }
+                            });
 
                             joinTableSimpleFieldOperation(config, dml, data, tableItem, esFieldData);
                         } else {
@@ -221,12 +215,11 @@ public class ESSyncService {
                     boolean allUpdateFieldSimple = true;
                     out: for (FieldItem fieldItem : schemaItem.getSelectFields().values()) {
                         for (ColumnItem columnItem : fieldItem.getColumnItems()) {
-                            if (old.containsKey(columnItem.getColumnName())) {
-                                if (fieldItem.isMethod() || fieldItem.isBinaryOp()) {
-                                    allUpdateFieldSimple = false;
-                                    break out;
-                                }
-                            }
+                            boolean condition = old.containsKey(columnItem.getColumnName()) && (fieldItem.isMethod() || fieldItem.isBinaryOp());
+							if (condition) {
+							    allUpdateFieldSimple = false;
+							    break out;
+							}
                         }
                     }
 
@@ -250,10 +243,7 @@ public class ESSyncService {
                         }
                         // 如果外键有修改,则更新所对应该表的所有查询条件数据
                         if (changed) {
-                            for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                                fieldItem.getColumnItems()
-                                    .forEach(columnItem -> old.put(columnItem.getColumnName(), null));
-                            }
+                            tableItem.getRelationSelectFieldItems().forEach(fieldItem -> fieldItem.getColumnItems().forEach(columnItem -> old.put(columnItem.getColumnName(), null)));
                         }
                     }
 
@@ -275,13 +265,7 @@ public class ESSyncService {
                     }
 
                     // 关联条件出现在主表查询条件是否为简单字段
-                    boolean allFieldsSimple = true;
-                    for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                        if (fieldItem.isMethod() || fieldItem.isBinaryOp()) {
-                            allFieldsSimple = false;
-                            break;
-                        }
-                    }
+                    boolean allFieldsSimple = tableItem.getRelationSelectFieldItems().stream().noneMatch(fieldItem -> fieldItem.isMethod() || fieldItem.isBinaryOp());
 
                     // 所有查询字段均为简单字段
                     if (allFieldsSimple) {
@@ -289,15 +273,13 @@ public class ESSyncService {
                         if (!tableItem.isSubQuery()) {
                             // ------关联表简单字段更新------
                             Map<String, Object> esFieldData = new LinkedHashMap<>();
-                            for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                                if (old.containsKey(fieldItem.getColumn().getColumnName())) {
-                                    Object value = esTemplate.getValFromData(config.getEsMapping(),
-                                        data,
-                                        fieldItem.getFieldName(),
-                                        fieldItem.getColumn().getColumnName());
-                                    esFieldData.put(Util.cleanColumn(fieldItem.getFieldName()), value);
-                                }
-                            }
+                            tableItem.getRelationSelectFieldItems().stream().filter(fieldItem -> old.containsKey(fieldItem.getColumn().getColumnName())).forEach(fieldItem -> {
+							    Object value = esTemplate.getValFromData(config.getEsMapping(),
+							        data,
+							        fieldItem.getFieldName(),
+							        fieldItem.getColumn().getColumnName());
+							    esFieldData.put(Util.cleanColumn(fieldItem.getFieldName()), value);
+							});
                             joinTableSimpleFieldOperation(config, dml, data, tableItem, esFieldData);
                         } else {
                             // ------关联子表简单字段更新------
@@ -392,13 +374,7 @@ public class ESSyncService {
                 }
 
                 // 关联条件出现在主表查询条件是否为简单字段
-                boolean allFieldsSimple = true;
-                for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                    if (fieldItem.isMethod() || fieldItem.isBinaryOp()) {
-                        allFieldsSimple = false;
-                        break;
-                    }
-                }
+                boolean allFieldsSimple = tableItem.getRelationSelectFieldItems().stream().noneMatch(fieldItem -> fieldItem.isMethod() || fieldItem.isBinaryOp());
 
                 // 所有查询字段均为简单字段
                 if (allFieldsSimple) {
@@ -406,9 +382,7 @@ public class ESSyncService {
                     if (!tableItem.isSubQuery()) {
                         // ------关联表简单字段更新为null------
                         Map<String, Object> esFieldData = new LinkedHashMap<>();
-                        for (FieldItem fieldItem : tableItem.getRelationSelectFieldItems()) {
-                            esFieldData.put(Util.cleanColumn(fieldItem.getFieldName()), null);
-                        }
+                        tableItem.getRelationSelectFieldItems().forEach(fieldItem -> esFieldData.put(Util.cleanColumn(fieldItem.getFieldName()), null));
                         joinTableSimpleFieldOperation(config, dml, data, tableItem, esFieldData);
                     } else {
                         // ------关联子表简单字段更新------
@@ -544,23 +518,16 @@ public class ESSyncService {
         ESMapping mapping = config.getEsMapping();
 
         Map<String, Object> paramsTmp = new LinkedHashMap<>();
-        for (Map.Entry<FieldItem, List<FieldItem>> entry : tableItem.getRelationTableFields().entrySet()) {
-            for (FieldItem fieldItem : entry.getValue()) {
-                if (fieldItem.getColumnItems().size() == 1) {
-                    Object value = esTemplate.getValFromData(mapping,
-                        data,
-                        fieldItem.getFieldName(),
-                        entry.getKey().getColumn().getColumnName());
-
-                    String fieldName = fieldItem.getFieldName();
-                    // 判断是否是主键
-                    if (fieldName.equals(mapping.get_id())) {
-                        fieldName = "_id";
-                    }
-                    paramsTmp.put(fieldName, value);
-                }
-            }
-        }
+        // 判断是否是主键
+		tableItem.getRelationTableFields().entrySet().forEach(entry -> entry.getValue().stream().filter(fieldItem -> fieldItem.getColumnItems().size() == 1).forEach(fieldItem -> {
+			Object value = esTemplate.getValFromData(mapping, data, fieldItem.getFieldName(),
+					entry.getKey().getColumn().getColumnName());
+			String fieldName = fieldItem.getFieldName();
+			if (fieldName.equals(mapping.get_id())) {
+				fieldName = "_id";
+			}
+			paramsTmp.put(fieldName, value);
+		}));
 
         if (logger.isDebugEnabled()) {
             logger.trace("Join table update es index by foreign key, destination:{}, table: {}, index: {}",
@@ -600,12 +567,12 @@ public class ESSyncService {
 
         List<Object> values = new ArrayList<>();
 
-        for (FieldItem fkFieldItem : tableItem.getRelationTableFields().keySet()) {
+        tableItem.getRelationTableFields().keySet().forEach(fkFieldItem -> {
             String columnName = fkFieldItem.getColumn().getColumnName();
             Object value = esTemplate.getValFromData(mapping, data, fkFieldItem.getFieldName(), columnName);
             sql.append(" AND ").append(columnName).append("=? ");
             values.add(value);
-        }
+        });
 
         String groupSql = SqlParser.parse4GroupBy(queryBlock);
         if (groupSql != null) {
@@ -629,8 +596,8 @@ public class ESSyncService {
                         if (old != null) {
                             out: for (FieldItem fieldItem1 : tableItem.getSubQueryFields()) {
                                 for (ColumnItem columnItem0 : fieldItem.getColumnItems()) {
-                                    if (fieldItem1.getFieldName().equals(columnItem0.getColumnName()))
-                                        for (ColumnItem columnItem : fieldItem1.getColumnItems()) {
+                                    if (fieldItem1.getFieldName().equals(columnItem0.getColumnName())) {
+										for (ColumnItem columnItem : fieldItem1.getColumnItems()) {
                                             if (old.containsKey(columnItem.getColumnName())) {
                                                 Object val = esTemplate.getValFromRS(mapping,
                                                     rs,
@@ -640,6 +607,7 @@ public class ESSyncService {
                                                 break out;
                                             }
                                         }
+									}
                                 }
                             }
                         } else {
@@ -707,11 +675,11 @@ public class ESSyncService {
 
         StringBuilder sql = new StringBuilder(sqlNoWhere + " WHERE ");
 
-        for (FieldItem fkFieldItem : tableItem.getRelationTableFields().keySet()) {
+        tableItem.getRelationTableFields().keySet().forEach(fkFieldItem -> {
             String columnName = fkFieldItem.getColumn().getColumnName();
             Object value = esTemplate.getValFromData(mapping, data, fkFieldItem.getFieldName(), columnName);
             ESSyncUtil.appendCondition(sql, value, tableItem.getAlias(), columnName);
-        }
+        });
         int len = sql.length();
         sql.delete(len - 5, len);
         sql.append(sqlGroupBy);
@@ -733,8 +701,8 @@ public class ESSyncService {
                             // 从表子查询
                             out: for (FieldItem fieldItem1 : tableItem.getSubQueryFields()) {
                                 for (ColumnItem columnItem0 : fieldItem.getColumnItems()) {
-                                    if (fieldItem1.getFieldName().equals(columnItem0.getColumnName()))
-                                        for (ColumnItem columnItem : fieldItem1.getColumnItems()) {
+                                    if (fieldItem1.getFieldName().equals(columnItem0.getColumnName())) {
+										for (ColumnItem columnItem : fieldItem1.getColumnItems()) {
                                             if (old.containsKey(columnItem.getColumnName())) {
                                                 Object val = esTemplate.getValFromRS(mapping,
                                                     rs,
@@ -744,6 +712,7 @@ public class ESSyncService {
                                                 break out;
                                             }
                                         }
+									}
                                 }
                             }
                             // 从表非子查询

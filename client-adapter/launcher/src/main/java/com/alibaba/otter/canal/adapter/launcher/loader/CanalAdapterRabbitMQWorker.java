@@ -8,10 +8,13 @@ import org.apache.kafka.common.errors.WakeupException;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CanalAdapterRabbitMQWorker extends AbstractCanalAdapterWorker {
 
-    private RabbitMQCanalConnector connector;
+    private static final Logger logger = LoggerFactory.getLogger(CanalAdapterRabbitMQWorker.class);
+	private RabbitMQCanalConnector connector;
     private String                 topic;
     private boolean                flatMessage;
 
@@ -40,6 +43,7 @@ public class CanalAdapterRabbitMQWorker extends AbstractCanalAdapterWorker {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
+				logger.error(ignored.getMessage(), ignored);
             }
         }
 
@@ -83,6 +87,7 @@ public class CanalAdapterRabbitMQWorker extends AbstractCanalAdapterWorker {
         try {
             connector.unsubscribe();
         } catch (WakeupException e) {
+			logger.error(e.getMessage(), e);
             // No-op. Continue process
         }
         connector.disconnect();

@@ -40,7 +40,7 @@ public class ConfigLoader {
             try {
                 config.validate();
             } catch (Exception e) {
-                throw new RuntimeException("ERROR Config: " + fileName + " " + e.getMessage(), e);
+                throw new RuntimeException(new StringBuilder().append("ERROR Config: ").append(fileName).append(" ").append(e.getMessage()).toString(), e);
             }
             result.put(fileName, config);
         });
