@@ -29,19 +29,20 @@ public class HbaseSyncService {
     }
 
     public void sync(MappingConfig config, Dml dml) {
-        if (config != null) {
-            String type = dml.getType();
-            if (type != null && type.equalsIgnoreCase("INSERT")) {
-                insert(config, dml);
-            } else if (type != null && type.equalsIgnoreCase("UPDATE")) {
-                update(config, dml);
-            } else if (type != null && type.equalsIgnoreCase("DELETE")) {
-                delete(config, dml);
-            }
-            if (logger.isDebugEnabled()) {
-                logger.debug("DML: {}", JSON.toJSONString(dml, SerializerFeature.WriteMapNullValue));
-            }
-        }
+        if (config == null) {
+			return;
+		}
+		String type = dml.getType();
+		if (type != null && "INSERT".equalsIgnoreCase(type)) {
+		    insert(config, dml);
+		} else if (type != null && "UPDATE".equalsIgnoreCase(type)) {
+		    update(config, dml);
+		} else if (type != null && "DELETE".equalsIgnoreCase(type)) {
+		    delete(config, dml);
+		}
+		if (logger.isDebugEnabled()) {
+		    logger.debug("DML: {}", JSON.toJSONString(dml, SerializerFeature.WriteMapNullValue));
+		}
     }
 
     /**
@@ -131,12 +132,12 @@ public class HbaseSyncService {
                     if (columnItem.isRowKey()) {
                         if (columnItem.getRowKeyLen() != null && entry.getValue() != null) {
                             if (entry.getValue() instanceof Number) {
-                                String v = String.format("%0" + columnItem.getRowKeyLen() + "d",
+                                String v = String.format(new StringBuilder().append("%0").append(columnItem.getRowKeyLen()).append("d").toString(),
                                     ((Number) entry.getValue()).longValue());
                                 bytes = Bytes.toBytes(v);
                             } else {
                                 try {
-                                    String v = String.format("%0" + columnItem.getRowKeyLen() + "d",
+                                    String v = String.format(new StringBuilder().append("%0").append(columnItem.getRowKeyLen()).append("d").toString(),
                                         Integer.parseInt((String) entry.getValue()));
                                     bytes = Bytes.toBytes(v);
                                 } catch (Exception e) {
@@ -204,7 +205,9 @@ public class HbaseSyncService {
             } else {
                 rowKeyBytes = getRowKeyBytes(hbaseMapping, rowKeyColumn, r);
             }
-            if (rowKeyBytes == null) throw new RuntimeException("rowKey值为空");
+            if (rowKeyBytes == null) {
+				throw new RuntimeException("rowKey值为空");
+			}
 
             Map<String, MappingConfig.ColumnItem> columnItems = hbaseMapping.getColumnItems();
             HRow hRow = new HRow(rowKeyBytes);
@@ -230,7 +233,9 @@ public class HbaseSyncService {
                     }
                 } else {
                     // 排除修改id的情况
-                    if (columnItem.isRowKey()) continue;
+                    if (columnItem.isRowKey()) {
+						continue;
+					}
 
                     Object newVal = r.get(updateColumn);
                     if (newVal == null) {
@@ -288,7 +293,9 @@ public class HbaseSyncService {
             } else {
                 rowKeyBytes = getRowKeyBytes(hbaseMapping, rowKeyColumn, r);
             }
-            if (rowKeyBytes == null) throw new RuntimeException("rowKey值为空");
+            if (rowKeyBytes == null) {
+				throw new RuntimeException("rowKey值为空");
+			}
             rowKeys.add(rowKeyBytes);
             complete = false;
             if (i % config.getHbaseMapping().getCommitBatch() == 0 && !rowKeys.isEmpty()) {
@@ -322,11 +329,7 @@ public class HbaseSyncService {
             // 拼接老的rowKey
             List<String> updateSubRowKey = new ArrayList<>();
             for (String rowKeyColumnName : rowKeyColumns) {
-                for (String updateColumn : old.get(index).keySet()) {
-                    if (rowKeyColumnName.equalsIgnoreCase(updateColumn)) {
-                        updateSubRowKey.add(rowKeyColumnName);
-                    }
-                }
+                old.get(index).keySet().stream().filter(rowKeyColumnName::equalsIgnoreCase).forEach(updateColumn -> updateSubRowKey.add(rowKeyColumnName));
             }
             if (updateSubRowKey.isEmpty()) {
                 throw new RuntimeException("没有更新复合主键的RowKey");
@@ -366,10 +369,11 @@ public class HbaseSyncService {
             i++;
             index++;
         }
-        if (!complete && !rows.isEmpty()) {
-            hbaseTemplate.deletes(hbaseMapping.getHbaseTable(), rowKeys);
-            hbaseTemplate.puts(hbaseMapping.getHbaseTable(), rows);
-        }
+        if (!(!complete && !rows.isEmpty())) {
+			return;
+		}
+		hbaseTemplate.deletes(hbaseMapping.getHbaseTable(), rowKeys);
+		hbaseTemplate.puts(hbaseMapping.getHbaseTable(), rows);
     }
 
     /**
@@ -438,9 +442,9 @@ public class HbaseSyncService {
         String v = null;
         if (rowKeyColumn.getRowKeyLen() != null) {
             if (val instanceof Number) {
-                v = String.format("%0" + rowKeyColumn.getRowKeyLen() + "d", (Number) ((Number) val).longValue());
+                v = String.format(new StringBuilder().append("%0").append(rowKeyColumn.getRowKeyLen()).append("d").toString(), (Number) ((Number) val).longValue());
             } else if (val instanceof String) {
-                v = String.format("%0" + rowKeyColumn.getRowKeyLen() + "d", Long.parseLong((String) val));
+                v = String.format(new StringBuilder().append("%0").append(rowKeyColumn.getRowKeyLen()).append("d").toString(), Long.parseLong((String) val));
             }
         }
         if (v != null) {

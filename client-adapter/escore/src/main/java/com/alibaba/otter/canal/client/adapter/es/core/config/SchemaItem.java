@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 /**
@@ -89,7 +90,7 @@ public class SchemaItem {
                             //当数据列并非原始列时，columnName是空的，例如concat('px',id)
                             if(columnItem.getColumnName() != null) {
                                 List<FieldItem> fieldItems = columnFields.computeIfAbsent(
-                                        columnItem.getOwner() + "." + columnItem.getColumnName(),
+                                        new StringBuilder().append(columnItem.getOwner()).append(".").append(columnItem.getColumnName()).toString(),
                                         k -> new ArrayList<>());
                                 fieldItems.add(fieldItem);
                             }
@@ -254,13 +255,12 @@ public class SchemaItem {
 
                             if (currentTableRelField != null) {
                                 List<FieldItem> selectFieldItem = getSchemaItem().getColumnFields()
-                                    .get(leftFieldItem.getOwner() + "." + leftFieldItem.getColumn().getColumnName());
+                                    .get(new StringBuilder().append(leftFieldItem.getOwner()).append(".").append(leftFieldItem.getColumn().getColumnName()).toString());
                                 if (selectFieldItem != null && !selectFieldItem.isEmpty()) {
                                     relationTableFields.put(currentTableRelField, selectFieldItem);
                                 } else {
                                     selectFieldItem = getSchemaItem().getColumnFields()
-                                        .get(rightFieldItem.getOwner() + "."
-                                             + rightFieldItem.getColumn().getColumnName());
+                                        .get(new StringBuilder().append(rightFieldItem.getOwner()).append(".").append(rightFieldItem.getColumn().getColumnName()).toString());
                                     if (selectFieldItem != null && !selectFieldItem.isEmpty()) {
                                         relationTableFields.put(currentTableRelField, selectFieldItem);
                                     } else {
@@ -281,11 +281,7 @@ public class SchemaItem {
                 synchronized (SchemaItem.class) {
                     if (relationSelectFieldItems == null) {
                         List<FieldItem> relationSelectFieldItemsTmp = new ArrayList<>();
-                        for (FieldItem fieldItem : schemaItem.getSelectFields().values()) {
-                            if (fieldItem.getOwners().contains(getAlias())) {
-                                relationSelectFieldItemsTmp.add(fieldItem);
-                            }
-                        }
+                        relationSelectFieldItemsTmp.addAll(schemaItem.getSelectFields().values().stream().filter(fieldItem -> fieldItem.getOwners().contains(getAlias())).collect(Collectors.toList()));
                         relationSelectFieldItems = relationSelectFieldItemsTmp;
                     }
                 }
@@ -401,8 +397,12 @@ public class SchemaItem {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+				return true;
+			}
+            if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
 
             FieldItem fieldItem = (FieldItem) o;
 

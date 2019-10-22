@@ -101,10 +101,9 @@ public class MetaSnapshotDO {
 
     @Override
     public String toString() {
-        return "MetaSnapshotDO [id=" + id + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified
-               + ", destination=" + destination + ", binlogFile=" + binlogFile + ", binlogOffest=" + binlogOffest
-               + ", binlogMasterId=" + binlogMasterId + ", binlogTimestamp=" + binlogTimestamp + ", data=" + data
-               + ", extra=" + extra + "]";
+        return new StringBuilder().append("MetaSnapshotDO [id=").append(id).append(", gmtCreate=").append(gmtCreate).append(", gmtModified=").append(gmtModified).append(", destination=")
+				.append(destination).append(", binlogFile=").append(binlogFile).append(", binlogOffest=").append(binlogOffest).append(", binlogMasterId=").append(binlogMasterId)
+				.append(", binlogTimestamp=").append(binlogTimestamp).append(", data=").append(data).append(", extra=").append(extra).append("]").toString();
     }
 
 }

@@ -59,38 +59,36 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
     private String                     user;
     private String                     passwd;
 
-    private static class SingletonHolder {
-
-        private static final CanalServerWithEmbedded CANAL_SERVER_WITH_EMBEDDED = new CanalServerWithEmbedded();
-    }
-
     public CanalServerWithEmbedded(){
         // 希望也保留用户new单独实例的需求,兼容历史
     }
 
-    public static CanalServerWithEmbedded instance() {
+	public static CanalServerWithEmbedded instance() {
         return SingletonHolder.CANAL_SERVER_WITH_EMBEDDED;
     }
 
-    public void start() {
-        if (!isStart()) {
-            super.start();
-            // 如果存在provider,则启动metrics service
-            loadCanalMetrics();
-            metrics.setServerPort(metricsPort);
-            metrics.initialize();
-            canalInstances = MigrateMap.makeComputingMap(new Function<String, CanalInstance>() {
+	@Override
+	public void start() {
+        // lastRollbackPostions = new MapMaker().makeMap();
+		if (isStart()) {
+			return;
+		}
+		super.start();
+		// 如果存在provider,则启动metrics service
+		loadCanalMetrics();
+		metrics.setServerPort(metricsPort);
+		metrics.initialize();
+		canalInstances = MigrateMap.makeComputingMap(new Function<String, CanalInstance>() {
 
-                public CanalInstance apply(String destination) {
-                    return canalInstanceGenerator.generate(destination);
-                }
-            });
-
-            // lastRollbackPostions = new MapMaker().makeMap();
-        }
+		    @Override
+			public CanalInstance apply(String destination) {
+		        return canalInstanceGenerator.generate(destination);
+		    }
+		});
     }
 
-    public void stop() {
+	@Override
+	public void stop() {
         super.stop();
         for (Map.Entry<String, CanalInstance> entry : canalInstances.entrySet()) {
             try {
@@ -112,7 +110,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         metrics.terminate();
     }
 
-    public boolean auth(String user, String passwd, byte[] seed) {
+	public boolean auth(String user, String passwd, byte[] seed) {
         // 如果user/passwd密码为空,则任何用户账户都能登录
         if ((StringUtils.isEmpty(this.user) || StringUtils.equals(this.user, user))) {
             if (StringUtils.isEmpty(this.passwd)) {
@@ -126,14 +124,15 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
                 byte[] passForClient = SecurityUtil.hexStr2Bytes(passwd);
                 return SecurityUtil.scrambleServerAuth(passForClient, SecurityUtil.hexStr2Bytes(this.passwd), seed);
             } catch (NoSuchAlgorithmException e) {
-                return false;
+                logger.error(e.getMessage(), e);
+				return false;
             }
         }
 
         return false;
     }
 
-    public void start(final String destination) {
+	public void start(final String destination) {
         final CanalInstance canalInstance = canalInstances.get(destination);
         if (!canalInstance.isStart()) {
             try {
@@ -149,33 +148,32 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    public void stop(String destination) {
+	public void stop(String destination) {
         CanalInstance canalInstance = canalInstances.remove(destination);
-        if (canalInstance != null) {
-            if (canalInstance.isStart()) {
-                try {
-                    MDC.put("destination", destination);
-                    canalInstance.stop();
-                    if (metrics.isRunning()) {
-                        metrics.unregister(canalInstance);
-                    }
-                    logger.info("stop CanalInstances[{}] successfully", destination);
-                } finally {
-                    MDC.remove("destination");
-                }
-            }
-        }
+        boolean condition = canalInstance != null && canalInstance.isStart();
+		if (condition) {
+		    try {
+		        MDC.put("destination", destination);
+		        canalInstance.stop();
+		        if (metrics.isRunning()) {
+		            metrics.unregister(canalInstance);
+		        }
+		        logger.info("stop CanalInstances[{}] successfully", destination);
+		    } finally {
+		        MDC.remove("destination");
+		    }
+		}
     }
 
-    public boolean isStart(String destination) {
+	public boolean isStart(String destination) {
         return canalInstances.containsKey(destination) && canalInstances.get(destination).isStart();
     }
 
-    /**
+	/**
      * 客户端订阅，重复订阅时会更新对应的filter信息
      */
     @Override
-    public void subscribe(ClientIdentity clientIdentity) throws CanalServerException {
+    public void subscribe(ClientIdentity clientIdentity) {
         checkStart(clientIdentity.getDestination());
 
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
@@ -200,26 +198,26 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         canalInstance.subscribeChange(clientIdentity);
     }
 
-    /**
+	/**
      * 取消订阅
      */
     @Override
-    public void unsubscribe(ClientIdentity clientIdentity) throws CanalServerException {
+    public void unsubscribe(ClientIdentity clientIdentity) {
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
         canalInstance.getMetaManager().unsubscribe(clientIdentity); // 执行一下meta订阅
 
         logger.info("unsubscribe successfully, {}", clientIdentity);
     }
 
-    /**
+	/**
      * 查询所有的订阅信息
      */
-    public List<ClientIdentity> listAllSubscribe(String destination) throws CanalServerException {
+    public List<ClientIdentity> listAllSubscribe(String destination) {
         CanalInstance canalInstance = canalInstances.get(destination);
         return canalInstance.getMetaManager().listAllSubscribeInfo(destination);
     }
 
-    /**
+	/**
      * 获取数据
      *
      * <pre>
@@ -227,11 +225,11 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      * </pre>
      */
     @Override
-    public Message get(ClientIdentity clientIdentity, int batchSize) throws CanalServerException {
+    public Message get(ClientIdentity clientIdentity, int batchSize) {
         return get(clientIdentity, batchSize, null, null);
     }
 
-    /**
+	/**
      * 获取数据，可以指定超时时间.
      *
      * <pre>
@@ -245,8 +243,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      * </pre>
      */
     @Override
-    public Message get(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit)
-                                                                                                 throws CanalServerException {
+    public Message get(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit) {
         checkStart(clientIdentity.getDestination());
         checkSubscribe(clientIdentity);
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
@@ -277,14 +274,16 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
                 if (raw) {
                     entrys = Lists.transform(events.getEvents(), new Function<Event, ByteString>() {
 
-                        public ByteString apply(Event input) {
+                        @Override
+						public ByteString apply(Event input) {
                             return input.getRawEntry();
                         }
                     });
                 } else {
                     entrys = Lists.transform(events.getEvents(), new Function<Event, CanalEntry.Entry>() {
 
-                        public CanalEntry.Entry apply(Event input) {
+                        @Override
+						public CanalEntry.Entry apply(Event input) {
                             return input.getEntry();
                         }
                     });
@@ -304,7 +303,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    /**
+	/**
      * 不指定 position 获取事件。canal 会记住此 client 最新的 position。 <br/>
      * 如果是第一次 fetch，则会从 canal 中保存的最老一条数据开始输出。
      *
@@ -313,11 +312,11 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      * </pre>
      */
     @Override
-    public Message getWithoutAck(ClientIdentity clientIdentity, int batchSize) throws CanalServerException {
+    public Message getWithoutAck(ClientIdentity clientIdentity, int batchSize) {
         return getWithoutAck(clientIdentity, batchSize, null, null);
     }
 
-    /**
+	/**
      * 不指定 position 获取事件。canal 会记住此 client 最新的 position。 <br/>
      * 如果是第一次 fetch，则会从 canal 中保存的最老一条数据开始输出。
      *
@@ -332,8 +331,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      * </pre>
      */
     @Override
-    public Message getWithoutAck(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit)
-                                                                                                           throws CanalServerException {
+    public Message getWithoutAck(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit) {
         checkStart(clientIdentity.getDestination());
         checkSubscribe(clientIdentity);
 
@@ -369,14 +367,16 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
                 if (raw) {
                     entrys = Lists.transform(events.getEvents(), new Function<Event, ByteString>() {
 
-                        public ByteString apply(Event input) {
+                        @Override
+						public ByteString apply(Event input) {
                             return input.getRawEntry();
                         }
                     });
                 } else {
                     entrys = Lists.transform(events.getEvents(), new Function<Event, CanalEntry.Entry>() {
 
-                        public CanalEntry.Entry apply(Event input) {
+                        @Override
+						public CanalEntry.Entry apply(Event input) {
                             return input.getEntry();
                         }
                     });
@@ -395,21 +395,21 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    /**
+	/**
      * 查询当前未被ack的batch列表，batchId会按照从小到大进行返回
      */
-    public List<Long> listBatchIds(ClientIdentity clientIdentity) throws CanalServerException {
+    public List<Long> listBatchIds(ClientIdentity clientIdentity) {
         checkStart(clientIdentity.getDestination());
         checkSubscribe(clientIdentity);
 
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
         Map<Long, PositionRange> batchs = canalInstance.getMetaManager().listAllBatchs(clientIdentity);
-        List<Long> result = new ArrayList<Long>(batchs.keySet());
+        List<Long> result = new ArrayList<>(batchs.keySet());
         Collections.sort(result);
         return result;
     }
 
-    /**
+	/**
      * 进行 batch id 的确认。确认之后，小于等于此 batchId 的 Message 都会被确认。
      *
      * <pre>
@@ -417,7 +417,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
      * </pre>
      */
     @Override
-    public void ack(ClientIdentity clientIdentity, long batchId) throws CanalServerException {
+    public void ack(ClientIdentity clientIdentity, long batchId) {
         checkStart(clientIdentity.getDestination());
         checkSubscribe(clientIdentity);
 
@@ -462,11 +462,11 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         canalInstance.getEventStore().ack(positionRanges.getEnd(), positionRanges.getEndSeq());
     }
 
-    /**
+	/**
      * 回滚到未进行 {@link #ack} 的地方，下次fetch的时候，可以从最后一个没有 {@link #ack} 的地方开始拿
      */
     @Override
-    public void rollback(ClientIdentity clientIdentity) throws CanalServerException {
+    public void rollback(ClientIdentity clientIdentity) {
         checkStart(clientIdentity.getDestination());
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
         // 因为存在第一次链接时自动rollback的情况，所以需要忽略未订阅
@@ -484,11 +484,11 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    /**
+	/**
      * 回滚到未进行 {@link #ack} 的地方，下次fetch的时候，可以从最后一个没有 {@link #ack} 的地方开始拿
      */
     @Override
-    public void rollback(ClientIdentity clientIdentity, Long batchId) throws CanalServerException {
+    public void rollback(ClientIdentity clientIdentity, Long batchId) {
         checkStart(clientIdentity.getDestination());
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
 
@@ -519,11 +519,11 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    public Map<String, CanalInstance> getCanalInstances() {
+	public Map<String, CanalInstance> getCanalInstances() {
         return Maps.newHashMap(canalInstances);
     }
 
-    // ======================== helper method =======================
+	// ======================== helper method =======================
 
     /**
      * 根据不同的参数，选择不同的方式获取数据
@@ -545,7 +545,7 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    private void checkSubscribe(ClientIdentity clientIdentity) {
+	private void checkSubscribe(ClientIdentity clientIdentity) {
         CanalInstance canalInstance = canalInstances.get(clientIdentity.getDestination());
         boolean hasSubscribe = canalInstance.getMetaManager().hasSubscribe(clientIdentity);
         if (!hasSubscribe) {
@@ -554,34 +554,33 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         }
     }
 
-    private void checkStart(String destination) {
+	private void checkStart(String destination) {
         if (!isStart(destination)) {
             throw new CanalServerException(String.format("destination:%s should start first", destination));
         }
     }
 
-    private void loadCanalMetrics() {
+	private void loadCanalMetrics() {
         ServiceLoader<CanalMetricsProvider> providers = ServiceLoader.load(CanalMetricsProvider.class);
-        List<CanalMetricsProvider> list = new ArrayList<CanalMetricsProvider>();
+        List<CanalMetricsProvider> list = new ArrayList<>();
         for (CanalMetricsProvider provider : providers) {
             list.add(provider);
         }
-        if (!list.isEmpty()) {
-            // 发现provider, 进行初始化
-            if (list.size() > 1) {
-                logger.warn("Found more than one CanalMetricsProvider, use the first one.");
-                // 报告冲突
-                for (CanalMetricsProvider p : list) {
-                    logger.warn("Found CanalMetricsProvider: {}.", p.getClass().getName());
-                }
-            }
-            // 默认使用第一个
-            CanalMetricsProvider provider = list.get(0);
-            this.metrics = provider.getService();
-        }
+        if (list.isEmpty()) {
+			return;
+		}
+		// 发现provider, 进行初始化
+		if (list.size() > 1) {
+		    logger.warn("Found more than one CanalMetricsProvider, use the first one.");
+		    // 报告冲突
+			list.forEach(p -> logger.warn("Found CanalMetricsProvider: {}.", p.getClass().getName()));
+		}
+		// 默认使用第一个
+		CanalMetricsProvider provider = list.get(0);
+		this.metrics = provider.getService();
     }
 
-    private boolean isRaw(CanalEventStore eventStore) {
+	private boolean isRaw(CanalEventStore eventStore) {
         if (eventStore instanceof MemoryEventStoreWithBuffer) {
             return ((MemoryEventStoreWithBuffer) eventStore).isRaw();
         }
@@ -589,22 +588,27 @@ public class CanalServerWithEmbedded extends AbstractCanalLifeCycle implements C
         return true;
     }
 
-    // ========= setter ==========
+	// ========= setter ==========
 
     public void setCanalInstanceGenerator(CanalInstanceGenerator canalInstanceGenerator) {
         this.canalInstanceGenerator = canalInstanceGenerator;
     }
 
-    public void setMetricsPort(int metricsPort) {
+	public void setMetricsPort(int metricsPort) {
         this.metricsPort = metricsPort;
     }
 
-    public void setUser(String user) {
+	public void setUser(String user) {
         this.user = user;
     }
 
-    public void setPasswd(String passwd) {
+	public void setPasswd(String passwd) {
         this.passwd = passwd;
+    }
+
+	private static class SingletonHolder {
+
+        private static final CanalServerWithEmbedded CANAL_SERVER_WITH_EMBEDDED = new CanalServerWithEmbedded();
     }
 
 }

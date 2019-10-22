@@ -10,7 +10,8 @@ public class AuthSwitchRequestMoreData extends CommandPacket {
     public int    status;
     public byte[] authData;
 
-    public void fromBytes(byte[] data) {
+    @Override
+	public void fromBytes(byte[] data) {
         int index = 0;
         // 1. read status
         status = data[index];
@@ -18,7 +19,8 @@ public class AuthSwitchRequestMoreData extends CommandPacket {
         authData = ByteHelper.readNullTerminatedBytes(data, index);
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 

@@ -9,15 +9,17 @@ import org.springframework.beans.PropertyEditorRegistry;
 
 public class SocketAddressEditor extends PropertyEditorSupport implements PropertyEditorRegistrar {
 
-    public void registerCustomEditors(PropertyEditorRegistry registry) {
+    @Override
+	public void registerCustomEditors(PropertyEditorRegistry registry) {
         registry.registerCustomEditor(InetSocketAddress.class, this);
     }
 
-    public void setAsText(String text) throws IllegalArgumentException {
+    @Override
+	public void setAsText(String text) {
         String[] addresses = StringUtils.split(text, ":");
         if (addresses.length > 0) {
             if (addresses.length != 2) {
-                throw new RuntimeException("address[" + text + "] is illegal, eg.127.0.0.1:3306");
+                throw new RuntimeException(new StringBuilder().append("address[").append(text).append("] is illegal, eg.127.0.0.1:3306").toString());
             } else {
                 setValue(new InetSocketAddress(addresses[0], Integer.valueOf(addresses[1])));
             }

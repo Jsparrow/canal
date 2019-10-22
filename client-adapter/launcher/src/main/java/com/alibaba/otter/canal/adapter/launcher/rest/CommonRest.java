@@ -26,6 +26,7 @@ import com.alibaba.otter.canal.client.adapter.OuterAdapter;
 import com.alibaba.otter.canal.client.adapter.support.EtlResult;
 import com.alibaba.otter.canal.client.adapter.support.ExtensionLoader;
 import com.alibaba.otter.canal.client.adapter.support.Result;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * 适配器操作Rest
@@ -70,7 +71,7 @@ public class CommonRest {
         String destination = adapter.getDestination(task);
         String lockKey = destination == null ? task : destination;
 
-        boolean locked = etlLock.tryLock(ETL_LOCK_ZK_NODE + type + "-" + lockKey);
+        boolean locked = etlLock.tryLock(new StringBuilder().append(ETL_LOCK_ZK_NODE).append(type).append("-").append(lockKey).toString());
         if (!locked) {
             EtlResult result = new EtlResult();
             result.setSucceeded(false);
@@ -95,7 +96,7 @@ public class CommonRest {
             try {
                 List<String> paramArray = null;
                 if (params != null) {
-                    paramArray = Arrays.asList(params.trim().split(";"));
+                    paramArray = Arrays.asList(StringUtils.trim(params).split(";"));
                 }
                 return adapter.etl(task, paramArray);
             } finally {
@@ -106,7 +107,7 @@ public class CommonRest {
                 }
             }
         } finally {
-            etlLock.unlock(ETL_LOCK_ZK_NODE + type + "-" + lockKey);
+            etlLock.unlock(new StringBuilder().append(ETL_LOCK_ZK_NODE).append(type).append("-").append(lockKey).toString());
         }
     }
 
@@ -156,7 +157,7 @@ public class CommonRest {
     public List<Map<String, String>> destinations() {
         List<Map<String, String>> result = new ArrayList<>();
         Set<String> destinations = adapterCanalConfig.DESTINATIONS;
-        for (String destination : destinations) {
+        destinations.forEach(destination -> {
             Map<String, String> resMap = new LinkedHashMap<>();
             boolean status = syncSwitch.status(destination);
             String resStatus;
@@ -168,7 +169,7 @@ public class CommonRest {
             resMap.put("destination", destination);
             resMap.put("status", resStatus);
             result.add(resMap);
-        }
+        });
         return result;
     }
 
@@ -181,18 +182,18 @@ public class CommonRest {
      */
     @PutMapping("/syncSwitch/{destination}/{status}")
     public Result etl(@PathVariable String destination, @PathVariable String status) {
-        if (status.equals("on")) {
+        if ("on".equals(status)) {
             syncSwitch.on(destination);
             logger.info("#Destination: {} sync on", destination);
-            return Result.createSuccess("实例: " + destination + " 开启同步成功");
-        } else if (status.equals("off")) {
+            return Result.createSuccess(new StringBuilder().append("实例: ").append(destination).append(" 开启同步成功").toString());
+        } else if ("off".equals(status)) {
             syncSwitch.off(destination);
             logger.info("#Destination: {} sync off", destination);
-            return Result.createSuccess("实例: " + destination + " 关闭同步成功");
+            return Result.createSuccess(new StringBuilder().append("实例: ").append(destination).append(" 关闭同步成功").toString());
         } else {
             Result result = new Result();
             result.setCode(50000);
-            result.setMessage("实例: " + destination + " 操作失败");
+            result.setMessage(new StringBuilder().append("实例: ").append(destination).append(" 操作失败").toString());
             return result;
         }
     }

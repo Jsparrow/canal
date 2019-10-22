@@ -28,14 +28,6 @@ public class PrometheusClientInstanceProfiler implements ClientInstanceProfiler 
     private final Histogram     responseLatency;
     private volatile boolean    running        = false;
 
-    private static class SingletonHolder {
-        private static final PrometheusClientInstanceProfiler SINGLETON = new PrometheusClientInstanceProfiler();
-    }
-
-    public static PrometheusClientInstanceProfiler instance() {
-        return SingletonHolder.SINGLETON;
-    }
-
     private PrometheusClientInstanceProfiler() {
         this.outboundCounter = Counter.build()
                 .labelNames(DEST_LABELS)
@@ -66,7 +58,11 @@ public class PrometheusClientInstanceProfiler implements ClientInstanceProfiler 
                 .create();
     }
 
-    @Override
+	public static PrometheusClientInstanceProfiler instance() {
+        return SingletonHolder.SINGLETON;
+    }
+
+	@Override
     public void profiling(ClientRequestResult result) {
         String destination = result.getDestination();
         PacketType type = result.getType();
@@ -94,7 +90,7 @@ public class PrometheusClientInstanceProfiler implements ClientInstanceProfiler 
         }
     }
 
-    @Override
+	@Override
     public void start() {
         if (outboundCounter != null) {
             outboundCounter.register();
@@ -114,7 +110,7 @@ public class PrometheusClientInstanceProfiler implements ClientInstanceProfiler 
         running = true;
     }
 
-    @Override
+	@Override
     public void stop() {
         running = false;
         if (outboundCounter != null) {
@@ -134,8 +130,12 @@ public class PrometheusClientInstanceProfiler implements ClientInstanceProfiler 
         }
     }
 
-    @Override
+	@Override
     public boolean isStart() {
         return running;
+    }
+
+	private static class SingletonHolder {
+        private static final PrometheusClientInstanceProfiler SINGLETON = new PrometheusClientInstanceProfiler();
     }
 }

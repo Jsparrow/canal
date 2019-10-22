@@ -35,25 +35,17 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
     private Channel                 serverChannel = null;
     private ServerBootstrap         bootstrap     = null;
     private ChannelGroup            childGroups   = null; // socket channel
-                                                          // container, used to
-                                                          // close sockets
-                                                          // explicitly.
-
-    private static class SingletonHolder {
-
-        private static final CanalServerWithNetty CANAL_SERVER_WITH_NETTY = new CanalServerWithNetty();
-    }
-
-    private CanalServerWithNetty(){
+                                                          private CanalServerWithNetty(){
         this.embeddedServer = CanalServerWithEmbedded.instance();
         this.childGroups = new DefaultChannelGroup();
     }
 
-    public static CanalServerWithNetty instance() {
+	public static CanalServerWithNetty instance() {
         return SingletonHolder.CANAL_SERVER_WITH_NETTY;
     }
 
-    public void start() {
+	@Override
+	public void start() {
         super.start();
 
         if (!embeddedServer.isStart()) {
@@ -75,22 +67,19 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
         bootstrap.setOption("child.tcpNoDelay", true);
 
         // 构造对应的pipeline
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
+        bootstrap.setPipelineFactory(() -> {
+		    ChannelPipeline pipelines = Channels.pipeline();
+		    pipelines.addLast(FixedHeaderFrameDecoder.class.getName(), new FixedHeaderFrameDecoder());
+		    // support to maintain child socket channel.
+		    pipelines.addLast(HandshakeInitializationHandler.class.getName(),
+		        new HandshakeInitializationHandler(childGroups));
+		    pipelines.addLast(ClientAuthenticationHandler.class.getName(),
+		        new ClientAuthenticationHandler(embeddedServer));
 
-            public ChannelPipeline getPipeline() throws Exception {
-                ChannelPipeline pipelines = Channels.pipeline();
-                pipelines.addLast(FixedHeaderFrameDecoder.class.getName(), new FixedHeaderFrameDecoder());
-                // support to maintain child socket channel.
-                pipelines.addLast(HandshakeInitializationHandler.class.getName(),
-                    new HandshakeInitializationHandler(childGroups));
-                pipelines.addLast(ClientAuthenticationHandler.class.getName(),
-                    new ClientAuthenticationHandler(embeddedServer));
-
-                SessionHandler sessionHandler = new SessionHandler(embeddedServer);
-                pipelines.addLast(SessionHandler.class.getName(), sessionHandler);
-                return pipelines;
-            }
-        });
+		    SessionHandler sessionHandler = new SessionHandler(embeddedServer);
+		    pipelines.addLast(SessionHandler.class.getName(), sessionHandler);
+		    return pipelines;
+		});
 
         // 启动
         if (StringUtils.isNotEmpty(ip)) {
@@ -100,7 +89,8 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
         }
     }
 
-    public void stop() {
+	@Override
+	public void stop() {
         super.stop();
 
         if (this.serverChannel != null) {
@@ -122,16 +112,25 @@ public class CanalServerWithNetty extends AbstractCanalLifeCycle implements Cana
         }
     }
 
-    public void setIp(String ip) {
+	public void setIp(String ip) {
         this.ip = ip;
     }
 
-    public void setPort(int port) {
+	public void setPort(int port) {
         this.port = port;
     }
 
-    public void setEmbeddedServer(CanalServerWithEmbedded embeddedServer) {
+	public void setEmbeddedServer(CanalServerWithEmbedded embeddedServer) {
         this.embeddedServer = embeddedServer;
+    }
+
+														// container, used to
+                                                          // close sockets
+                                                          // explicitly.
+
+    private static class SingletonHolder {
+
+        private static final CanalServerWithNetty CANAL_SERVER_WITH_NETTY = new CanalServerWithNetty();
     }
 
 }

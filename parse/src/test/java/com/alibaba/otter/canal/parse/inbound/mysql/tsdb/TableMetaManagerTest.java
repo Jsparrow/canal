@@ -31,7 +31,7 @@ public class TableMetaManagerTest {
     DatabaseTableMeta tableMetaManager;
 
     @Test
-    public void testSimple() throws FileNotFoundException, IOException {
+    public void testSimple() throws IOException {
         tableMetaManager.init("test");
 
         URL url = Thread.currentThread().getContextClassLoader().getResource("dummy.txt");

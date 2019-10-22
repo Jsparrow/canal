@@ -44,7 +44,7 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  * @author jianghang 2012-6-21 下午04:06:32
  * @version 1.0.0
  */
-public class MysqlEventParser extends AbstractMysqlEventParser implements CanalEventParser, CanalHASwitchable {
+public class MysqlEventParser extends AbstractMysqlEventParser implements CanalHASwitchable {
 
     private CanalHAController    haController                      = null;
 
@@ -71,68 +71,68 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
     private int                  dumpErrorCountThreshold           = 2;        // binlogDump失败异常计数阀值
     private boolean              rdsOssMode                        = false;
 
-    protected ErosaConnection buildErosaConnection() {
+    @Override
+	protected ErosaConnection buildErosaConnection() {
         return buildMysqlConnection(this.runningInfo);
     }
 
-    protected void preDump(ErosaConnection connection) {
+    @Override
+	protected void preDump(ErosaConnection connection) {
         if (!(connection instanceof MysqlConnection)) {
             throw new CanalParseException("Unsupported connection type : " + connection.getClass().getSimpleName());
         }
 
-        if (binlogParser != null && binlogParser instanceof LogEventConvert) {
-            metaConnection = (MysqlConnection) connection.fork();
-            try {
-                metaConnection.connect();
-            } catch (IOException e) {
-                throw new CanalParseException(e);
-            }
+        if (!(binlogParser instanceof LogEventConvert)) {
+			return;
+		}
+		metaConnection = (MysqlConnection) connection.fork();
+		try {
+		    metaConnection.connect();
+		} catch (IOException e) {
+		    throw new CanalParseException(e);
+		}
+		if (supportBinlogFormats != null && supportBinlogFormats.length > 0) {
+		    BinlogFormat format = ((MysqlConnection) metaConnection).getBinlogFormat();
+		    boolean found = false;
+		    for (BinlogFormat supportFormat : supportBinlogFormats) {
+		        if (supportFormat != null && format == supportFormat) {
+		            found = true;
+		            break;
+		        }
+		    }
 
-            if (supportBinlogFormats != null && supportBinlogFormats.length > 0) {
-                BinlogFormat format = ((MysqlConnection) metaConnection).getBinlogFormat();
-                boolean found = false;
-                for (BinlogFormat supportFormat : supportBinlogFormats) {
-                    if (supportFormat != null && format == supportFormat) {
-                        found = true;
-                        break;
-                    }
-                }
+		    if (!found) {
+		        throw new CanalParseException("Unsupported BinlogFormat " + format);
+		    }
+		}
+		if (supportBinlogImages != null && supportBinlogImages.length > 0) {
+		    BinlogImage image = ((MysqlConnection) metaConnection).getBinlogImage();
+		    boolean found = false;
+		    for (BinlogImage supportImage : supportBinlogImages) {
+		        if (supportImage != null && image == supportImage) {
+		            found = true;
+		            break;
+		        }
+		    }
 
-                if (!found) {
-                    throw new CanalParseException("Unsupported BinlogFormat " + format);
-                }
-            }
-
-            if (supportBinlogImages != null && supportBinlogImages.length > 0) {
-                BinlogImage image = ((MysqlConnection) metaConnection).getBinlogImage();
-                boolean found = false;
-                for (BinlogImage supportImage : supportBinlogImages) {
-                    if (supportImage != null && image == supportImage) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found) {
-                    throw new CanalParseException("Unsupported BinlogImage " + image);
-                }
-            }
-
-            if (tableMetaTSDB != null && tableMetaTSDB instanceof DatabaseTableMeta) {
-                ((DatabaseTableMeta) tableMetaTSDB).setConnection(metaConnection);
-                ((DatabaseTableMeta) tableMetaTSDB).setFilter(eventFilter);
-                ((DatabaseTableMeta) tableMetaTSDB).setBlackFilter(eventBlackFilter);
-                ((DatabaseTableMeta) tableMetaTSDB).setSnapshotInterval(tsdbSnapshotInterval);
-                ((DatabaseTableMeta) tableMetaTSDB).setSnapshotExpire(tsdbSnapshotExpire);
-                ((DatabaseTableMeta) tableMetaTSDB).init(destination);
-            }
-
-            tableMetaCache = new TableMetaCache(metaConnection, tableMetaTSDB);
-            ((LogEventConvert) binlogParser).setTableMetaCache(tableMetaCache);
-        }
+		    if (!found) {
+		        throw new CanalParseException("Unsupported BinlogImage " + image);
+		    }
+		}
+		if (tableMetaTSDB instanceof DatabaseTableMeta) {
+		    ((DatabaseTableMeta) tableMetaTSDB).setConnection(metaConnection);
+		    ((DatabaseTableMeta) tableMetaTSDB).setFilter(eventFilter);
+		    ((DatabaseTableMeta) tableMetaTSDB).setBlackFilter(eventBlackFilter);
+		    ((DatabaseTableMeta) tableMetaTSDB).setSnapshotInterval(tsdbSnapshotInterval);
+		    ((DatabaseTableMeta) tableMetaTSDB).setSnapshotExpire(tsdbSnapshotExpire);
+		    ((DatabaseTableMeta) tableMetaTSDB).init(destination);
+		}
+		tableMetaCache = new TableMetaCache(metaConnection, tableMetaTSDB);
+		((LogEventConvert) binlogParser).setTableMetaCache(tableMetaCache);
     }
 
-    protected void afterDump(ErosaConnection connection) {
+    @Override
+	protected void afterDump(ErosaConnection connection) {
         super.afterDump(connection);
 
         if (connection == null) {
@@ -153,7 +153,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    public void start() throws CanalParseException {
+    @Override
+	public void start() {
         if (runningInfo == null) { // 第一次链接主库
             runningInfo = masterInfo;
         }
@@ -161,7 +162,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         super.start();
     }
 
-    public void stop() throws CanalParseException {
+    @Override
+	public void stop() {
         if (metaConnection != null) {
             try {
                 metaConnection.disconnect();
@@ -178,7 +180,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         super.stop();
     }
 
-    protected TimerTask buildHeartBeatTimeTask(ErosaConnection connection) {
+    @Override
+	protected TimerTask buildHeartBeatTimeTask(ErosaConnection connection) {
         if (!(connection instanceof MysqlConnection)) {
             throw new CanalParseException("Unsupported connection type : " + connection.getClass().getSimpleName());
         }
@@ -192,93 +195,31 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
 
     }
 
-    protected void stopHeartBeat() {
+    @Override
+	protected void stopHeartBeat() {
         TimerTask heartBeatTimerTask = this.heartBeatTimerTask;
         super.stopHeartBeat();
-        if (heartBeatTimerTask != null && heartBeatTimerTask instanceof MysqlDetectingTimeTask) {
-            MysqlConnection mysqlConnection = ((MysqlDetectingTimeTask) heartBeatTimerTask).getMysqlConnection();
-            try {
-                mysqlConnection.disconnect();
-            } catch (IOException e) {
-                logger.error("ERROR # disconnect heartbeat connection for address:{}", mysqlConnection.getConnector()
-                    .getAddress(), e);
-            }
-        }
-    }
-
-    /**
-     * 心跳信息
-     *
-     * @author jianghang 2012-7-6 下午02:50:15
-     * @version 1.0.0
-     */
-    class MysqlDetectingTimeTask extends TimerTask {
-
-        private boolean         reconnect = false;
-        private MysqlConnection mysqlConnection;
-
-        public MysqlDetectingTimeTask(MysqlConnection mysqlConnection){
-            this.mysqlConnection = mysqlConnection;
-        }
-
-        public void run() {
-            try {
-                if (reconnect) {
-                    reconnect = false;
-                    mysqlConnection.reconnect();
-                } else if (!mysqlConnection.isConnected()) {
-                    mysqlConnection.connect();
-                }
-                Long startTime = System.currentTimeMillis();
-
-                // 可能心跳sql为select 1
-                if (StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "select")
-                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "show")
-                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "explain")
-                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "desc")) {
-                    mysqlConnection.query(detectingSQL);
-                } else {
-                    mysqlConnection.update(detectingSQL);
-                }
-
-                Long costTime = System.currentTimeMillis() - startTime;
-                if (haController != null && haController instanceof HeartBeatCallback) {
-                    ((HeartBeatCallback) haController).onSuccess(costTime);
-                }
-            } catch (SocketTimeoutException e) {
-                if (haController != null && haController instanceof HeartBeatCallback) {
-                    ((HeartBeatCallback) haController).onFailed(e);
-                }
-                reconnect = true;
-                logger.warn("connect failed by ", e);
-            } catch (IOException e) {
-                if (haController != null && haController instanceof HeartBeatCallback) {
-                    ((HeartBeatCallback) haController).onFailed(e);
-                }
-                reconnect = true;
-                logger.warn("connect failed by ", e);
-            } catch (Throwable e) {
-                if (haController != null && haController instanceof HeartBeatCallback) {
-                    ((HeartBeatCallback) haController).onFailed(e);
-                }
-                reconnect = true;
-                logger.warn("connect failed by ", e);
-            }
-
-        }
-
-        public MysqlConnection getMysqlConnection() {
-            return mysqlConnection;
-        }
+        if (!(heartBeatTimerTask instanceof MysqlDetectingTimeTask)) {
+			return;
+		}
+		MysqlConnection mysqlConnection = ((MysqlDetectingTimeTask) heartBeatTimerTask).getMysqlConnection();
+		try {
+		    mysqlConnection.disconnect();
+		} catch (IOException e) {
+		    logger.error("ERROR # disconnect heartbeat connection for address:{}", mysqlConnection.getConnector()
+		        .getAddress(), e);
+		}
     }
 
     // 处理主备切换的逻辑
-    public void doSwitch() {
+    @Override
+	public void doSwitch() {
         AuthenticationInfo newRunningInfo = (runningInfo.equals(masterInfo) ? standbyInfo : masterInfo);
         this.doSwitch(newRunningInfo);
     }
 
-    public void doSwitch(AuthenticationInfo newRunningInfo) {
+	@Override
+	public void doSwitch(AuthenticationInfo newRunningInfo) {
         // 1. 需要停止当前正在复制的过程
         // 2. 找到新的position点
         // 3. 重新建立链接，开始复制数据
@@ -299,8 +240,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
             return;
         } else {
             stop();
-            alarmMessage = "try to ha switch, old:" + runningInfo.getAddress().toString() + ", new:"
-                           + newRunningInfo.getAddress().toString();
+            alarmMessage = new StringBuilder().append("try to ha switch, old:").append(runningInfo.getAddress().toString()).append(", new:").append(newRunningInfo.getAddress().toString()).toString();
             logger.warn(alarmMessage);
             sendAlarm(destination, alarmMessage);
             runningInfo = newRunningInfo;
@@ -308,7 +248,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    // =================== helper method =================
+	// =================== helper method =================
 
     private MysqlConnection buildMysqlConnection(AuthenticationInfo runningInfo) {
         MysqlConnection connection = new MysqlConnection(runningInfo.getAddress(),
@@ -329,7 +269,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         return connection;
     }
 
-    private final long generateUniqueServerId() {
+	private final long generateUniqueServerId() {
         try {
             // a=`echo $masterip|cut -d\. -f1`
             // b=`echo $masterip|cut -d\. -f2`
@@ -350,7 +290,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    protected EntryPosition findStartPosition(ErosaConnection connection) throws IOException {
+	@Override
+	protected EntryPosition findStartPosition(ErosaConnection connection) throws IOException {
         if (isGTIDMode()) {
             // GTID模式下，CanalLogPositionManager里取最后的gtid，没有则取instanc配置中的
             LogPosition logPosition = getLogPositionManager().getLatestIndexBy(destination);
@@ -381,13 +322,13 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         return startPosition;
     }
 
-    protected EntryPosition findEndPosition(ErosaConnection connection) throws IOException {
+	protected EntryPosition findEndPosition(ErosaConnection connection) throws IOException {
         MysqlConnection mysqlConnection = (MysqlConnection) connection;
         EntryPosition endPosition = findEndPosition(mysqlConnection);
         return endPosition;
     }
 
-    protected EntryPosition findEndPositionWithMasterIdAndTimestamp(MysqlConnection connection) {
+	protected EntryPosition findEndPositionWithMasterIdAndTimestamp(MysqlConnection connection) {
         MysqlConnection mysqlConnection = (MysqlConnection) connection;
         final EntryPosition endPosition = findEndPosition(mysqlConnection);
         if (tableMetaTSDB != null) {
@@ -402,27 +343,25 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    protected EntryPosition findPositionWithMasterIdAndTimestamp(MysqlConnection connection, EntryPosition fixedPosition) {
+	protected EntryPosition findPositionWithMasterIdAndTimestamp(MysqlConnection connection, EntryPosition fixedPosition) {
         MysqlConnection mysqlConnection = (MysqlConnection) connection;
-        if (tableMetaTSDB != null && (fixedPosition.getTimestamp() == null || fixedPosition.getTimestamp() <= 0)) {
-            // 使用一个未来极大的时间，基于位点进行定位
-            long startTimestamp = System.currentTimeMillis() + 102L * 365 * 24 * 3600 * 1000; // 当前时间的未来102年
-            EntryPosition entryPosition = findAsPerTimestampInSpecificLogFile(mysqlConnection,
-                startTimestamp,
-                fixedPosition,
-                fixedPosition.getJournalName(),
-                true);
-            if (entryPosition == null) {
-                throw new CanalParseException("[fixed timestamp] can't found begin/commit position before with fixed position"
-                                              + fixedPosition.getJournalName() + ":" + fixedPosition.getPosition());
-            }
-            return entryPosition;
-        } else {
-            return fixedPosition;
-        }
+        if (!(tableMetaTSDB != null && (fixedPosition.getTimestamp() == null || fixedPosition.getTimestamp() <= 0))) {
+			return fixedPosition;
+		}
+		// 使用一个未来极大的时间，基于位点进行定位
+		long startTimestamp = System.currentTimeMillis() + 102L * 365 * 24 * 3600 * 1000; // 当前时间的未来102年
+		EntryPosition entryPosition = findAsPerTimestampInSpecificLogFile(mysqlConnection,
+		    startTimestamp,
+		    fixedPosition,
+		    fixedPosition.getJournalName(),
+		    true);
+		if (entryPosition == null) {
+		    throw new CanalParseException(new StringBuilder().append("[fixed timestamp] can't found begin/commit position before with fixed position").append(fixedPosition.getJournalName()).append(":").append(fixedPosition.getPosition()).toString());
+		}
+		return entryPosition;
     }
 
-    protected EntryPosition findStartPositionInternal(ErosaConnection connection) {
+	protected EntryPosition findStartPositionInternal(ErosaConnection connection) {
         MysqlConnection mysqlConnection = (MysqlConnection) connection;
         LogPosition logPosition = logPositionManager.getLatestIndexBy(destination);
         if (logPosition == null) {// 找不到历史成功记录
@@ -523,7 +462,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    // 根据想要的position，可能这个position对应的记录为rowdata，需要找到事务头，避免丢数据
+	// 根据想要的position，可能这个position对应的记录为rowdata，需要找到事务头，避免丢数据
     // 主要考虑一个事务执行时间可能会几秒种，如果仅仅按照timestamp相同，则可能会丢失事务的前半部分数据
     private Long findTransactionBeginPosition(ErosaConnection mysqlConnection, final EntryPosition entryPosition)
                                                                                                                  throws IOException {
@@ -534,7 +473,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
 
             private LogPosition lastPosition;
 
-            public boolean sink(LogEvent event) {
+            @Override
+			public boolean sink(LogEvent event) {
                 try {
                     CanalEntry.Entry entry = parseAndProfilingIfNecessary(event, true);
                     if (entry == null) {
@@ -570,7 +510,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         return preTransactionStartPosition.get();
     }
 
-    // 根据时间查找binlog位置
+	// 根据时间查找binlog位置
     private EntryPosition findByStartTimeStamp(MysqlConnection mysqlConnection, Long startTimestamp) {
         EntryPosition endPosition = findEndPosition(mysqlConnection);
         EntryPosition startPosition = findStartPosition(mysqlConnection);
@@ -632,7 +572,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         return null;
     }
 
-    /**
+	/**
      * 查询当前db的serverId信息
      */
     private Long findServerId(MysqlConnection mysqlConnection) {
@@ -648,7 +588,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    /**
+	/**
      * 查询当前的binlog位置
      */
     private EntryPosition findEndPosition(MysqlConnection mysqlConnection) {
@@ -668,7 +608,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    /**
+	/**
      * 查询当前的binlog位置
      */
     private EntryPosition findStartPosition(MysqlConnection mysqlConnection) {
@@ -686,7 +626,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
 
     }
 
-    /**
+	/**
      * 查询当前的slave视图的binlog位置
      */
     @SuppressWarnings("unused")
@@ -700,7 +640,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
             }
 
             int i = 0;
-            Map<String, String> maps = new HashMap<String, String>(names.size(), 1f);
+            Map<String, String> maps = new HashMap<>(names.size(), 1f);
             for (FieldPacket name : names) {
                 maps.put(name.getName(), fields.get(i));
                 i++;
@@ -711,9 +651,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
             String slaveSQLRunning = maps.get("Slave_SQL_Running"); // Slave_SQL_Running
             if ((!"0".equals(errno)) || (!"Yes".equalsIgnoreCase(slaveIORunning))
                 || (!"Yes".equalsIgnoreCase(slaveSQLRunning))) {
-                logger.warn("Ignoring failed slave: " + mysqlConnection.getConnector().getAddress() + ", Last_Errno = "
-                            + errno + ", Slave_IO_Running = " + slaveIORunning + ", Slave_SQL_Running = "
-                            + slaveSQLRunning);
+                logger.warn(new StringBuilder().append("Ignoring failed slave: ").append(mysqlConnection.getConnector().getAddress()).append(", Last_Errno = ").append(errno).append(", Slave_IO_Running = ").append(slaveIORunning)
+						.append(", Slave_SQL_Running = ").append(slaveSQLRunning).toString());
                 return null;
             }
 
@@ -729,7 +668,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         return null;
     }
 
-    /**
+	/**
      * 根据给定的时间戳，在指定的binlog中找到最接近于该时间戳(必须是小于时间戳)的一个事务起始位置。
      * 针对最后一个binlog会给定endPosition，避免无尽的查询
      */
@@ -747,7 +686,8 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
 
                 private LogPosition lastPosition;
 
-                public boolean sink(LogEvent event) {
+                @Override
+				public boolean sink(LogEvent event) {
                     EntryPosition entryPosition = null;
                     try {
                         CanalEntry.Entry entry = parseAndProfilingIfNecessary(event, true);
@@ -825,7 +765,7 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         }
     }
 
-    @Override
+	@Override
     protected void processDumpError(Throwable e) {
         if (e instanceof IOException) {
             String message = e.getMessage();
@@ -838,100 +778,157 @@ public class MysqlEventParser extends AbstractMysqlEventParser implements CanalE
         super.processDumpError(e);
     }
 
-    public void setSupportBinlogFormats(String formatStrs) {
+	public void setSupportBinlogFormats(String formatStrs) {
         String[] formats = StringUtils.split(formatStrs, ',');
-        if (formats != null) {
-            BinlogFormat[] supportBinlogFormats = new BinlogFormat[formats.length];
-            int i = 0;
-            for (String format : formats) {
-                supportBinlogFormats[i++] = BinlogFormat.valuesOf(format);
-            }
-
-            this.supportBinlogFormats = supportBinlogFormats;
-        }
+        if (formats == null) {
+			return;
+		}
+		BinlogFormat[] supportBinlogFormats = new BinlogFormat[formats.length];
+		int i = 0;
+		for (String format : formats) {
+		    supportBinlogFormats[i++] = BinlogFormat.valuesOf(format);
+		}
+		this.supportBinlogFormats = supportBinlogFormats;
     }
 
-    public void setSupportBinlogImages(String imageStrs) {
+	public void setSupportBinlogImages(String imageStrs) {
         String[] images = StringUtils.split(imageStrs, ',');
-        if (images != null) {
-            BinlogImage[] supportBinlogImages = new BinlogImage[images.length];
-            int i = 0;
-            for (String image : images) {
-                supportBinlogImages[i++] = BinlogImage.valuesOf(image);
-            }
-
-            this.supportBinlogImages = supportBinlogImages;
-        }
+        if (images == null) {
+			return;
+		}
+		BinlogImage[] supportBinlogImages = new BinlogImage[images.length];
+		int i = 0;
+		for (String image : images) {
+		    supportBinlogImages[i++] = BinlogImage.valuesOf(image);
+		}
+		this.supportBinlogImages = supportBinlogImages;
     }
 
-    // ===================== setter / getter ========================
+	// ===================== setter / getter ========================
 
     public void setDefaultConnectionTimeoutInSeconds(int defaultConnectionTimeoutInSeconds) {
         this.defaultConnectionTimeoutInSeconds = defaultConnectionTimeoutInSeconds;
     }
 
-    public void setReceiveBufferSize(int receiveBufferSize) {
+	public void setReceiveBufferSize(int receiveBufferSize) {
         this.receiveBufferSize = receiveBufferSize;
     }
 
-    public void setSendBufferSize(int sendBufferSize) {
+	public void setSendBufferSize(int sendBufferSize) {
         this.sendBufferSize = sendBufferSize;
     }
 
-    public void setMasterInfo(AuthenticationInfo masterInfo) {
+	public void setMasterInfo(AuthenticationInfo masterInfo) {
         this.masterInfo = masterInfo;
     }
 
-    public void setStandbyInfo(AuthenticationInfo standbyInfo) {
+	public void setStandbyInfo(AuthenticationInfo standbyInfo) {
         this.standbyInfo = standbyInfo;
     }
 
-    public void setMasterPosition(EntryPosition masterPosition) {
+	public void setMasterPosition(EntryPosition masterPosition) {
         this.masterPosition = masterPosition;
     }
 
-    public void setStandbyPosition(EntryPosition standbyPosition) {
+	public void setStandbyPosition(EntryPosition standbyPosition) {
         this.standbyPosition = standbyPosition;
     }
 
-    public void setSlaveId(long slaveId) {
+	public void setSlaveId(long slaveId) {
         this.slaveId = slaveId;
     }
 
-    public void setDetectingSQL(String detectingSQL) {
+	public void setDetectingSQL(String detectingSQL) {
         this.detectingSQL = detectingSQL;
     }
 
-    public void setDetectingIntervalInSeconds(Integer detectingIntervalInSeconds) {
+	@Override
+	public void setDetectingIntervalInSeconds(Integer detectingIntervalInSeconds) {
         this.detectingIntervalInSeconds = detectingIntervalInSeconds;
     }
 
-    public void setDetectingEnable(boolean detectingEnable) {
+	@Override
+	public void setDetectingEnable(boolean detectingEnable) {
         this.detectingEnable = detectingEnable;
     }
 
-    public void setFallbackIntervalInSeconds(int fallbackIntervalInSeconds) {
+	public void setFallbackIntervalInSeconds(int fallbackIntervalInSeconds) {
         this.fallbackIntervalInSeconds = fallbackIntervalInSeconds;
     }
 
-    public CanalHAController getHaController() {
+	public CanalHAController getHaController() {
         return haController;
     }
 
-    public void setHaController(CanalHAController haController) {
+	public void setHaController(CanalHAController haController) {
         this.haController = haController;
     }
 
-    public void setDumpErrorCountThreshold(int dumpErrorCountThreshold) {
+	public void setDumpErrorCountThreshold(int dumpErrorCountThreshold) {
         this.dumpErrorCountThreshold = dumpErrorCountThreshold;
     }
 
-    public boolean isRdsOssMode() {
+	public boolean isRdsOssMode() {
         return rdsOssMode;
     }
 
-    public void setRdsOssMode(boolean rdsOssMode) {
+	public void setRdsOssMode(boolean rdsOssMode) {
         this.rdsOssMode = rdsOssMode;
+    }
+
+	/**
+     * 心跳信息
+     *
+     * @author jianghang 2012-7-6 下午02:50:15
+     * @version 1.0.0
+     */
+    class MysqlDetectingTimeTask extends TimerTask {
+
+        private boolean         reconnect = false;
+        private MysqlConnection mysqlConnection;
+
+        public MysqlDetectingTimeTask(MysqlConnection mysqlConnection){
+            this.mysqlConnection = mysqlConnection;
+        }
+
+        @Override
+		public void run() {
+            try {
+                if (reconnect) {
+                    reconnect = false;
+                    mysqlConnection.reconnect();
+                } else if (!mysqlConnection.isConnected()) {
+                    mysqlConnection.connect();
+                }
+                Long startTime = System.currentTimeMillis();
+
+                // 可能心跳sql为select 1
+                if (StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "select")
+                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "show")
+                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "explain")
+                    || StringUtils.startsWithIgnoreCase(detectingSQL.trim(), "desc")) {
+                    mysqlConnection.query(detectingSQL);
+                } else {
+                    mysqlConnection.update(detectingSQL);
+                }
+
+                Long costTime = System.currentTimeMillis() - startTime;
+                if (haController instanceof HeartBeatCallback) {
+                    ((HeartBeatCallback) haController).onSuccess(costTime);
+                }
+            } catch (Throwable e) {
+                if (haController instanceof HeartBeatCallback) {
+                    ((HeartBeatCallback) haController).onFailed(e);
+                }
+                reconnect = true;
+                logger.warn("connect failed by ", e);
+            }
+
+        }
+
+        public MysqlConnection getMysqlConnection() {
+            return mysqlConnection;
+        }
     }
 
 }

@@ -111,9 +111,7 @@ public class HbaseTemplate {
         try {
             HTable table = (HTable) getConnection().getTable(TableName.valueOf(tableName));
             Put put = new Put(hRow.getRowKey());
-            for (HRow.HCell hCell : hRow.getCells()) {
-                put.addColumn(Bytes.toBytes(hCell.getFamily()), Bytes.toBytes(hCell.getQualifier()), hCell.getValue());
-            }
+            hRow.getCells().forEach(hCell -> put.addColumn(Bytes.toBytes(hCell.getFamily()), Bytes.toBytes(hCell.getQualifier()), hCell.getValue()));
             table.put(put);
             flag = true;
         } catch (Exception e) {
@@ -136,15 +134,11 @@ public class HbaseTemplate {
         try {
             HTable table = (HTable) getConnection().getTable(TableName.valueOf(tableName));
             List<Put> puts = new ArrayList<>();
-            for (HRow hRow : rows) {
+            rows.forEach(hRow -> {
                 Put put = new Put(hRow.getRowKey());
-                for (HRow.HCell hCell : hRow.getCells()) {
-                    put.addColumn(Bytes.toBytes(hCell.getFamily()),
-                        Bytes.toBytes(hCell.getQualifier()),
-                        hCell.getValue());
-                }
+                hRow.getCells().forEach(hCell -> put.addColumn(Bytes.toBytes(hCell.getFamily()), Bytes.toBytes(hCell.getQualifier()), hCell.getValue()));
                 puts.add(put);
-            }
+            });
             if (!puts.isEmpty()) {
                 table.put(puts);
             }
@@ -168,10 +162,7 @@ public class HbaseTemplate {
         try {
             HTable table = (HTable) getConnection().getTable(TableName.valueOf(tableName));
             List<Delete> deletes = new ArrayList<>();
-            for (byte[] rowKey : rowKeys) {
-                Delete delete = new Delete(rowKey);
-                deletes.add(delete);
-            }
+            rowKeys.stream().map(Delete::new).forEach(deletes::add);
             if (!deletes.isEmpty()) {
                 table.delete(deletes);
             }

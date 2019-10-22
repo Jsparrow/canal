@@ -125,7 +125,650 @@ public class CanalParameter implements Serializable {
     //自定义alarmHandler插件文件夹路径
     private String                   alarmHandlerPluginDir              = null;
 
-    public static enum RunMode {
+    public Long getCanalId() {
+        return canalId;
+    }
+
+	public void setCanalId(Long canalId) {
+        this.canalId = canalId;
+    }
+
+	public RunMode getRunMode() {
+        return runMode;
+    }
+
+	public void setRunMode(RunMode runMode) {
+        this.runMode = runMode;
+    }
+
+	public ClusterMode getClusterMode() {
+        return clusterMode;
+    }
+
+	public void setClusterMode(ClusterMode clusterMode) {
+        this.clusterMode = clusterMode;
+    }
+
+	public List<String> getZkClusters() {
+        return zkClusters;
+    }
+
+	public void setZkClusters(List<String> zkClusters) {
+        this.zkClusters = zkClusters;
+    }
+
+	public MetaMode getMetaMode() {
+        return metaMode;
+    }
+
+	public void setMetaMode(MetaMode metaMode) {
+        this.metaMode = metaMode;
+    }
+
+	public StorageMode getStorageMode() {
+        return storageMode;
+    }
+
+	public String getDataDir() {
+        return dataDir;
+    }
+
+	public void setDataDir(String dataDir) {
+        this.dataDir = dataDir;
+    }
+
+	public Integer getMetaFileFlushPeriod() {
+        return metaFileFlushPeriod;
+    }
+
+	public void setMetaFileFlushPeriod(Integer metaFileFlushPeriod) {
+        this.metaFileFlushPeriod = metaFileFlushPeriod;
+    }
+
+	public void setStorageMode(StorageMode storageMode) {
+        this.storageMode = storageMode;
+    }
+
+	public Integer getMemoryStorageBufferSize() {
+        return memoryStorageBufferSize;
+    }
+
+	public void setMemoryStorageBufferSize(Integer memoryStorageBufferSize) {
+        this.memoryStorageBufferSize = memoryStorageBufferSize;
+    }
+
+	public String getFileStorageDirectory() {
+        return fileStorageDirectory;
+    }
+
+	public void setFileStorageDirectory(String fileStorageDirectory) {
+        this.fileStorageDirectory = fileStorageDirectory;
+    }
+
+	public Integer getFileStorageStoreCount() {
+        return fileStorageStoreCount;
+    }
+
+	public void setFileStorageStoreCount(Integer fileStorageStoreCount) {
+        this.fileStorageStoreCount = fileStorageStoreCount;
+    }
+
+	public Integer getFileStorageRollverCount() {
+        return fileStorageRollverCount;
+    }
+
+	public void setFileStorageRollverCount(Integer fileStorageRollverCount) {
+        this.fileStorageRollverCount = fileStorageRollverCount;
+    }
+
+	public Integer getFileStoragePercentThresold() {
+        return fileStoragePercentThresold;
+    }
+
+	public void setFileStoragePercentThresold(Integer fileStoragePercentThresold) {
+        this.fileStoragePercentThresold = fileStoragePercentThresold;
+    }
+
+	public SourcingType getSourcingType() {
+        return sourcingType;
+    }
+
+	public void setSourcingType(SourcingType sourcingType) {
+        this.sourcingType = sourcingType;
+    }
+
+	public String getLocalBinlogDirectory() {
+        return localBinlogDirectory;
+    }
+
+	public void setLocalBinlogDirectory(String localBinlogDirectory) {
+        this.localBinlogDirectory = localBinlogDirectory;
+    }
+
+	public HAMode getHaMode() {
+        return haMode;
+    }
+
+	public void setHaMode(HAMode haMode) {
+        this.haMode = haMode;
+    }
+
+	public Integer getPort() {
+        return port;
+    }
+
+	public void setPort(Integer port) {
+        this.port = port;
+    }
+
+	public Integer getDefaultConnectionTimeoutInSeconds() {
+        return defaultConnectionTimeoutInSeconds;
+    }
+
+	public void setDefaultConnectionTimeoutInSeconds(Integer defaultConnectionTimeoutInSeconds) {
+        this.defaultConnectionTimeoutInSeconds = defaultConnectionTimeoutInSeconds;
+    }
+
+	public Integer getReceiveBufferSize() {
+        return receiveBufferSize;
+    }
+
+	public void setReceiveBufferSize(Integer receiveBufferSize) {
+        this.receiveBufferSize = receiveBufferSize;
+    }
+
+	public Integer getSendBufferSize() {
+        return sendBufferSize;
+    }
+
+	public void setSendBufferSize(Integer sendBufferSize) {
+        this.sendBufferSize = sendBufferSize;
+    }
+
+	public Byte getConnectionCharsetNumber() {
+        return connectionCharsetNumber;
+    }
+
+	public void setConnectionCharsetNumber(Byte connectionCharsetNumber) {
+        this.connectionCharsetNumber = connectionCharsetNumber;
+    }
+
+	public String getConnectionCharset() {
+        return connectionCharset;
+    }
+
+	public void setConnectionCharset(String connectionCharset) {
+        this.connectionCharset = connectionCharset;
+    }
+
+	public IndexMode getIndexMode() {
+        return indexMode;
+    }
+
+	public void setIndexMode(IndexMode indexMode) {
+        this.indexMode = indexMode;
+    }
+
+	public String getDefaultDatabaseName() {
+        return defaultDatabaseName;
+    }
+
+	public void setDefaultDatabaseName(String defaultDatabaseName) {
+        this.defaultDatabaseName = defaultDatabaseName;
+    }
+
+	public Long getSlaveId() {
+        return slaveId;
+    }
+
+	public void setSlaveId(Long slaveId) {
+        this.slaveId = slaveId;
+    }
+
+	public Boolean getDetectingEnable() {
+        return detectingEnable;
+    }
+
+	public void setDetectingEnable(Boolean detectingEnable) {
+        this.detectingEnable = detectingEnable;
+    }
+
+	public String getDetectingSQL() {
+        return detectingSQL;
+    }
+
+	public void setDetectingSQL(String detectingSQL) {
+        this.detectingSQL = detectingSQL;
+    }
+
+	public Integer getDetectingIntervalInSeconds() {
+        return detectingIntervalInSeconds;
+    }
+
+	public void setDetectingIntervalInSeconds(Integer detectingIntervalInSeconds) {
+        this.detectingIntervalInSeconds = detectingIntervalInSeconds;
+    }
+
+	public Integer getDetectingTimeoutThresholdInSeconds() {
+        return detectingTimeoutThresholdInSeconds;
+    }
+
+	public void setDetectingTimeoutThresholdInSeconds(Integer detectingTimeoutThresholdInSeconds) {
+        this.detectingTimeoutThresholdInSeconds = detectingTimeoutThresholdInSeconds;
+    }
+
+	public Integer getDetectingRetryTimes() {
+        return detectingRetryTimes;
+    }
+
+	public void setDetectingRetryTimes(Integer detectingRetryTimes) {
+        this.detectingRetryTimes = detectingRetryTimes;
+    }
+
+	public StorageScavengeMode getStorageScavengeMode() {
+        return storageScavengeMode;
+    }
+
+	public void setStorageScavengeMode(StorageScavengeMode storageScavengeMode) {
+        this.storageScavengeMode = storageScavengeMode;
+    }
+
+	public String getScavengeSchdule() {
+        return scavengeSchdule;
+    }
+
+	public void setScavengeSchdule(String scavengeSchdule) {
+        this.scavengeSchdule = scavengeSchdule;
+    }
+
+	public String getApp() {
+        return app;
+    }
+
+	public String getGroup() {
+        return group;
+    }
+
+	public void setApp(String app) {
+        this.app = app;
+    }
+
+	public void setGroup(String group) {
+        this.group = group;
+    }
+
+	public String getMetaqStoreUri() {
+        return metaqStoreUri;
+    }
+
+	public void setMetaqStoreUri(String metaqStoreUri) {
+        this.metaqStoreUri = metaqStoreUri;
+    }
+
+	public Integer getTransactionSize() {
+        return transactionSize != null ? transactionSize : 1024;
+    }
+
+	public void setTransactionSize(Integer transactionSize) {
+        this.transactionSize = transactionSize;
+    }
+
+	public List<InetSocketAddress> getDbAddresses() {
+        if (dbAddresses == null) {
+            dbAddresses = new ArrayList<>();
+            if (masterAddress != null) {
+                dbAddresses.add(masterAddress);
+            }
+
+            if (standbyAddress != null) {
+                dbAddresses.add(standbyAddress);
+            }
+        }
+        return dbAddresses;
+    }
+
+	public List<List<DataSourcing>> getGroupDbAddresses() {
+        if (groupDbAddresses == null) {
+            groupDbAddresses = new ArrayList<>();
+            if (dbAddresses != null) {
+                dbAddresses.forEach(address -> {
+                    List<DataSourcing> groupAddresses = new ArrayList<>();
+                    groupAddresses.add(new DataSourcing(sourcingType, address));
+                    groupDbAddresses.add(groupAddresses);
+                });
+            } else {
+                if (masterAddress != null) {
+                    List<DataSourcing> groupAddresses = new ArrayList<>();
+                    groupAddresses.add(new DataSourcing(sourcingType, masterAddress));
+                    groupDbAddresses.add(groupAddresses);
+                }
+
+                if (standbyAddress != null) {
+                    List<DataSourcing> groupAddresses = new ArrayList<>();
+                    groupAddresses.add(new DataSourcing(sourcingType, standbyAddress));
+                    groupDbAddresses.add(groupAddresses);
+                }
+            }
+        }
+        return groupDbAddresses;
+    }
+
+	public void setGroupDbAddresses(List<List<DataSourcing>> groupDbAddresses) {
+        this.groupDbAddresses = groupDbAddresses;
+    }
+
+	public void setDbAddresses(List<InetSocketAddress> dbAddresses) {
+        this.dbAddresses = dbAddresses;
+    }
+
+	public String getDbUsername() {
+        if (dbUsername == null) {
+            dbUsername = (masterUsername != null ? masterUsername : standbyUsername);
+        }
+        return dbUsername;
+    }
+
+	public void setDbUsername(String dbUsername) {
+        this.dbUsername = dbUsername;
+    }
+
+	public String getDbPassword() {
+        if (dbPassword == null) {
+            dbPassword = (masterPassword != null ? masterPassword : standbyPassword);
+        }
+        return dbPassword;
+    }
+
+	public void setDbPassword(String dbPassword) {
+        this.dbPassword = dbPassword;
+    }
+
+	public List<String> getPositions() {
+        if (positions == null) {
+            positions = new ArrayList<>();
+            String masterPosition = buildPosition(masterLogfileName, masterLogfileOffest, masterTimestamp);
+            if (masterPosition != null) {
+                positions.add(masterPosition);
+            }
+
+            String standbyPosition = buildPosition(standbyLogfileName, standbyLogfileOffest, standbyTimestamp);
+            if (standbyPosition != null) {
+                positions.add(standbyPosition);
+            }
+
+        }
+        return positions;
+    }
+
+	public void setPositions(List<String> positions) {
+        this.positions = positions;
+    }
+
+	// ===========================兼容字段
+
+    private String buildPosition(String journalName, Long position, Long timestamp) {
+        StringBuilder masterBuilder = new StringBuilder();
+        if (!(StringUtils.isNotEmpty(journalName) || position != null || timestamp != null)) {
+			return null;
+		}
+		masterBuilder.append('{');
+		if (StringUtils.isNotEmpty(journalName)) {
+		    masterBuilder.append("\"journalName\":\"").append(journalName).append("\"");
+		}
+		if (position != null) {
+		    if (masterBuilder.length() > 1) {
+		        masterBuilder.append(",");
+		    }
+		    masterBuilder.append("\"position\":").append(position);
+		}
+		if (timestamp != null) {
+		    if (masterBuilder.length() > 1) {
+		        masterBuilder.append(",");
+		    }
+		    masterBuilder.append("\"timestamp\":").append(timestamp);
+		}
+		masterBuilder.append('}');
+		return masterBuilder.toString();
+    }
+
+	public void setMasterUsername(String masterUsername) {
+        this.masterUsername = masterUsername;
+    }
+
+	public void setMasterPassword(String masterPassword) {
+        this.masterPassword = masterPassword;
+    }
+
+	public void setStandbyAddress(InetSocketAddress standbyAddress) {
+        this.standbyAddress = standbyAddress;
+    }
+
+	public void setStandbyUsername(String standbyUsername) {
+        this.standbyUsername = standbyUsername;
+    }
+
+	public void setStandbyPassword(String standbyPassword) {
+        this.standbyPassword = standbyPassword;
+    }
+
+	public void setMasterLogfileName(String masterLogfileName) {
+        this.masterLogfileName = masterLogfileName;
+    }
+
+	public void setMasterLogfileOffest(Long masterLogfileOffest) {
+        this.masterLogfileOffest = masterLogfileOffest;
+    }
+
+	public void setMasterTimestamp(Long masterTimestamp) {
+        this.masterTimestamp = masterTimestamp;
+    }
+
+	public void setStandbyLogfileName(String standbyLogfileName) {
+        this.standbyLogfileName = standbyLogfileName;
+    }
+
+	public void setStandbyLogfileOffest(Long standbyLogfileOffest) {
+        this.standbyLogfileOffest = standbyLogfileOffest;
+    }
+
+	public void setStandbyTimestamp(Long standbyTimestamp) {
+        this.standbyTimestamp = standbyTimestamp;
+    }
+
+	public void setMasterAddress(InetSocketAddress masterAddress) {
+        this.masterAddress = masterAddress;
+    }
+
+	public Integer getFallbackIntervalInSeconds() {
+        return fallbackIntervalInSeconds == null ? 60 : fallbackIntervalInSeconds;
+    }
+
+	public void setFallbackIntervalInSeconds(Integer fallbackIntervalInSeconds) {
+        this.fallbackIntervalInSeconds = fallbackIntervalInSeconds;
+    }
+
+	public Boolean getHeartbeatHaEnable() {
+        return heartbeatHaEnable == null ? false : heartbeatHaEnable;
+    }
+
+	public void setHeartbeatHaEnable(Boolean heartbeatHaEnable) {
+        this.heartbeatHaEnable = heartbeatHaEnable;
+    }
+
+	public BatchMode getStorageBatchMode() {
+        return storageBatchMode == null ? BatchMode.MEMSIZE : storageBatchMode;
+    }
+
+	public void setStorageBatchMode(BatchMode storageBatchMode) {
+        this.storageBatchMode = storageBatchMode;
+    }
+
+	public Integer getMemoryStorageBufferMemUnit() {
+        return memoryStorageBufferMemUnit == null ? 1024 : memoryStorageBufferMemUnit;
+    }
+
+	public void setMemoryStorageBufferMemUnit(Integer memoryStorageBufferMemUnit) {
+        this.memoryStorageBufferMemUnit = memoryStorageBufferMemUnit;
+    }
+
+	public String getMediaGroup() {
+        return mediaGroup;
+    }
+
+	public void setMediaGroup(String mediaGroup) {
+        this.mediaGroup = mediaGroup;
+    }
+
+	public Long getZkClusterId() {
+        return zkClusterId;
+    }
+
+	public void setZkClusterId(Long zkClusterId) {
+        this.zkClusterId = zkClusterId;
+    }
+
+	public Boolean getDdlIsolation() {
+        return ddlIsolation == null ? false : ddlIsolation;
+    }
+
+	public void setDdlIsolation(Boolean ddlIsolation) {
+        this.ddlIsolation = ddlIsolation;
+    }
+
+	public Boolean getFilterTableError() {
+        return filterTableError == null ? false : filterTableError;
+    }
+
+	public void setFilterTableError(Boolean filterTableError) {
+        this.filterTableError = filterTableError;
+    }
+
+	public String getBlackFilter() {
+        return blackFilter;
+    }
+
+	public void setBlackFilter(String blackFilter) {
+        this.blackFilter = blackFilter;
+    }
+
+	public Boolean getTsdbEnable() {
+        return tsdbEnable;
+    }
+
+	public void setTsdbEnable(Boolean tsdbEnable) {
+        this.tsdbEnable = tsdbEnable;
+    }
+
+	public String getTsdbJdbcUrl() {
+        return tsdbJdbcUrl;
+    }
+
+	public void setTsdbJdbcUrl(String tsdbJdbcUrl) {
+        this.tsdbJdbcUrl = tsdbJdbcUrl;
+    }
+
+	public String getTsdbJdbcUserName() {
+        return tsdbJdbcUserName;
+    }
+
+	public void setTsdbJdbcUserName(String tsdbJdbcUserName) {
+        this.tsdbJdbcUserName = tsdbJdbcUserName;
+    }
+
+	public String getTsdbJdbcPassword() {
+        return tsdbJdbcPassword;
+    }
+
+	public void setTsdbJdbcPassword(String tsdbJdbcPassword) {
+        this.tsdbJdbcPassword = tsdbJdbcPassword;
+    }
+
+	public String getRdsAccesskey() {
+        return rdsAccesskey;
+    }
+
+	public void setRdsAccesskey(String rdsAccesskey) {
+        this.rdsAccesskey = rdsAccesskey;
+    }
+
+	public String getRdsSecretkey() {
+        return rdsSecretkey;
+    }
+
+	public void setRdsSecretkey(String rdsSecretkey) {
+        this.rdsSecretkey = rdsSecretkey;
+    }
+
+	public String getRdsInstanceId() {
+        return rdsInstanceId;
+    }
+
+	public void setRdsInstanceId(String rdsInstanceId) {
+        this.rdsInstanceId = rdsInstanceId;
+    }
+
+	public Boolean getGtidEnable() {
+        return gtidEnable;
+    }
+
+	public void setGtidEnable(Boolean gtidEnable) {
+        this.gtidEnable = gtidEnable;
+    }
+
+	public Boolean getMemoryStorageRawEntry() {
+        return memoryStorageRawEntry;
+    }
+
+	public void setMemoryStorageRawEntry(Boolean memoryStorageRawEntry) {
+        this.memoryStorageRawEntry = memoryStorageRawEntry;
+    }
+
+	public Integer getTsdbSnapshotInterval() {
+        return tsdbSnapshotInterval;
+    }
+
+	public void setTsdbSnapshotInterval(Integer tsdbSnapshotInterval) {
+        this.tsdbSnapshotInterval = tsdbSnapshotInterval;
+    }
+
+	public Integer getTsdbSnapshotExpire() {
+        return tsdbSnapshotExpire;
+    }
+
+	public void setTsdbSnapshotExpire(Integer tsdbSnapshotExpire) {
+        this.tsdbSnapshotExpire = tsdbSnapshotExpire;
+    }
+
+	public Boolean getParallel() {
+        return parallel;
+    }
+
+	public void setParallel(Boolean parallel) {
+        this.parallel = parallel;
+    }
+
+	public String getAlarmHandlerClass() {
+        return alarmHandlerClass;
+    }
+
+	public void setAlarmHandlerClass(String alarmHandlerClass) {
+        this.alarmHandlerClass = alarmHandlerClass;
+    }
+
+	public String getAlarmHandlerPluginDir() {
+        return alarmHandlerPluginDir;
+    }
+
+	public void setAlarmHandlerPluginDir(String alarmHandlerPluginDir) {
+        this.alarmHandlerPluginDir = alarmHandlerPluginDir;
+    }
+
+	@Override
+	public String toString() {
+        return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
+    }
+
+	public static enum RunMode {
 
         /** 嵌入式 */
         EMBEDDED,
@@ -133,15 +776,15 @@ public class CanalParameter implements Serializable {
         SERVICE;
 
         public boolean isEmbedded() {
-            return this.equals(RunMode.EMBEDDED);
+            return this == RunMode.EMBEDDED;
         }
 
         public boolean isService() {
-            return this.equals(RunMode.SERVICE);
+            return this == RunMode.SERVICE;
         }
     }
 
-    public static enum ClusterMode {
+	public static enum ClusterMode {
 
         /** 嵌入式 */
         STANDALONE,
@@ -151,19 +794,19 @@ public class CanalParameter implements Serializable {
         ACTIVE;
 
         public boolean isStandalone() {
-            return this.equals(ClusterMode.STANDALONE);
+            return this == ClusterMode.STANDALONE;
         }
 
         public boolean isStandby() {
-            return this.equals(ClusterMode.STANDBY);
+            return this == ClusterMode.STANDBY;
         }
 
         public boolean isActive() {
-            return this.equals(ClusterMode.ACTIVE);
+            return this == ClusterMode.ACTIVE;
         }
     }
 
-    public static enum HAMode {
+	public static enum HAMode {
 
         /** 心跳检测 */
         HEARTBEAT,
@@ -171,16 +814,16 @@ public class CanalParameter implements Serializable {
         MEDIA;
 
         public boolean isHeartBeat() {
-            return this.equals(HAMode.HEARTBEAT);
+            return this == HAMode.HEARTBEAT;
         }
 
         public boolean isMedia() {
-            return this.equals(HAMode.MEDIA);
+            return this == HAMode.MEDIA;
         }
 
     }
 
-    public static enum StorageMode {
+	public static enum StorageMode {
         /** 内存存储模式 */
         MEMORY,
         /** 文件存储模式 */
@@ -189,20 +832,20 @@ public class CanalParameter implements Serializable {
         MIXED;
 
         public boolean isMemory() {
-            return this.equals(StorageMode.MEMORY);
+            return this == StorageMode.MEMORY;
         }
 
         public boolean isFile() {
-            return this.equals(StorageMode.FILE);
+            return this == StorageMode.FILE;
         }
 
         public boolean isMixed() {
-            return this.equals(StorageMode.MIXED);
+            return this == StorageMode.MIXED;
         }
 
     }
 
-    public static enum StorageScavengeMode {
+	public static enum StorageScavengeMode {
         /** 在存储满的时候触发 */
         ON_FULL,
         /** 在每次有ack请求时触发 */
@@ -213,23 +856,23 @@ public class CanalParameter implements Serializable {
         NO_OP;
 
         public boolean isOnFull() {
-            return this.equals(StorageScavengeMode.ON_FULL);
+            return this == StorageScavengeMode.ON_FULL;
         }
 
         public boolean isOnAck() {
-            return this.equals(StorageScavengeMode.ON_ACK);
+            return this == StorageScavengeMode.ON_ACK;
         }
 
         public boolean isOnSchedule() {
-            return this.equals(StorageScavengeMode.ON_SCHEDULE);
+            return this == StorageScavengeMode.ON_SCHEDULE;
         }
 
         public boolean isNoop() {
-            return this.equals(StorageScavengeMode.NO_OP);
+            return this == StorageScavengeMode.NO_OP;
         }
     }
 
-    public static enum SourcingType {
+	public static enum SourcingType {
         /** mysql DB */
         MYSQL,
         /** localBinLog */
@@ -240,23 +883,23 @@ public class CanalParameter implements Serializable {
         GROUP;
 
         public boolean isMysql() {
-            return this.equals(SourcingType.MYSQL);
+            return this == SourcingType.MYSQL;
         }
 
         public boolean isLocalBinlog() {
-            return this.equals(SourcingType.LOCALBINLOG);
+            return this == SourcingType.LOCALBINLOG;
         }
 
         public boolean isOracle() {
-            return this.equals(SourcingType.ORACLE);
+            return this == SourcingType.ORACLE;
         }
 
         public boolean isGroup() {
-            return this.equals(SourcingType.GROUP);
+            return this == SourcingType.GROUP;
         }
     }
 
-    public static enum MetaMode {
+	public static enum MetaMode {
         /** 内存存储模式 */
         MEMORY,
         /** 文件存储模式 */
@@ -267,23 +910,23 @@ public class CanalParameter implements Serializable {
         LOCAL_FILE;
 
         public boolean isMemory() {
-            return this.equals(MetaMode.MEMORY);
+            return this == MetaMode.MEMORY;
         }
 
         public boolean isZookeeper() {
-            return this.equals(MetaMode.ZOOKEEPER);
+            return this == MetaMode.ZOOKEEPER;
         }
 
         public boolean isMixed() {
-            return this.equals(MetaMode.MIXED);
+            return this == MetaMode.MIXED;
         }
 
         public boolean isLocalFile() {
-            return this.equals(MetaMode.LOCAL_FILE);
+            return this == MetaMode.LOCAL_FILE;
         }
     }
 
-    public static enum IndexMode {
+	public static enum IndexMode {
         /** 内存存储模式 */
         MEMORY,
         /** 文件存储模式 */
@@ -296,27 +939,27 @@ public class CanalParameter implements Serializable {
         MEMORY_META_FAILBACK;
 
         public boolean isMemory() {
-            return this.equals(IndexMode.MEMORY);
+            return this == IndexMode.MEMORY;
         }
 
         public boolean isZookeeper() {
-            return this.equals(IndexMode.ZOOKEEPER);
+            return this == IndexMode.ZOOKEEPER;
         }
 
         public boolean isMixed() {
-            return this.equals(IndexMode.MIXED);
+            return this == IndexMode.MIXED;
         }
 
         public boolean isMeta() {
-            return this.equals(IndexMode.META);
+            return this == IndexMode.META;
         }
 
         public boolean isMemoryMetaFailback() {
-            return this.equals(IndexMode.MEMORY_META_FAILBACK);
+            return this == IndexMode.MEMORY_META_FAILBACK;
         }
     }
 
-    public static enum BatchMode {
+	public static enum BatchMode {
         /** 对象数量 */
         ITEMSIZE,
 
@@ -332,7 +975,7 @@ public class CanalParameter implements Serializable {
         }
     }
 
-    /**
+	/**
      * 数据来源描述
      *
      * @author jianghang 2012-12-26 上午11:05:20
@@ -369,650 +1012,5 @@ public class CanalParameter implements Serializable {
             this.dbAddress = dbAddress;
         }
 
-    }
-
-    public Long getCanalId() {
-        return canalId;
-    }
-
-    public void setCanalId(Long canalId) {
-        this.canalId = canalId;
-    }
-
-    public RunMode getRunMode() {
-        return runMode;
-    }
-
-    public void setRunMode(RunMode runMode) {
-        this.runMode = runMode;
-    }
-
-    public ClusterMode getClusterMode() {
-        return clusterMode;
-    }
-
-    public void setClusterMode(ClusterMode clusterMode) {
-        this.clusterMode = clusterMode;
-    }
-
-    public List<String> getZkClusters() {
-        return zkClusters;
-    }
-
-    public void setZkClusters(List<String> zkClusters) {
-        this.zkClusters = zkClusters;
-    }
-
-    public MetaMode getMetaMode() {
-        return metaMode;
-    }
-
-    public void setMetaMode(MetaMode metaMode) {
-        this.metaMode = metaMode;
-    }
-
-    public StorageMode getStorageMode() {
-        return storageMode;
-    }
-
-    public String getDataDir() {
-        return dataDir;
-    }
-
-    public void setDataDir(String dataDir) {
-        this.dataDir = dataDir;
-    }
-
-    public Integer getMetaFileFlushPeriod() {
-        return metaFileFlushPeriod;
-    }
-
-    public void setMetaFileFlushPeriod(Integer metaFileFlushPeriod) {
-        this.metaFileFlushPeriod = metaFileFlushPeriod;
-    }
-
-    public void setStorageMode(StorageMode storageMode) {
-        this.storageMode = storageMode;
-    }
-
-    public Integer getMemoryStorageBufferSize() {
-        return memoryStorageBufferSize;
-    }
-
-    public void setMemoryStorageBufferSize(Integer memoryStorageBufferSize) {
-        this.memoryStorageBufferSize = memoryStorageBufferSize;
-    }
-
-    public String getFileStorageDirectory() {
-        return fileStorageDirectory;
-    }
-
-    public void setFileStorageDirectory(String fileStorageDirectory) {
-        this.fileStorageDirectory = fileStorageDirectory;
-    }
-
-    public Integer getFileStorageStoreCount() {
-        return fileStorageStoreCount;
-    }
-
-    public void setFileStorageStoreCount(Integer fileStorageStoreCount) {
-        this.fileStorageStoreCount = fileStorageStoreCount;
-    }
-
-    public Integer getFileStorageRollverCount() {
-        return fileStorageRollverCount;
-    }
-
-    public void setFileStorageRollverCount(Integer fileStorageRollverCount) {
-        this.fileStorageRollverCount = fileStorageRollverCount;
-    }
-
-    public Integer getFileStoragePercentThresold() {
-        return fileStoragePercentThresold;
-    }
-
-    public void setFileStoragePercentThresold(Integer fileStoragePercentThresold) {
-        this.fileStoragePercentThresold = fileStoragePercentThresold;
-    }
-
-    public SourcingType getSourcingType() {
-        return sourcingType;
-    }
-
-    public void setSourcingType(SourcingType sourcingType) {
-        this.sourcingType = sourcingType;
-    }
-
-    public String getLocalBinlogDirectory() {
-        return localBinlogDirectory;
-    }
-
-    public void setLocalBinlogDirectory(String localBinlogDirectory) {
-        this.localBinlogDirectory = localBinlogDirectory;
-    }
-
-    public HAMode getHaMode() {
-        return haMode;
-    }
-
-    public void setHaMode(HAMode haMode) {
-        this.haMode = haMode;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
-
-    public Integer getDefaultConnectionTimeoutInSeconds() {
-        return defaultConnectionTimeoutInSeconds;
-    }
-
-    public void setDefaultConnectionTimeoutInSeconds(Integer defaultConnectionTimeoutInSeconds) {
-        this.defaultConnectionTimeoutInSeconds = defaultConnectionTimeoutInSeconds;
-    }
-
-    public Integer getReceiveBufferSize() {
-        return receiveBufferSize;
-    }
-
-    public void setReceiveBufferSize(Integer receiveBufferSize) {
-        this.receiveBufferSize = receiveBufferSize;
-    }
-
-    public Integer getSendBufferSize() {
-        return sendBufferSize;
-    }
-
-    public void setSendBufferSize(Integer sendBufferSize) {
-        this.sendBufferSize = sendBufferSize;
-    }
-
-    public Byte getConnectionCharsetNumber() {
-        return connectionCharsetNumber;
-    }
-
-    public void setConnectionCharsetNumber(Byte connectionCharsetNumber) {
-        this.connectionCharsetNumber = connectionCharsetNumber;
-    }
-
-    public String getConnectionCharset() {
-        return connectionCharset;
-    }
-
-    public void setConnectionCharset(String connectionCharset) {
-        this.connectionCharset = connectionCharset;
-    }
-
-    public IndexMode getIndexMode() {
-        return indexMode;
-    }
-
-    public void setIndexMode(IndexMode indexMode) {
-        this.indexMode = indexMode;
-    }
-
-    public String getDefaultDatabaseName() {
-        return defaultDatabaseName;
-    }
-
-    public void setDefaultDatabaseName(String defaultDatabaseName) {
-        this.defaultDatabaseName = defaultDatabaseName;
-    }
-
-    public Long getSlaveId() {
-        return slaveId;
-    }
-
-    public void setSlaveId(Long slaveId) {
-        this.slaveId = slaveId;
-    }
-
-    public Boolean getDetectingEnable() {
-        return detectingEnable;
-    }
-
-    public void setDetectingEnable(Boolean detectingEnable) {
-        this.detectingEnable = detectingEnable;
-    }
-
-    public String getDetectingSQL() {
-        return detectingSQL;
-    }
-
-    public void setDetectingSQL(String detectingSQL) {
-        this.detectingSQL = detectingSQL;
-    }
-
-    public Integer getDetectingIntervalInSeconds() {
-        return detectingIntervalInSeconds;
-    }
-
-    public void setDetectingIntervalInSeconds(Integer detectingIntervalInSeconds) {
-        this.detectingIntervalInSeconds = detectingIntervalInSeconds;
-    }
-
-    public Integer getDetectingTimeoutThresholdInSeconds() {
-        return detectingTimeoutThresholdInSeconds;
-    }
-
-    public void setDetectingTimeoutThresholdInSeconds(Integer detectingTimeoutThresholdInSeconds) {
-        this.detectingTimeoutThresholdInSeconds = detectingTimeoutThresholdInSeconds;
-    }
-
-    public Integer getDetectingRetryTimes() {
-        return detectingRetryTimes;
-    }
-
-    public void setDetectingRetryTimes(Integer detectingRetryTimes) {
-        this.detectingRetryTimes = detectingRetryTimes;
-    }
-
-    public StorageScavengeMode getStorageScavengeMode() {
-        return storageScavengeMode;
-    }
-
-    public void setStorageScavengeMode(StorageScavengeMode storageScavengeMode) {
-        this.storageScavengeMode = storageScavengeMode;
-    }
-
-    public String getScavengeSchdule() {
-        return scavengeSchdule;
-    }
-
-    public void setScavengeSchdule(String scavengeSchdule) {
-        this.scavengeSchdule = scavengeSchdule;
-    }
-
-    public String getApp() {
-        return app;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setApp(String app) {
-        this.app = app;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
-    }
-
-    public String getMetaqStoreUri() {
-        return metaqStoreUri;
-    }
-
-    public void setMetaqStoreUri(String metaqStoreUri) {
-        this.metaqStoreUri = metaqStoreUri;
-    }
-
-    public Integer getTransactionSize() {
-        return transactionSize != null ? transactionSize : 1024;
-    }
-
-    public void setTransactionSize(Integer transactionSize) {
-        this.transactionSize = transactionSize;
-    }
-
-    public List<InetSocketAddress> getDbAddresses() {
-        if (dbAddresses == null) {
-            dbAddresses = new ArrayList<InetSocketAddress>();
-            if (masterAddress != null) {
-                dbAddresses.add(masterAddress);
-            }
-
-            if (standbyAddress != null) {
-                dbAddresses.add(standbyAddress);
-            }
-        }
-        return dbAddresses;
-    }
-
-    public List<List<DataSourcing>> getGroupDbAddresses() {
-        if (groupDbAddresses == null) {
-            groupDbAddresses = new ArrayList<List<DataSourcing>>();
-            if (dbAddresses != null) {
-                for (InetSocketAddress address : dbAddresses) {
-                    List<DataSourcing> groupAddresses = new ArrayList<DataSourcing>();
-                    groupAddresses.add(new DataSourcing(sourcingType, address));
-                    groupDbAddresses.add(groupAddresses);
-                }
-            } else {
-                if (masterAddress != null) {
-                    List<DataSourcing> groupAddresses = new ArrayList<DataSourcing>();
-                    groupAddresses.add(new DataSourcing(sourcingType, masterAddress));
-                    groupDbAddresses.add(groupAddresses);
-                }
-
-                if (standbyAddress != null) {
-                    List<DataSourcing> groupAddresses = new ArrayList<DataSourcing>();
-                    groupAddresses.add(new DataSourcing(sourcingType, standbyAddress));
-                    groupDbAddresses.add(groupAddresses);
-                }
-            }
-        }
-        return groupDbAddresses;
-    }
-
-    public void setGroupDbAddresses(List<List<DataSourcing>> groupDbAddresses) {
-        this.groupDbAddresses = groupDbAddresses;
-    }
-
-    public void setDbAddresses(List<InetSocketAddress> dbAddresses) {
-        this.dbAddresses = dbAddresses;
-    }
-
-    public String getDbUsername() {
-        if (dbUsername == null) {
-            dbUsername = (masterUsername != null ? masterUsername : standbyUsername);
-        }
-        return dbUsername;
-    }
-
-    public void setDbUsername(String dbUsername) {
-        this.dbUsername = dbUsername;
-    }
-
-    public String getDbPassword() {
-        if (dbPassword == null) {
-            dbPassword = (masterPassword != null ? masterPassword : standbyPassword);
-        }
-        return dbPassword;
-    }
-
-    public void setDbPassword(String dbPassword) {
-        this.dbPassword = dbPassword;
-    }
-
-    public List<String> getPositions() {
-        if (positions == null) {
-            positions = new ArrayList<String>();
-            String masterPosition = buildPosition(masterLogfileName, masterLogfileOffest, masterTimestamp);
-            if (masterPosition != null) {
-                positions.add(masterPosition);
-            }
-
-            String standbyPosition = buildPosition(standbyLogfileName, standbyLogfileOffest, standbyTimestamp);
-            if (standbyPosition != null) {
-                positions.add(standbyPosition);
-            }
-
-        }
-        return positions;
-    }
-
-    public void setPositions(List<String> positions) {
-        this.positions = positions;
-    }
-
-    // ===========================兼容字段
-
-    private String buildPosition(String journalName, Long position, Long timestamp) {
-        StringBuilder masterBuilder = new StringBuilder();
-        if (StringUtils.isNotEmpty(journalName) || position != null || timestamp != null) {
-            masterBuilder.append('{');
-            if (StringUtils.isNotEmpty(journalName)) {
-                masterBuilder.append("\"journalName\":\"").append(journalName).append("\"");
-            }
-
-            if (position != null) {
-                if (masterBuilder.length() > 1) {
-                    masterBuilder.append(",");
-                }
-                masterBuilder.append("\"position\":").append(position);
-            }
-
-            if (timestamp != null) {
-                if (masterBuilder.length() > 1) {
-                    masterBuilder.append(",");
-                }
-                masterBuilder.append("\"timestamp\":").append(timestamp);
-            }
-            masterBuilder.append('}');
-            return masterBuilder.toString();
-        } else {
-            return null;
-        }
-    }
-
-    public void setMasterUsername(String masterUsername) {
-        this.masterUsername = masterUsername;
-    }
-
-    public void setMasterPassword(String masterPassword) {
-        this.masterPassword = masterPassword;
-    }
-
-    public void setStandbyAddress(InetSocketAddress standbyAddress) {
-        this.standbyAddress = standbyAddress;
-    }
-
-    public void setStandbyUsername(String standbyUsername) {
-        this.standbyUsername = standbyUsername;
-    }
-
-    public void setStandbyPassword(String standbyPassword) {
-        this.standbyPassword = standbyPassword;
-    }
-
-    public void setMasterLogfileName(String masterLogfileName) {
-        this.masterLogfileName = masterLogfileName;
-    }
-
-    public void setMasterLogfileOffest(Long masterLogfileOffest) {
-        this.masterLogfileOffest = masterLogfileOffest;
-    }
-
-    public void setMasterTimestamp(Long masterTimestamp) {
-        this.masterTimestamp = masterTimestamp;
-    }
-
-    public void setStandbyLogfileName(String standbyLogfileName) {
-        this.standbyLogfileName = standbyLogfileName;
-    }
-
-    public void setStandbyLogfileOffest(Long standbyLogfileOffest) {
-        this.standbyLogfileOffest = standbyLogfileOffest;
-    }
-
-    public void setStandbyTimestamp(Long standbyTimestamp) {
-        this.standbyTimestamp = standbyTimestamp;
-    }
-
-    public void setMasterAddress(InetSocketAddress masterAddress) {
-        this.masterAddress = masterAddress;
-    }
-
-    public Integer getFallbackIntervalInSeconds() {
-        return fallbackIntervalInSeconds == null ? 60 : fallbackIntervalInSeconds;
-    }
-
-    public void setFallbackIntervalInSeconds(Integer fallbackIntervalInSeconds) {
-        this.fallbackIntervalInSeconds = fallbackIntervalInSeconds;
-    }
-
-    public Boolean getHeartbeatHaEnable() {
-        return heartbeatHaEnable == null ? false : heartbeatHaEnable;
-    }
-
-    public void setHeartbeatHaEnable(Boolean heartbeatHaEnable) {
-        this.heartbeatHaEnable = heartbeatHaEnable;
-    }
-
-    public BatchMode getStorageBatchMode() {
-        return storageBatchMode == null ? BatchMode.MEMSIZE : storageBatchMode;
-    }
-
-    public void setStorageBatchMode(BatchMode storageBatchMode) {
-        this.storageBatchMode = storageBatchMode;
-    }
-
-    public Integer getMemoryStorageBufferMemUnit() {
-        return memoryStorageBufferMemUnit == null ? 1024 : memoryStorageBufferMemUnit;
-    }
-
-    public void setMemoryStorageBufferMemUnit(Integer memoryStorageBufferMemUnit) {
-        this.memoryStorageBufferMemUnit = memoryStorageBufferMemUnit;
-    }
-
-    public String getMediaGroup() {
-        return mediaGroup;
-    }
-
-    public void setMediaGroup(String mediaGroup) {
-        this.mediaGroup = mediaGroup;
-    }
-
-    public Long getZkClusterId() {
-        return zkClusterId;
-    }
-
-    public void setZkClusterId(Long zkClusterId) {
-        this.zkClusterId = zkClusterId;
-    }
-
-    public Boolean getDdlIsolation() {
-        return ddlIsolation == null ? false : ddlIsolation;
-    }
-
-    public void setDdlIsolation(Boolean ddlIsolation) {
-        this.ddlIsolation = ddlIsolation;
-    }
-
-    public Boolean getFilterTableError() {
-        return filterTableError == null ? false : filterTableError;
-    }
-
-    public void setFilterTableError(Boolean filterTableError) {
-        this.filterTableError = filterTableError;
-    }
-
-    public String getBlackFilter() {
-        return blackFilter;
-    }
-
-    public void setBlackFilter(String blackFilter) {
-        this.blackFilter = blackFilter;
-    }
-
-    public Boolean getTsdbEnable() {
-        return tsdbEnable;
-    }
-
-    public void setTsdbEnable(Boolean tsdbEnable) {
-        this.tsdbEnable = tsdbEnable;
-    }
-
-    public String getTsdbJdbcUrl() {
-        return tsdbJdbcUrl;
-    }
-
-    public void setTsdbJdbcUrl(String tsdbJdbcUrl) {
-        this.tsdbJdbcUrl = tsdbJdbcUrl;
-    }
-
-    public String getTsdbJdbcUserName() {
-        return tsdbJdbcUserName;
-    }
-
-    public void setTsdbJdbcUserName(String tsdbJdbcUserName) {
-        this.tsdbJdbcUserName = tsdbJdbcUserName;
-    }
-
-    public String getTsdbJdbcPassword() {
-        return tsdbJdbcPassword;
-    }
-
-    public void setTsdbJdbcPassword(String tsdbJdbcPassword) {
-        this.tsdbJdbcPassword = tsdbJdbcPassword;
-    }
-
-    public String getRdsAccesskey() {
-        return rdsAccesskey;
-    }
-
-    public void setRdsAccesskey(String rdsAccesskey) {
-        this.rdsAccesskey = rdsAccesskey;
-    }
-
-    public String getRdsSecretkey() {
-        return rdsSecretkey;
-    }
-
-    public void setRdsSecretkey(String rdsSecretkey) {
-        this.rdsSecretkey = rdsSecretkey;
-    }
-
-    public String getRdsInstanceId() {
-        return rdsInstanceId;
-    }
-
-    public void setRdsInstanceId(String rdsInstanceId) {
-        this.rdsInstanceId = rdsInstanceId;
-    }
-
-    public Boolean getGtidEnable() {
-        return gtidEnable;
-    }
-
-    public void setGtidEnable(Boolean gtidEnable) {
-        this.gtidEnable = gtidEnable;
-    }
-
-    public Boolean getMemoryStorageRawEntry() {
-        return memoryStorageRawEntry;
-    }
-
-    public void setMemoryStorageRawEntry(Boolean memoryStorageRawEntry) {
-        this.memoryStorageRawEntry = memoryStorageRawEntry;
-    }
-
-    public Integer getTsdbSnapshotInterval() {
-        return tsdbSnapshotInterval;
-    }
-
-    public void setTsdbSnapshotInterval(Integer tsdbSnapshotInterval) {
-        this.tsdbSnapshotInterval = tsdbSnapshotInterval;
-    }
-
-    public Integer getTsdbSnapshotExpire() {
-        return tsdbSnapshotExpire;
-    }
-
-    public void setTsdbSnapshotExpire(Integer tsdbSnapshotExpire) {
-        this.tsdbSnapshotExpire = tsdbSnapshotExpire;
-    }
-
-    public Boolean getParallel() {
-        return parallel;
-    }
-
-    public void setParallel(Boolean parallel) {
-        this.parallel = parallel;
-    }
-
-    public String getAlarmHandlerClass() {
-        return alarmHandlerClass;
-    }
-
-    public void setAlarmHandlerClass(String alarmHandlerClass) {
-        this.alarmHandlerClass = alarmHandlerClass;
-    }
-
-    public String getAlarmHandlerPluginDir() {
-        return alarmHandlerPluginDir;
-    }
-
-    public void setAlarmHandlerPluginDir(String alarmHandlerPluginDir) {
-        this.alarmHandlerPluginDir = alarmHandlerPluginDir;
-    }
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 }

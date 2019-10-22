@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.alibaba.otter.canal.parse.driver.mysql.packets.GTIDSet;
 import com.alibaba.otter.canal.parse.driver.mysql.packets.MysqlGTIDSet;
 import com.alibaba.otter.canal.parse.driver.mysql.packets.UUIDSet;
+import java.util.Collections;
 
 /**
  * Created by hiwjd on 2018/4/25. hiwjd0@gmail.com
@@ -38,7 +39,7 @@ public class MysqlGTIDSetTest {
 
     @Test
     public void testParse() {
-        Map<String, MysqlGTIDSet> cases = new HashMap<String, MysqlGTIDSet>(5);
+        Map<String, MysqlGTIDSet> cases = new HashMap<>(5);
         cases.put("726757ad-4455-11e8-ae04-0242ac110002:1",
             buildForTest(new Material("726757ad-4455-11e8-ae04-0242ac110002", 1, 2)));
         cases.put("726757ad-4455-11e8-ae04-0242ac110002:1-3",
@@ -51,50 +52,25 @@ public class MysqlGTIDSetTest {
             buildForTest(Arrays.asList(new Material("726757ad-4455-11e8-ae04-0242ac110002", 1, 4),
                 new Material("726757ad-4455-11e8-ae04-0242ac110003", 4, 5))));
 
-        for (Map.Entry<String, MysqlGTIDSet> entry : cases.entrySet()) {
+        cases.entrySet().forEach(entry -> {
             MysqlGTIDSet expected = entry.getValue();
             MysqlGTIDSet actual = MysqlGTIDSet.parse(entry.getKey());
 
             assertEquals(expected, actual);
-        }
-    }
-
-    private static class Material {
-
-        public Material(String uuid, long start, long stop){
-            this.uuid = uuid;
-            this.start = start;
-            this.stop = stop;
-            this.start1 = 0;
-            this.stop1 = 0;
-        }
-
-        public Material(String uuid, long start, long stop, long start1, long stop1){
-            this.uuid = uuid;
-            this.start = start;
-            this.stop = stop;
-            this.start1 = start1;
-            this.stop1 = stop1;
-        }
-
-        public String uuid;
-        public long   start;
-        public long   stop;
-        public long   start1;
-        public long   stop1;
+        });
     }
 
     private MysqlGTIDSet buildForTest(Material material) {
-        return buildForTest(Arrays.asList(material));
+        return buildForTest(Collections.singletonList(material));
     }
 
-    private MysqlGTIDSet buildForTest(List<Material> materials) {
-        Map<String, UUIDSet> sets = new HashMap<String, UUIDSet>();
-        for (Material a : materials) {
+	private MysqlGTIDSet buildForTest(List<Material> materials) {
+        Map<String, UUIDSet> sets = new HashMap<>();
+        materials.forEach(a -> {
             UUIDSet.Interval interval = new UUIDSet.Interval();
             interval.start = a.start;
             interval.stop = a.stop;
-            List<UUIDSet.Interval> intervals = new ArrayList<UUIDSet.Interval>();
+            List<UUIDSet.Interval> intervals = new ArrayList<>();
             intervals.add(interval);
 
             if (a.start1 > 0 && a.stop1 > 0) {
@@ -109,11 +85,35 @@ public class MysqlGTIDSetTest {
             us.intervals = intervals;
 
             sets.put(a.uuid, us);
-        }
+        });
 
         MysqlGTIDSet gs = new MysqlGTIDSet();
         gs.sets = sets;
 
         return gs;
+    }
+
+	private static class Material {
+
+        public String uuid;
+		public long   start;
+		public long   stop;
+		public long   start1;
+		public long   stop1;
+		public Material(String uuid, long start, long stop){
+            this.uuid = uuid;
+            this.start = start;
+            this.stop = stop;
+            this.start1 = 0;
+            this.stop1 = 0;
+        }
+
+		public Material(String uuid, long start, long stop, long start1, long stop1){
+            this.uuid = uuid;
+            this.start = start;
+            this.stop = stop;
+            this.start1 = start1;
+            this.stop1 = stop1;
+        }
     }
 }

@@ -20,11 +20,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class ESTest {
 
-    private TransportClient transportClient;
+    private static final Logger logger = LoggerFactory.getLogger(ESTest.class);
+	private TransportClient transportClient;
 
     @Before
     public void init() throws UnknownHostException {
@@ -48,7 +51,7 @@ public class ESTest {
             .setSize(10000)
             .get();
         for (SearchHit hit : response.getHits()) {
-            System.out.println(hit.getSourceAsMap().get("data").getClass());
+            logger.info(String.valueOf(hit.getSourceAsMap().get("data").getClass()));
         }
     }
 
@@ -95,22 +98,23 @@ public class ESTest {
     }
 
     private void commit(BulkRequestBuilder bulkRequestBuilder) {
-        if (bulkRequestBuilder.numberOfActions() > 0) {
-            BulkResponse response = bulkRequestBuilder.execute().actionGet();
-            if (response.hasFailures()) {
-                for (BulkItemResponse itemResponse : response.getItems()) {
-                    if (!itemResponse.isFailed()) {
-                        continue;
-                    }
+        if (bulkRequestBuilder.numberOfActions() <= 0) {
+			return;
+		}
+		BulkResponse response = bulkRequestBuilder.execute().actionGet();
+		if (response.hasFailures()) {
+		    for (BulkItemResponse itemResponse : response.getItems()) {
+		        if (!itemResponse.isFailed()) {
+		            continue;
+		        }
 
-                    if (itemResponse.getFailure().getStatus() == RestStatus.NOT_FOUND) {
-                        System.out.println(itemResponse.getFailureMessage());
-                    } else {
-                        System.out.println("ES bulk commit error" + itemResponse.getFailureMessage());
-                    }
-                }
-            }
-        }
+		        if (itemResponse.getFailure().getStatus() == RestStatus.NOT_FOUND) {
+		            logger.info(itemResponse.getFailureMessage());
+		        } else {
+		            logger.info("ES bulk commit error" + itemResponse.getFailureMessage());
+		        }
+		    }
+		}
     }
 
     @After

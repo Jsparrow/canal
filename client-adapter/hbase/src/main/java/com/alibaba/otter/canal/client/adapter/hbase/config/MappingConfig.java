@@ -3,6 +3,8 @@ package com.alibaba.otter.canal.client.adapter.hbase.config;
 import com.alibaba.otter.canal.client.adapter.support.AdapterConfig;
 
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * HBase表映射配置
@@ -22,7 +24,8 @@ public class MappingConfig implements AdapterConfig {
 
     private HbaseMapping hbaseMapping;    // hbase映射配置
 
-    public String getDataSourceKey() {
+    @Override
+	public String getDataSourceKey() {
         return dataSourceKey;
     }
 
@@ -62,7 +65,8 @@ public class MappingConfig implements AdapterConfig {
         this.hbaseMapping = hbaseMapping;
     }
 
-    public AdapterMapping getMapping() {
+    @Override
+	public AdapterMapping getMapping() {
         return hbaseMapping;
     }
 
@@ -86,8 +90,12 @@ public class MappingConfig implements AdapterConfig {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+			return true;
+		}
+        if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
         MappingConfig config = (MappingConfig) o;
 
@@ -99,7 +107,21 @@ public class MappingConfig implements AdapterConfig {
         return hbaseMapping != null ? hbaseMapping.hashCode() : 0;
     }
 
-    public static class ColumnItem {
+    public enum Mode {
+                      STRING("STRING"), NATIVE("NATIVE"), PHOENIX("PHOENIX");
+
+        private String type;
+
+        public String getType() {
+            return type;
+        }
+
+        Mode(String type){
+            this.type = type;
+        }
+    }
+
+	public static class ColumnItem {
 
         private boolean isRowKey = false;
         private Integer rowKeyLen;
@@ -158,8 +180,12 @@ public class MappingConfig implements AdapterConfig {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+				return true;
+			}
+            if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
             ColumnItem that = (ColumnItem) o;
             return Objects.equals(column, that.column);
         }
@@ -171,23 +197,10 @@ public class MappingConfig implements AdapterConfig {
         }
     }
 
-    public enum Mode {
-                      STRING("STRING"), NATIVE("NATIVE"), PHOENIX("PHOENIX");
-
-        private String type;
-
-        public String getType() {
-            return type;
-        }
-
-        Mode(String type){
-            this.type = type;
-        }
-    }
-
     public static class HbaseMapping implements AdapterMapping {
 
-        private Mode                    mode               = Mode.STRING;           // hbase默认转换格式
+        private final Logger logger = LoggerFactory.getLogger(HbaseMapping.class);
+		private Mode                    mode               = Mode.STRING;           // hbase默认转换格式
         private String                  database;                                   // 数据库名或schema名
         private String                  table;                                      // 表面名
         private String                  hbaseTable;                                 // hbase表名
@@ -273,7 +286,8 @@ public class MappingConfig implements AdapterConfig {
             this.rowKey = rowKey;
         }
 
-        public String getEtlCondition() {
+        @Override
+		public String getEtlCondition() {
             return etlCondition;
         }
 
@@ -306,13 +320,14 @@ public class MappingConfig implements AdapterConfig {
                             try {
                                 columnItem.setRowKeyLen(Integer.parseInt(len));
                             } catch (Exception e) {
+								logger.error(e.getMessage(), e);
                                 // ignore
                             }
                         }
                         columnItem.setRowKey(true);
                         rowKeyColumn = columnItem;
                     } else {
-                        if (field == null || field.equals("")) {
+                        if (field == null || "".equals(field)) {
                             columnItem.setFamily(family);
                             columnItem.setQualifier(columnField.getKey());
                         } else {
@@ -391,12 +406,18 @@ public class MappingConfig implements AdapterConfig {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+				return true;
+			}
+            if (o == null || getClass() != o.getClass()) {
+				return false;
+			}
 
             HbaseMapping hbaseMapping = (HbaseMapping) o;
 
-            if (table != null ? !table.equals(hbaseMapping.table) : hbaseMapping.table != null) return false;
+            if (table != null ? !table.equals(hbaseMapping.table) : hbaseMapping.table != null) {
+				return false;
+			}
             return hbaseTable != null ? hbaseTable.equals(hbaseMapping.hbaseTable) : hbaseMapping.hbaseTable == null;
         }
 

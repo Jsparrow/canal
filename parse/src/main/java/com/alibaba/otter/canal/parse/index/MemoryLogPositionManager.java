@@ -32,7 +32,7 @@ public class MemoryLogPositionManager extends AbstractLogPositionManager {
     }
 
     @Override
-    public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+    public void persistLogPosition(String destination, LogPosition logPosition) {
         positions.put(destination, logPosition);
     }
 

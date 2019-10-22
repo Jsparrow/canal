@@ -31,39 +31,35 @@ public class EntryCollector extends Collector implements InstanceRegistry {
     private static final String                             TRANSACTION       = "canal_instance_transactions";
     private static final String                             DELAY_HELP        = "Traffic delay of canal instance in milliseconds";
     private static final String                             TRANSACTION_HELP  = "Transactions counter of canal instance";
-    private final ConcurrentMap<String, EntryMetricsHolder> instances        = new ConcurrentHashMap<String, EntryMetricsHolder>();
+    private final ConcurrentMap<String, EntryMetricsHolder> instances        = new ConcurrentHashMap<>();
 
     private EntryCollector() {}
-
-    private static class SingletonHolder {
-        private static final EntryCollector SINGLETON = new EntryCollector();
-    }
 
     public static EntryCollector instance() {
         return SingletonHolder.SINGLETON;
     }
 
-    @Override
+	@Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
         GaugeMetricFamily delay = new GaugeMetricFamily(DELAY,
                 DELAY_HELP, DEST_LABELS_LIST);
         CounterMetricFamily transactions = new CounterMetricFamily(TRANSACTION,
                 TRANSACTION_HELP, DEST_LABELS_LIST);
-        for (EntryMetricsHolder emh : instances.values()) {
+        instances.values().forEach(emh -> {
             long now = System.currentTimeMillis();
             long latest = emh.latestExecTime.get();
             // execTime > now，delay显示为0
             long d = (now >= latest) ? (now - latest) : 0;
             delay.addMetric(emh.destLabelValues, d);
             transactions.addMetric(emh.destLabelValues, emh.transactionCounter.doubleValue());
-        }
+        });
         mfs.add(delay);
         mfs.add(transactions);
         return mfs;
     }
 
-    @Override
+	@Override
     public void register(CanalInstance instance) {
         final String destination = instance.getDestination();
         EntryMetricsHolder holder = new EntryMetricsHolder();
@@ -84,7 +80,7 @@ public class EntryCollector extends Collector implements InstanceRegistry {
         }
     }
 
-    @Override
+	@Override
     public void unregister(CanalInstance instance) {
         final String destination = instance.getDestination();
         CanalEventSink sink = instance.getEventSink();
@@ -95,7 +91,7 @@ public class EntryCollector extends Collector implements InstanceRegistry {
         instances.remove(destination);
     }
 
-    private PrometheusCanalEventDownStreamHandler assembleHandler(EntryEventSink entrySink) {
+	private PrometheusCanalEventDownStreamHandler assembleHandler(EntryEventSink entrySink) {
         PrometheusCanalEventDownStreamHandler ph = new PrometheusCanalEventDownStreamHandler();
         List<CanalEventDownStreamHandler> handlers = entrySink.getHandlers();
         for (CanalEventDownStreamHandler handler : handlers) {
@@ -107,7 +103,7 @@ public class EntryCollector extends Collector implements InstanceRegistry {
         return ph;
     }
 
-    private void unloadHandler(EntryEventSink entrySink) {
+	private void unloadHandler(EntryEventSink entrySink) {
         List<CanalEventDownStreamHandler> handlers = entrySink.getHandlers();
         int i = 0;
         for (; i < handlers.size(); i++) {
@@ -123,6 +119,10 @@ public class EntryCollector extends Collector implements InstanceRegistry {
                 throw new IllegalStateException("Multiple prometheusCanalEventDownStreamHandler exists in handlers.");
             }
         }
+    }
+
+	private static class SingletonHolder {
+        private static final EntryCollector SINGLETON = new EntryCollector();
     }
 
     private class EntryMetricsHolder {

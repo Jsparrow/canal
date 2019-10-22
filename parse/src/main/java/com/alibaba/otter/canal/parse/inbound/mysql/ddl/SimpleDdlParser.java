@@ -125,12 +125,11 @@ public class SimpleDdlParser {
 
     private static DdlResult parseDdl(String queryString, String schmeaName, String pattern, int index) {
         Perl5Matcher matcher = new Perl5Matcher();
-        if (matcher.matches(queryString, PatternUtils.getPattern(pattern))) {
-            DdlResult result = parseTableName(matcher.getMatch().group(index), schmeaName);
-            return result != null ? result : new DdlResult(schmeaName); // 无法解析时，直接返回schmea，进行兼容处理
-        }
-
-        return null;
+        if (!matcher.matches(queryString, PatternUtils.getPattern(pattern))) {
+			return null;
+		}
+		DdlResult result = parseTableName(matcher.getMatch().group(index), schmeaName);
+		return result != null ? result : new DdlResult(schmeaName); // 无法解析时，直接返回schmea，进行兼容处理
     }
 
     private static boolean isDml(String queryString, String pattern) {

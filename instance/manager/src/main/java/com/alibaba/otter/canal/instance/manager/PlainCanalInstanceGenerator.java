@@ -34,12 +34,13 @@ public class PlainCanalInstanceGenerator implements CanalInstanceGenerator {
         this.canalConfig = canalConfig;
     }
 
-    public CanalInstance generate(String destination) {
+    @Override
+	public CanalInstance generate(String destination) {
         synchronized (CanalInstanceGenerator.class) {
             try {
                 PlainCanal canal = canalConfigClient.findInstance(destination, null);
                 if (canal == null) {
-                    throw new CanalException("instance : " + destination + " config is not found");
+                    throw new CanalException(new StringBuilder().append("instance : ").append(destination).append(" config is not found").toString());
                 }
                 Properties properties = canal.getProperties();
                 // merge local

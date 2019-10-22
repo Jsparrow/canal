@@ -15,11 +15,14 @@ import com.taobao.tddl.dbsync.binlog.LogContext;
 import com.taobao.tddl.dbsync.binlog.LogDecoder;
 import com.taobao.tddl.dbsync.binlog.LogEvent;
 import org.junit.Ignore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class MysqlBinlogEventPerformanceTest {
 
-    protected static Charset charset = Charset.forName("utf-8");
+    private static final Logger logger = LoggerFactory.getLogger(MysqlBinlogEventPerformanceTest.class);
+	protected static Charset charset = Charset.forName("utf-8");
 
     public static void main(String args[]) {
         DirectLogFetcher fetcher = new DirectLogFetcher();
@@ -42,17 +45,19 @@ public class MysqlBinlogEventPerformanceTest {
                 if (current - last >= 100000) {
                     end = System.currentTimeMillis();
                     long tps = ((current - last) * 1000) / (end - start);
-                    System.out.println(" total : " + sum + " , cost : " + (end - start) + " , tps : " + tps);
+                    logger.info(new StringBuilder().append(" total : ").append(sum).append(" , cost : ").append(end - start).append(" , tps : ")
+							.append(tps).toString());
                     last = current;
                     start = end;
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             try {
                 fetcher.close();
             } catch (IOException e) {
+				logger.error(e.getMessage(), e);
             }
         }
     }
@@ -73,7 +78,7 @@ public class MysqlBinlogEventPerformanceTest {
 
     private static void updateSettings(MysqlConnector connector) throws IOException {
         update("set @master_binlog_checksum= '@@global.binlog_checksum'", connector);
-        update("SET @mariadb_slave_capability='" + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + "'", connector);
+        update(new StringBuilder().append("SET @mariadb_slave_capability='").append(LogEvent.MARIA_SLAVE_CAPABILITY_MINE).append("'").toString(), connector);
     }
 
     public static void update(String cmd, MysqlConnector connector) throws IOException {

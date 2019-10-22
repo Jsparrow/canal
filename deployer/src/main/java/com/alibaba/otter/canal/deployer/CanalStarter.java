@@ -61,11 +61,11 @@ public class CanalStarter {
      */
     public synchronized void start() throws Throwable {
         String serverMode = CanalController.getProperty(properties, CanalConstants.CANAL_SERVER_MODE);
-        if (serverMode.equalsIgnoreCase("kafka")) {
+        if ("kafka".equalsIgnoreCase(serverMode)) {
             canalMQProducer = new CanalKafkaProducer();
-        } else if (serverMode.equalsIgnoreCase("rocketmq")) {
+        } else if ("rocketmq".equalsIgnoreCase(serverMode)) {
             canalMQProducer = new CanalRocketMQProducer();
-        } else if (serverMode.equalsIgnoreCase("rabbitmq")) {
+        } else if ("rabbitmq".equalsIgnoreCase(serverMode)) {
             canalMQProducer = new CanalRabbitMQProducer();
         }
 
@@ -86,7 +86,8 @@ public class CanalStarter {
         logger.info("## the canal server is running now ......");
         shutdownThread = new Thread() {
 
-            public void run() {
+            @Override
+			public void run() {
                 try {
                     logger.info("## stop the canal server");
                     controller.stop();
@@ -303,14 +304,14 @@ public class CanalStarter {
             mqProperties.setDatabaseHash(Boolean.valueOf(databaseHash));
         }
 
-        for (Object key : properties.keySet()) {
+        properties.keySet().forEach(key -> {
             key = StringUtils.trim(key.toString());
             if (((String) key).startsWith(CanalConstants.CANAL_MQ_PROPERTIES)) {
                 String value = CanalController.getProperty(properties, (String) key);
                 String subKey = ((String) key).substring(CanalConstants.CANAL_MQ_PROPERTIES.length() + 1);
                 mqProperties.getProperties().put(subKey, value);
             }
-        }
+        });
 
         return mqProperties;
     }

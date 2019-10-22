@@ -58,13 +58,13 @@ public class MysqlQueryExecutor {
         if (body[0] < 0) {
             ErrorPacket packet = new ErrorPacket();
             packet.fromBytes(body);
-            throw new IOException(packet + "\n with command: " + queryString);
+            throw new IOException(new StringBuilder().append(packet).append("\n with command: ").append(queryString).toString());
         }
 
         ResultSetHeaderPacket rsHeader = new ResultSetHeaderPacket();
         rsHeader.fromBytes(body);
 
-        List<FieldPacket> fields = new ArrayList<FieldPacket>();
+        List<FieldPacket> fields = new ArrayList<>();
         for (int i = 0; i < rsHeader.getColumnCount(); i++) {
             FieldPacket fp = new FieldPacket();
             fp.fromBytes(readNextPacket());
@@ -73,7 +73,7 @@ public class MysqlQueryExecutor {
 
         readEofPacket();
 
-        List<RowDataPacket> rowData = new ArrayList<RowDataPacket>();
+        List<RowDataPacket> rowData = new ArrayList<>();
         while (true) {
             body = readNextPacket();
             if (body[0] == -2) {
@@ -86,9 +86,7 @@ public class MysqlQueryExecutor {
 
         ResultSetPacket resultSet = new ResultSetPacket();
         resultSet.getFieldDescriptors().addAll(fields);
-        for (RowDataPacket r : rowData) {
-            resultSet.getFieldValues().addAll(r.getColumns());
-        }
+        rowData.forEach(r -> resultSet.getFieldValues().addAll(r.getColumns()));
         resultSet.setSourceAddress(channel.getRemoteSocketAddress());
 
         return resultSet;
@@ -99,20 +97,20 @@ public class MysqlQueryExecutor {
         cmd.setQueryString(queryString);
         byte[] bodyBytes = cmd.toBytes();
         PacketManager.writeBody(channel, bodyBytes);
-        List<ResultSetPacket> resultSets = new ArrayList<ResultSetPacket>();
+        List<ResultSetPacket> resultSets = new ArrayList<>();
         boolean moreResult = true;
         while (moreResult) {
             byte[] body = readNextPacket();
             if (body[0] < 0) {
                 ErrorPacket packet = new ErrorPacket();
                 packet.fromBytes(body);
-                throw new IOException(packet + "\n with command: " + queryString);
+                throw new IOException(new StringBuilder().append(packet).append("\n with command: ").append(queryString).toString());
             }
 
             ResultSetHeaderPacket rsHeader = new ResultSetHeaderPacket();
             rsHeader.fromBytes(body);
 
-            List<FieldPacket> fields = new ArrayList<FieldPacket>();
+            List<FieldPacket> fields = new ArrayList<>();
             for (int i = 0; i < rsHeader.getColumnCount(); i++) {
                 FieldPacket fp = new FieldPacket();
                 fp.fromBytes(readNextPacket());
@@ -121,7 +119,7 @@ public class MysqlQueryExecutor {
 
             moreResult = readEofPacket();
 
-            List<RowDataPacket> rowData = new ArrayList<RowDataPacket>();
+            List<RowDataPacket> rowData = new ArrayList<>();
             while (true) {
                 body = readNextPacket();
                 if (body[0] == -2) {
@@ -134,9 +132,7 @@ public class MysqlQueryExecutor {
 
             ResultSetPacket resultSet = new ResultSetPacket();
             resultSet.getFieldDescriptors().addAll(fields);
-            for (RowDataPacket r : rowData) {
-                resultSet.getFieldValues().addAll(r.getColumns());
-            }
+            rowData.forEach(r -> resultSet.getFieldValues().addAll(r.getColumns()));
             resultSet.setSourceAddress(channel.getRemoteSocketAddress());
             resultSets.add(resultSet);
         }
@@ -149,7 +145,7 @@ public class MysqlQueryExecutor {
         EOFPacket packet = new EOFPacket();
         packet.fromBytes(eofBody);
         if (eofBody[0] != -2) {
-            throw new IOException("EOF Packet is expected, but packet with field_count=" + eofBody[0] + " is found.");
+            throw new IOException(new StringBuilder().append("EOF Packet is expected, but packet with field_count=").append(eofBody[0]).append(" is found.").toString());
         }
 
         return (packet.statusFlag & 0x0008) != 0;

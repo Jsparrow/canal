@@ -21,11 +21,11 @@ public class CanalSinkException extends CanalException {
     }
 
     public CanalSinkException(String errorCode, String errorDesc){
-        super(errorCode + ":" + errorDesc);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString());
     }
 
     public CanalSinkException(String errorCode, String errorDesc, Throwable cause){
-        super(errorCode + ":" + errorDesc, cause);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString(), cause);
     }
 
     public CanalSinkException(Throwable cause){

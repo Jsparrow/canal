@@ -149,8 +149,9 @@ public class FlatMessage implements Serializable {
 
     @Override
     public String toString() {
-        return "FlatMessage [id=" + id + ", database=" + database + ", table=" + table + ", isDdl=" + isDdl + ", type="
-               + type + ", es=" + es + ", ts=" + ts + ", sql=" + sql + ", sqlType=" + sqlType + ", mysqlType="
-               + mysqlType + ", data=" + data + ", old=" + old + "]";
+        return new StringBuilder().append("FlatMessage [id=").append(id).append(", database=").append(database).append(", table=").append(table).append(", isDdl=")
+				.append(isDdl).append(", type=").append(type).append(", es=").append(es).append(", ts=").append(ts)
+				.append(", sql=").append(sql).append(", sqlType=").append(sqlType).append(", mysqlType=").append(mysqlType).append(", data=")
+				.append(data).append(", old=").append(old).append("]").toString();
     }
 }

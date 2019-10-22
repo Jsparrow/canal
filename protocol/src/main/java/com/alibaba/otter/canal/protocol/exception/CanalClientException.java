@@ -19,11 +19,11 @@ public class CanalClientException extends NestableRuntimeException {
     }
 
     public CanalClientException(String errorCode, String errorDesc){
-        super(errorCode + ":" + errorDesc);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString());
     }
 
     public CanalClientException(String errorCode, String errorDesc, Throwable cause){
-        super(errorCode + ":" + errorDesc, cause);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString(), cause);
     }
 
     public CanalClientException(Throwable cause){

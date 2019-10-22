@@ -64,7 +64,7 @@ public class SimpleCanalConnector implements CanalConnector {
     private SocketChannel        channel;
     private ReadableByteChannel  readableChannel;
     private WritableByteChannel  writableChannel;
-    private List<Compression>    supportedCompressions = new ArrayList<Compression>();
+    private List<Compression>    supportedCompressions = new ArrayList<>();
     private ClientIdentity       clientIdentity;
     private ClientRunningMonitor runningMonitor;                                                             // 运行控制
     private ZkClientx            zkClientx;
@@ -98,7 +98,8 @@ public class SimpleCanalConnector implements CanalConnector {
         this.clientIdentity = new ClientIdentity(destination, (short) 1001);
     }
 
-    public void connect() throws CanalClientException {
+    @Override
+	public void connect() {
         if (connected) {
             return;
         }
@@ -124,7 +125,8 @@ public class SimpleCanalConnector implements CanalConnector {
         connected = true;
     }
 
-    public void disconnect() throws CanalClientException {
+    @Override
+	public void disconnect() {
         if (rollbackOnDisConnect && channel.isConnected()) {
             rollback();
         }
@@ -139,7 +141,7 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    private InetSocketAddress doConnect() throws CanalClientException {
+    private InetSocketAddress doConnect() {
         try {
             channel = SocketChannel.open();
             channel.socket().setSoTimeout(soTimeout);
@@ -199,7 +201,7 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    private void doDisconnect() throws CanalClientException {
+    private void doDisconnect() {
         if (readableChannel != null) {
             quietlyClose(readableChannel);
             readableChannel = null;
@@ -208,10 +210,11 @@ public class SimpleCanalConnector implements CanalConnector {
             quietlyClose(writableChannel);
             writableChannel = null;
         }
-        if (channel != null) {
-            quietlyClose(channel);
-            channel = null;
-        }
+        if (channel == null) {
+			return;
+		}
+		quietlyClose(channel);
+		channel = null;
     }
 
     private void quietlyClose(Channel channel) {
@@ -222,11 +225,13 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public void subscribe() throws CanalClientException {
+    @Override
+	public void subscribe() {
         subscribe(""); // 传递空字符即可
     }
 
-    public void subscribe(String filter) throws CanalClientException {
+    @Override
+	public void subscribe(String filter) {
         waitClientRunning();
         if (!running) {
             return;
@@ -255,7 +260,8 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public void unsubscribe() throws CanalClientException {
+    @Override
+	public void unsubscribe() {
         waitClientRunning();
         if (!running) {
             return;
@@ -281,21 +287,25 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public Message get(int batchSize) throws CanalClientException {
+    @Override
+	public Message get(int batchSize) {
         return get(batchSize, null, null);
     }
 
-    public Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    @Override
+	public Message get(int batchSize, Long timeout, TimeUnit unit) {
         Message message = getWithoutAck(batchSize, timeout, unit);
         ack(message.getId());
         return message;
     }
 
-    public Message getWithoutAck(int batchSize) throws CanalClientException {
+    @Override
+	public Message getWithoutAck(int batchSize) {
         return getWithoutAck(batchSize, null, null);
     }
 
-    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    @Override
+	public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) {
         waitClientRunning();
         if (!running) {
             return null;
@@ -331,7 +341,8 @@ public class SimpleCanalConnector implements CanalConnector {
         return CanalMessageDeserializer.deserializer(data, lazyParseEntry);
     }
 
-    public void ack(long batchId) throws CanalClientException {
+    @Override
+	public void ack(long batchId) {
         waitClientRunning();
         if (!running) {
             return;
@@ -352,7 +363,8 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public void rollback(long batchId) throws CanalClientException {
+    @Override
+	public void rollback(long batchId) {
         waitClientRunning();
         ClientRollback ca = ClientRollback.newBuilder()
             .setDestination(clientIdentity.getDestination())
@@ -370,7 +382,8 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public void rollback() throws CanalClientException {
+    @Override
+	public void rollback() {
         waitClientRunning();
         rollback(0);// 0代笔未设置
     }
@@ -416,38 +429,40 @@ public class SimpleCanalConnector implements CanalConnector {
     }
 
     private synchronized void initClientRunningMonitor(ClientIdentity clientIdentity) {
-        if (zkClientx != null && clientIdentity != null && runningMonitor == null) {
-            ClientRunningData clientData = new ClientRunningData();
-            clientData.setClientId(clientIdentity.getClientId());
-            clientData.setAddress(AddressUtils.getHostIp());
+        if (!(zkClientx != null && clientIdentity != null && runningMonitor == null)) {
+			return;
+		}
+		ClientRunningData clientData = new ClientRunningData();
+		clientData.setClientId(clientIdentity.getClientId());
+		clientData.setAddress(AddressUtils.getHostIp());
+		runningMonitor = new ClientRunningMonitor();
+		runningMonitor.setDestination(clientIdentity.getDestination());
+		runningMonitor.setZkClient(zkClientx);
+		runningMonitor.setClientData(clientData);
+		runningMonitor.setListener(new ClientRunningListener() {
 
-            runningMonitor = new ClientRunningMonitor();
-            runningMonitor.setDestination(clientIdentity.getDestination());
-            runningMonitor.setZkClient(zkClientx);
-            runningMonitor.setClientData(clientData);
-            runningMonitor.setListener(new ClientRunningListener() {
+		    @Override
+			public InetSocketAddress processActiveEnter() {
+		        InetSocketAddress address = doConnect();
+		        mutex.set(true);
+		        if (filter != null) { // 如果存在条件，说明是自动切换，基于上一次的条件订阅一次
+		            subscribe(filter);
+		        }
 
-                public InetSocketAddress processActiveEnter() {
-                    InetSocketAddress address = doConnect();
-                    mutex.set(true);
-                    if (filter != null) { // 如果存在条件，说明是自动切换，基于上一次的条件订阅一次
-                        subscribe(filter);
-                    }
+		        if (rollbackOnConnect) {
+		            rollback();
+		        }
 
-                    if (rollbackOnConnect) {
-                        rollback();
-                    }
+		        return address;
+		    }
 
-                    return address;
-                }
+		    @Override
+			public void processActiveExit() {
+		        mutex.set(false);
+		        doDisconnect();
+		    }
 
-                public void processActiveExit() {
-                    mutex.set(false);
-                    doDisconnect();
-                }
-
-            });
-        }
+		});
     }
 
     private void waitClientRunning() {
@@ -469,7 +484,8 @@ public class SimpleCanalConnector implements CanalConnector {
         }
     }
 
-    public boolean checkValid() {
+    @Override
+	public boolean checkValid() {
         if (zkClientx != null) {
             return mutex.state();
         } else {
@@ -535,12 +551,13 @@ public class SimpleCanalConnector implements CanalConnector {
     }
 
     public void stopRunning() {
-        if (running) {
-            running = false; // 设置为非running状态
-            if (!mutex.state()) {
-                mutex.set(true); // 中断阻塞
-            }
-        }
+        if (!running) {
+			return;
+		}
+		running = false; // 设置为非running状态
+		if (!mutex.state()) {
+		    mutex.set(true); // 中断阻塞
+		}
     }
 
 }

@@ -10,7 +10,7 @@ import com.alibaba.otter.canal.common.zookeeper.ZookeeperPathUtils;
 
 public class ZooKeeperLogPositionManagerTest extends AbstractLogPositionManagerTest {
 
-    private ZkClientx zkclientx = new ZkClientx(cluster1 + ";" + cluster2);
+    private ZkClientx zkclientx = new ZkClientx(new StringBuilder().append(cluster1).append(";").append(cluster2).toString());
 
     @Before
     public void setUp() {

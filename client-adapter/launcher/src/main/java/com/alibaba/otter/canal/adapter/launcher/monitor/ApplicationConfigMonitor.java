@@ -65,7 +65,9 @@ public class ApplicationConfigMonitor {
 
     private class FileListener extends FileAlterationListenerAdaptor {
 
-        @Override
+        private final Logger logger1 = LoggerFactory.getLogger(FileListener.class);
+
+		@Override
         public void onFileChange(File file) {
             super.onFileChange(file);
             try {
@@ -80,6 +82,7 @@ public class ApplicationConfigMonitor {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
+					logger1.error(e.getMessage(), e);
                     // ignore
                 }
                 canalAdapterService.init();

@@ -8,22 +8,21 @@ import com.alibaba.otter.canal.server.exception.CanalServerException;
 
 public interface CanalService {
 
-    void subscribe(ClientIdentity clientIdentity) throws CanalServerException;
+    void subscribe(ClientIdentity clientIdentity);
 
-    void unsubscribe(ClientIdentity clientIdentity) throws CanalServerException;
+    void unsubscribe(ClientIdentity clientIdentity);
 
-    Message get(ClientIdentity clientIdentity, int batchSize) throws CanalServerException;
+    Message get(ClientIdentity clientIdentity, int batchSize);
 
-    Message get(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit) throws CanalServerException;
+    Message get(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit);
 
-    Message getWithoutAck(ClientIdentity clientIdentity, int batchSize) throws CanalServerException;
+    Message getWithoutAck(ClientIdentity clientIdentity, int batchSize);
 
-    Message getWithoutAck(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit)
-                                                                                                    throws CanalServerException;
+    Message getWithoutAck(ClientIdentity clientIdentity, int batchSize, Long timeout, TimeUnit unit);
 
-    void ack(ClientIdentity clientIdentity, long batchId) throws CanalServerException;
+    void ack(ClientIdentity clientIdentity, long batchId);
 
-    void rollback(ClientIdentity clientIdentity) throws CanalServerException;
+    void rollback(ClientIdentity clientIdentity);
 
-    void rollback(ClientIdentity clientIdentity, Long batchId) throws CanalServerException;
+    void rollback(ClientIdentity clientIdentity, Long batchId);
 }

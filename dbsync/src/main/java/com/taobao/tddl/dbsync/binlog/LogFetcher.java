@@ -65,12 +65,14 @@ public abstract class LogFetcher extends LogBuffer implements Closeable {
     protected final void ensureCapacity(final int minCapacity) {
         final int oldCapacity = buffer.length;
 
-        if (minCapacity > oldCapacity) {
-            int newCapacity = (int) (oldCapacity * factor);
-            if (newCapacity < minCapacity) newCapacity = minCapacity;
-
-            buffer = Arrays.copyOf(buffer, newCapacity);
-        }
+        if (minCapacity <= oldCapacity) {
+			return;
+		}
+		int newCapacity = (int) (oldCapacity * factor);
+		if (newCapacity < minCapacity) {
+			newCapacity = minCapacity;
+		}
+		buffer = Arrays.copyOf(buffer, newCapacity);
     }
 
     /**
@@ -83,5 +85,6 @@ public abstract class LogFetcher extends LogBuffer implements Closeable {
      * 
      * @see java.io.Closeable#close()
      */
-    public abstract void close() throws IOException;
+    @Override
+	public abstract void close() throws IOException;
 }

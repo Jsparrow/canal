@@ -57,7 +57,7 @@ public class SimpleAdminConnector implements AdminConnector {
     }
 
     @Override
-    public void connect() throws ServiceException {
+    public void connect() {
         try {
             if (connected) {
                 return;
@@ -108,15 +108,13 @@ public class SimpleAdminConnector implements AdminConnector {
             }
 
             connected = true;
-        } catch (IOException e) {
-            throw new ServiceException(e);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException | IOException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public void disconnect() throws ServiceException {
+    public void disconnect() {
         if (!connected) {
             return;
         }
@@ -130,10 +128,11 @@ public class SimpleAdminConnector implements AdminConnector {
             quietlyClose(writableChannel);
             writableChannel = null;
         }
-        if (channel != null) {
-            quietlyClose(channel);
-            channel = null;
-        }
+        if (channel == null) {
+			return;
+		}
+		quietlyClose(channel);
+		channel = null;
     }
 
     @Override

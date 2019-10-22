@@ -13,10 +13,13 @@ import com.alibaba.otter.canal.protocol.CanalEntry;
 import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.CanalEntry.EntryType;
 import com.alibaba.otter.canal.protocol.CanalEntry.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EventTransactionBufferTest {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final Logger logger = LoggerFactory.getLogger(EventTransactionBufferTest.class);
+	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String messgae     = "{0} [{1}:{2}:{3}] {4}.{5}";
 
     @Test
@@ -25,30 +28,27 @@ public class EventTransactionBufferTest {
         final int transactionSize = 5;
         EventTransactionBuffer buffer = new EventTransactionBuffer();
         buffer.setBufferSize(bufferSize);
-        buffer.setFlushCallback(new TransactionFlushCallback() {
+        buffer.setFlushCallback((List<Entry> transaction) -> {
+		    Assert.assertEquals(transactionSize, transaction.size());
+		    logger.info("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		    transaction.forEach(data -> {
 
-            public void flush(List<Entry> transaction) throws InterruptedException {
-                Assert.assertEquals(transactionSize, transaction.size());
-                System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                for (Entry data : transaction) {
+		        CanalEntry.Header header = data.getHeader();
+		        Date date = new Date(header.getExecuteTime());
+		        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+		        if (data.getEntryType() == EntryType.TRANSACTIONBEGIN
+		            || data.getEntryType() == EntryType.TRANSACTIONEND) {
+		            logger.info(String.valueOf(data.getEntryType()));
 
-                    CanalEntry.Header header = data.getHeader();
-                    Date date = new Date(header.getExecuteTime());
-                    SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-                    if (data.getEntryType() == EntryType.TRANSACTIONBEGIN
-                        || data.getEntryType() == EntryType.TRANSACTIONEND) {
-                        System.out.println(data.getEntryType());
+		        } else {
+		            logger.info(MessageFormat.format(messgae, new Object[] {
+		                    Thread.currentThread().getName(), header.getLogfileName(), header.getLogfileOffset(),
+		                    format.format(date), header.getSchemaName(), header.getTableName() }));
+		        }
 
-                    } else {
-                        System.out.println(MessageFormat.format(messgae, new Object[] {
-                                Thread.currentThread().getName(), header.getLogfileName(), header.getLogfileOffset(),
-                                format.format(date), header.getSchemaName(), header.getTableName() }));
-                    }
-
-                }
-                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-            }
-        });
+		    });
+		    logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+		});
         buffer.start();
 
         try {
@@ -73,36 +73,33 @@ public class EventTransactionBufferTest {
         final int bufferSize = 64;
         EventTransactionBuffer buffer = new EventTransactionBuffer();
         buffer.setBufferSize(bufferSize);
-        buffer.setFlushCallback(new TransactionFlushCallback() {
+        buffer.setFlushCallback((List<Entry> transaction) -> {
+		    Assert.assertEquals(bufferSize, transaction.size());
+		    logger.info("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+		    transaction.forEach(data -> {
 
-            public void flush(List<Entry> transaction) throws InterruptedException {
-                Assert.assertEquals(bufferSize, transaction.size());
-                System.out.println("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                for (Entry data : transaction) {
+		        CanalEntry.Header header = data.getHeader();
+		        Date date = new Date(header.getExecuteTime());
+		        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+		        if (data.getEntryType() == EntryType.TRANSACTIONBEGIN
+		            || data.getEntryType() == EntryType.TRANSACTIONEND) {
+		            // System.out.println(MessageFormat.format(messgae, new
+		            // Object[] {
+		            // Thread.currentThread().getName(),
+		            // header.getLogfilename(), header.getLogfileoffset(),
+		            // format.format(date),
+		            // data.getEntry().getEntryType(), "" }));
+		            logger.info(String.valueOf(data.getEntryType()));
 
-                    CanalEntry.Header header = data.getHeader();
-                    Date date = new Date(header.getExecuteTime());
-                    SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-                    if (data.getEntryType() == EntryType.TRANSACTIONBEGIN
-                        || data.getEntryType() == EntryType.TRANSACTIONEND) {
-                        // System.out.println(MessageFormat.format(messgae, new
-                        // Object[] {
-                        // Thread.currentThread().getName(),
-                        // header.getLogfilename(), header.getLogfileoffset(),
-                        // format.format(date),
-                        // data.getEntry().getEntryType(), "" }));
-                        System.out.println(data.getEntryType());
+		        } else {
+		            logger.info(MessageFormat.format(messgae, new Object[] {
+		                    Thread.currentThread().getName(), header.getLogfileName(), header.getLogfileOffset(),
+		                    format.format(date), header.getSchemaName(), header.getTableName() }));
+		        }
 
-                    } else {
-                        System.out.println(MessageFormat.format(messgae, new Object[] {
-                                Thread.currentThread().getName(), header.getLogfileName(), header.getLogfileOffset(),
-                                format.format(date), header.getSchemaName(), header.getTableName() }));
-                    }
-
-                }
-                System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
-            }
-        });
+		    });
+		    logger.info("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+		});
         buffer.start();
 
         try {

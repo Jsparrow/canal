@@ -68,9 +68,8 @@ public class CanalLauncher {
                     autoCluster);
                 PlainCanal canalConfig = configClient.findServer(null);
                 if (canalConfig == null) {
-                    throw new IllegalArgumentException("managerAddress:" + managerAddress
-                                                       + " can't not found config for [" + registerIp + ":" + adminPort
-                                                       + "]");
+                    throw new IllegalArgumentException(new StringBuilder().append("managerAddress:").append(managerAddress).append(" can't not found config for [").append(registerIp).append(":").append(adminPort)
+							.append("]").toString());
                 }
                 Properties managerProperties = canalConfig.getProperties();
                 // merge local
@@ -82,7 +81,8 @@ public class CanalLauncher {
 
                     private PlainCanal lastCanalConfig;
 
-                    public void run() {
+                    @Override
+					public void run() {
                         try {
                             if (lastCanalConfig == null) {
                                 lastCanalConfig = configClient.findServer(null);
@@ -121,13 +121,7 @@ public class CanalLauncher {
     }
 
     private static void setGlobalUncaughtExceptionHandler() {
-        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-
-            @Override
-            public void uncaughtException(Thread t, Throwable e) {
-                logger.error("UnCaughtException", e);
-            }
-        });
+        Thread.setDefaultUncaughtExceptionHandler((Thread t, Throwable e) -> logger.error("UnCaughtException", e));
     }
 
 }

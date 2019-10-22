@@ -15,11 +15,11 @@ public class TableIdNotFoundException extends CanalException {
     }
 
     public TableIdNotFoundException(String errorCode, String errorDesc){
-        super(errorCode + ":" + errorDesc);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString());
     }
 
     public TableIdNotFoundException(String errorCode, String errorDesc, Throwable cause){
-        super(errorCode + ":" + errorDesc, cause);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString(), cause);
     }
 
     public TableIdNotFoundException(Throwable cause){

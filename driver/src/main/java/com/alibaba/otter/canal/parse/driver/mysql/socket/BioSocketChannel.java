@@ -9,6 +9,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.channels.ClosedByInterruptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 使用BIO进行dump
@@ -17,7 +19,8 @@ import java.nio.channels.ClosedByInterruptException;
  */
 public class BioSocketChannel implements SocketChannel {
 
-    static final int     DEFAULT_CONNECT_TIMEOUT = 10 * 1000;
+    private static final Logger logger = LoggerFactory.getLogger(BioSocketChannel.class);
+	static final int     DEFAULT_CONNECT_TIMEOUT = 10 * 1000;
     static final int     SO_TIMEOUT              = 1000;
     private Socket       socket;
     private InputStream  input;
@@ -29,7 +32,8 @@ public class BioSocketChannel implements SocketChannel {
         this.output = socket.getOutputStream();
     }
 
-    public void write(byte[]... buf) throws IOException {
+    @Override
+	public void write(byte[]... buf) throws IOException {
         OutputStream output = this.output;
         if (output != null) {
             for (byte[] bs : buf) {
@@ -40,7 +44,8 @@ public class BioSocketChannel implements SocketChannel {
         }
     }
 
-    public byte[] read(int readSize) throws IOException {
+    @Override
+	public byte[] read(int readSize) throws IOException {
         InputStream input = this.input;
         byte[] data = new byte[readSize];
         int remain = readSize;
@@ -56,7 +61,8 @@ public class BioSocketChannel implements SocketChannel {
                     throw new IOException("EOF encountered.");
                 }
             } catch (SocketTimeoutException te) {
-                if (Thread.interrupted()) {
+                logger.error(te.getMessage(), te);
+				if (Thread.interrupted()) {
                     throw new ClosedByInterruptException();
                 }
             }
@@ -64,7 +70,8 @@ public class BioSocketChannel implements SocketChannel {
         return data;
     }
 
-    public byte[] read(int readSize, int timeout) throws IOException {
+    @Override
+	public byte[] read(int readSize, int timeout) throws IOException {
         InputStream input = this.input;
         byte[] data = new byte[readSize];
         int remain = readSize;
@@ -81,16 +88,16 @@ public class BioSocketChannel implements SocketChannel {
                     throw new IOException("EOF encountered.");
                 }
             } catch (SocketTimeoutException te) {
-                if (Thread.interrupted()) {
+                logger.error(te.getMessage(), te);
+				if (Thread.interrupted()) {
                     throw new ClosedByInterruptException();
                 }
                 accTimeout += SO_TIMEOUT;
             }
         }
         if (remain > 0 && accTimeout >= timeout) {
-            throw new SocketTimeoutException("Timeout occurred, failed to read total " + readSize + " bytes in "
-                                             + timeout + " milliseconds, actual read only " + (readSize - remain)
-                                             + " bytes");
+            throw new SocketTimeoutException(new StringBuilder().append("Timeout occurred, failed to read total ").append(readSize).append(" bytes in ").append(timeout).append(" milliseconds, actual read only ")
+					.append(readSize - remain).append(" bytes").toString());
         }
         return data;
     }
@@ -113,7 +120,8 @@ public class BioSocketChannel implements SocketChannel {
                     throw new IOException("EOF encountered.");
                 }
             } catch (SocketTimeoutException te) {
-                if (Thread.interrupted()) {
+                logger.error(te.getMessage(), te);
+				if (Thread.interrupted()) {
                     throw new ClosedByInterruptException();
                 }
                 accTimeout += SO_TIMEOUT;
@@ -121,12 +129,13 @@ public class BioSocketChannel implements SocketChannel {
         }
 
         if (n < len && accTimeout >= timeout) {
-            throw new SocketTimeoutException("Timeout occurred, failed to read total " + len + " bytes in " + timeout
-                                             + " milliseconds, actual read only " + n + " bytes");
+            throw new SocketTimeoutException(new StringBuilder().append("Timeout occurred, failed to read total ").append(len).append(" bytes in ").append(timeout).append(" milliseconds, actual read only ").append(n)
+					.append(" bytes").toString());
         }
     }
 
-    public boolean isConnected() {
+    @Override
+	public boolean isConnected() {
         Socket socket = this.socket;
         if (socket != null) {
             return socket.isConnected();
@@ -134,7 +143,8 @@ public class BioSocketChannel implements SocketChannel {
         return false;
     }
 
-    public SocketAddress getRemoteSocketAddress() {
+    @Override
+	public SocketAddress getRemoteSocketAddress() {
         Socket socket = this.socket;
         if (socket != null) {
             return socket.getRemoteSocketAddress();
@@ -143,7 +153,8 @@ public class BioSocketChannel implements SocketChannel {
         return null;
     }
 
-    public SocketAddress getLocalSocketAddress() {
+    @Override
+	public SocketAddress getLocalSocketAddress() {
         Socket socket = this.socket;
         if (socket != null) {
             return socket.getLocalSocketAddress();
@@ -152,22 +163,26 @@ public class BioSocketChannel implements SocketChannel {
         return null;
     }
 
-    public void close() {
+    @Override
+	public void close() {
         Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.shutdownInput();
             } catch (IOException e) {
+				logger.error(e.getMessage(), e);
                 // Ignore, could not do anymore
             }
             try {
                 socket.shutdownOutput();
             } catch (IOException e) {
+				logger.error(e.getMessage(), e);
                 // Ignore, could not do anymore
             }
             try {
                 socket.close();
             } catch (IOException e) {
+				logger.error(e.getMessage(), e);
                 // Ignore, could not do anymore
             }
         }

@@ -85,15 +85,18 @@ public class MysqlConnection implements ErosaConnection {
         connector.setConnTimeout(connTimeout);
     }
 
-    public void connect() throws IOException {
+    @Override
+	public void connect() throws IOException {
         connector.connect();
     }
 
-    public void reconnect() throws IOException {
+    @Override
+	public void reconnect() throws IOException {
         connector.reconnect();
     }
 
-    public void disconnect() throws IOException {
+    @Override
+	public void disconnect() throws IOException {
         connector.disconnect();
     }
 
@@ -119,7 +122,8 @@ public class MysqlConnection implements ErosaConnection {
     /**
      * 加速主备切换时的查找速度，做一些特殊优化，比如只解析事务头或者尾
      */
-    public void seek(String binlogfilename, Long binlogPosition, String gtid, SinkFunction func) throws IOException {
+    @Override
+	public void seek(String binlogfilename, Long binlogPosition, String gtid, SinkFunction func) throws IOException {
         updateSettings();
         loadBinlogChecksum();
         sendBinlogDump(binlogfilename, binlogPosition);
@@ -156,7 +160,8 @@ public class MysqlConnection implements ErosaConnection {
         }
     }
 
-    public void dump(String binlogfilename, Long binlogPosition, SinkFunction func) throws IOException {
+    @Override
+	public void dump(String binlogfilename, Long binlogPosition, SinkFunction func) throws IOException {
         updateSettings();
         loadBinlogChecksum();
         sendRegisterSlave();
@@ -217,7 +222,8 @@ public class MysqlConnection implements ErosaConnection {
         }
     }
 
-    public void dump(long timestamp, SinkFunction func) throws IOException {
+    @Override
+	public void dump(long timestamp, SinkFunction func) throws IOException {
         throw new NullPointerException("Not implement yet");
     }
 
@@ -276,7 +282,7 @@ public class MysqlConnection implements ErosaConnection {
     private void sendRegisterSlave() throws IOException {
         RegisterSlaveCommandPacket cmd = new RegisterSlaveCommandPacket();
         SocketAddress socketAddress = connector.getChannel().getLocalSocketAddress();
-        if (socketAddress == null || !(socketAddress instanceof InetSocketAddress)) {
+        if (!(socketAddress instanceof InetSocketAddress)) {
             return;
         }
 
@@ -354,7 +360,8 @@ public class MysqlConnection implements ErosaConnection {
         connector.setDumping(true);
     }
 
-    public MysqlConnection fork() {
+    @Override
+	public MysqlConnection fork() {
         MysqlConnection connection = new MysqlConnection();
         connection.setCharset(getCharset());
         connection.setSlaveId(getSlaveId());
@@ -436,7 +443,7 @@ public class MysqlConnection implements ErosaConnection {
 
         try {
             // mariadb针对特殊的类型，需要设置session变量
-            update("SET @mariadb_slave_capability='" + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + "'");
+            update(new StringBuilder().append("SET @mariadb_slave_capability='").append(LogEvent.MARIA_SLAVE_CAPABILITY_MINE).append("'").toString());
         } catch (Exception e) {
             if (!StringUtils.contains(e.getMessage(), "Unknown system variable")) {
                 logger.warn("update mariadb_slave_capability failed", e);
@@ -522,13 +529,14 @@ public class MysqlConnection implements ErosaConnection {
             rs = query("select @@global.binlog_checksum");
             List<String> columnValues = rs.getFieldValues();
             if (columnValues != null && columnValues.size() >= 1 && columnValues.get(0) != null
-                && columnValues.get(0).toUpperCase().equals("CRC32")) {
+                && "CRC32".equals(columnValues.get(0).toUpperCase())) {
                 binlogChecksum = LogEvent.BINLOG_CHECKSUM_ALG_CRC32;
             } else {
                 binlogChecksum = LogEvent.BINLOG_CHECKSUM_ALG_OFF;
             }
         } catch (Throwable e) {
-            // logger.error("", e);
+            logger.error(e.getMessage(), e);
+			// logger.error("", e);
             binlogChecksum = LogEvent.BINLOG_CHECKSUM_ALG_OFF;
         }
     }
@@ -539,7 +547,77 @@ public class MysqlConnection implements ErosaConnection {
         }
     }
 
-    public static enum BinlogFormat {
+    // ================== setter / getter ===================
+
+    public Charset getCharset() {
+        return charset;
+    }
+
+	public void setCharset(Charset charset) {
+        this.charset = charset;
+    }
+
+	public long getSlaveId() {
+        return slaveId;
+    }
+
+	public void setSlaveId(long slaveId) {
+        this.slaveId = slaveId;
+    }
+
+	public MysqlConnector getConnector() {
+        return connector;
+    }
+
+	public void setConnector(MysqlConnector connector) {
+        this.connector = connector;
+    }
+
+	public BinlogFormat getBinlogFormat() {
+        if (binlogFormat == null) {
+            synchronized (this) {
+                loadBinlogFormat();
+            }
+        }
+
+        return binlogFormat;
+    }
+
+	public BinlogImage getBinlogImage() {
+        if (binlogImage == null) {
+            synchronized (this) {
+                loadBinlogImage();
+            }
+        }
+
+        return binlogImage;
+    }
+
+	public InetSocketAddress getAddress() {
+        return authInfo.getAddress();
+    }
+
+	public void setConnTimeout(int connTimeout) {
+        this.connTimeout = connTimeout;
+    }
+
+	public void setSoTimeout(int soTimeout) {
+        this.soTimeout = soTimeout;
+    }
+
+	public AuthenticationInfo getAuthInfo() {
+        return authInfo;
+    }
+
+	public void setAuthInfo(AuthenticationInfo authInfo) {
+        this.authInfo = authInfo;
+    }
+
+	public void setReceivedBinlogBytes(AtomicLong receivedBinlogBytes) {
+        this.receivedBinlogBytes = receivedBinlogBytes;
+    }
+
+	public static enum BinlogFormat {
 
         STATEMENT("STATEMENT"), ROW("ROW"), MIXED("MIXED");
 
@@ -572,7 +650,7 @@ public class MysqlConnection implements ErosaConnection {
         }
     }
 
-    /**
+	/**
      * http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.
      * html#sysvar_binlog_row_image
      * 
@@ -610,76 +688,6 @@ public class MysqlConnection implements ErosaConnection {
             }
             return null;
         }
-    }
-
-    // ================== setter / getter ===================
-
-    public Charset getCharset() {
-        return charset;
-    }
-
-    public void setCharset(Charset charset) {
-        this.charset = charset;
-    }
-
-    public long getSlaveId() {
-        return slaveId;
-    }
-
-    public void setSlaveId(long slaveId) {
-        this.slaveId = slaveId;
-    }
-
-    public MysqlConnector getConnector() {
-        return connector;
-    }
-
-    public void setConnector(MysqlConnector connector) {
-        this.connector = connector;
-    }
-
-    public BinlogFormat getBinlogFormat() {
-        if (binlogFormat == null) {
-            synchronized (this) {
-                loadBinlogFormat();
-            }
-        }
-
-        return binlogFormat;
-    }
-
-    public BinlogImage getBinlogImage() {
-        if (binlogImage == null) {
-            synchronized (this) {
-                loadBinlogImage();
-            }
-        }
-
-        return binlogImage;
-    }
-
-    public InetSocketAddress getAddress() {
-        return authInfo.getAddress();
-    }
-
-    public void setConnTimeout(int connTimeout) {
-        this.connTimeout = connTimeout;
-    }
-
-    public void setSoTimeout(int soTimeout) {
-        this.soTimeout = soTimeout;
-    }
-
-    public AuthenticationInfo getAuthInfo() {
-        return authInfo;
-    }
-
-    public void setAuthInfo(AuthenticationInfo authInfo) {
-        this.authInfo = authInfo;
-    }
-
-    public void setReceivedBinlogBytes(AtomicLong receivedBinlogBytes) {
-        this.receivedBinlogBytes = receivedBinlogBytes;
     }
 
 }

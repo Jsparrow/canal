@@ -357,7 +357,117 @@ public class QueryLogEvent extends LogEvent {
                                                                                        * ,
                                                                                        * default_collation_for_utf8mb4_number
                                                                                        */+ 1 /* sql_require_primary_key */;
-    /**
+
+	/* query event post-header */
+    public static final int Q_THREAD_ID_OFFSET                = 0;
+
+	public static final int Q_EXEC_TIME_OFFSET                = 4;
+
+	public static final int Q_DB_LEN_OFFSET                   = 8;
+
+	public static final int Q_ERR_CODE_OFFSET                 = 9;
+
+	public static final int Q_STATUS_VARS_LEN_OFFSET          = 11;
+
+	public static final int Q_DATA_OFFSET                     = QUERY_HEADER_LEN;
+
+	/* these are codes, not offsets; not more than 256 values (1 byte). */
+    public static final int Q_FLAGS2_CODE                     = 0;
+
+	public static final int Q_SQL_MODE_CODE                   = 1;
+
+	/**
+     * Q_CATALOG_CODE is catalog with end zero stored; it is used only by MySQL
+     * 5.0.x where 0<=x<=3. We have to keep it to be able to replicate these old
+     * masters.
+     */
+    public static final int Q_CATALOG_CODE                    = 2;
+
+	public static final int Q_AUTO_INCREMENT                  = 3;
+
+	public static final int Q_CHARSET_CODE                    = 4;
+
+	public static final int Q_TIME_ZONE_CODE                  = 5;
+
+	/**
+     * Q_CATALOG_NZ_CODE is catalog withOUT end zero stored; it is used by MySQL
+     * 5.0.x where x>=4. Saves one byte in every Query_log_event in binlog,
+     * compared to Q_CATALOG_CODE. The reason we didn't simply re-use
+     * Q_CATALOG_CODE is that then a 5.0.3 slave of this 5.0.x (x>=4) master
+     * would crash (segfault etc) because it would expect a 0 when there is
+     * none.
+     */
+    public static final int Q_CATALOG_NZ_CODE                 = 6;
+
+	public static final int Q_LC_TIME_NAMES_CODE              = 7;
+
+	public static final int Q_CHARSET_DATABASE_CODE           = 8;
+
+	public static final int Q_TABLE_MAP_FOR_UPDATE_CODE       = 9;
+
+	public static final int Q_MASTER_DATA_WRITTEN_CODE        = 10;
+
+	public static final int Q_INVOKER                         = 11;
+
+	/**
+     * Q_UPDATED_DB_NAMES status variable collects of the updated databases
+     * total number and their names to be propagated to the slave in order to
+     * facilitate the parallel applying of the Query events.
+     */
+    public static final int Q_UPDATED_DB_NAMES                = 12;
+
+	public static final int Q_MICROSECONDS                    = 13;
+
+	/**
+     * A old (unused now) code for Query_log_event status similar to
+     * G_COMMIT_TS.
+     */
+    public static final int Q_COMMIT_TS                       = 14;
+
+	/**
+     * A code for Query_log_event status, similar to G_COMMIT_TS2.
+     */
+    public static final int Q_COMMIT_TS2                      = 15;
+
+	/**
+     * The master connection @@session.explicit_defaults_for_timestamp which is
+     * recorded for queries, CREATE and ALTER table that is defined with a
+     * TIMESTAMP column, that are dependent on that feature. For pre-WL6292
+     * master's the associated with this code value is zero.
+     */
+    public static final int Q_EXPLICIT_DEFAULTS_FOR_TIMESTAMP = 16;
+
+	/**
+     * The variable carries xid info of 2pc-aware (recoverable) DDL queries.
+     */
+    public static final int Q_DDL_LOGGED_WITH_XID             = 17;
+
+	/**
+     * This variable stores the default collation for the utf8mb4 character set.
+     * Used to support cross-version replication.
+     */
+    public static final int Q_DEFAULT_COLLATION_FOR_UTF8MB4   = 18;
+
+	/**
+     * Replicate sql_require_primary_key.
+     */
+    public static final int Q_SQL_REQUIRE_PRIMARY_KEY         = 19;
+
+	/**
+     * FROM MariaDB 5.5.34
+     */
+    public static final int Q_HRNOW                           = 128;
+
+	/* FLAGS2 values that can be represented inside the binlog */
+    public static final int OPTION_AUTO_IS_NULL          = 1 << 14;
+
+	public static final int OPTION_NOT_AUTOCOMMIT        = 1 << 19;
+
+	public static final int OPTION_NO_FOREIGN_KEY_CHECKS = 1 << 26;
+
+	public static final int OPTION_RELAXED_UNIQUE_CHECKS = 1 << 27;
+
+	/**
      * Fixed data part:
      * <ul>
      * <li>4 bytes. The ID of the thread that issued this statement. Needed for
@@ -401,43 +511,54 @@ public class QueryLogEvent extends LogEvent {
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log
      */
     private String          user;
-    private String          host;
 
-    /* using byte for query string */
+	private String          host;
+
+	/* using byte for query string */
     protected String        query;
-    protected String        catalog;
-    protected final String  dbname;
 
-    /** The number of seconds the query took to run on the master. */
+	protected String        catalog;
+
+	protected final String  dbname;
+
+	/** The number of seconds the query took to run on the master. */
     // The time in seconds that the statement took to execute. Only useful for
     // inspection by the DBA
     private final long      execTime;
-    private final int       errorCode;
-    private final long      sessionId;                                                                                     /* thread_id */
 
-    /**
+	private final int       errorCode;
+
+	private final long      sessionId;                                                                                     /* thread_id */
+
+	/**
      * 'flags2' is a second set of flags (on top of those in Log_event), for
      * session variables. These are thd->options which is & against a mask
      * (OPTIONS_WRITTEN_TO_BIN_LOG).
      */
     private long            flags2;
 
-    /** In connections sql_mode is 32 bits now but will be 64 bits soon */
-    private long            sql_mode;
+	/** In connections sql_mode is 32 bits now but will be 64 bits soon */
+    private long            sqlMode;
 
-    private long            autoIncrementIncrement    = -1;
-    private long            autoIncrementOffset       = -1;
+	private long            autoIncrementIncrement    = -1;
 
-    private int             clientCharset             = -1;
-    private int             clientCollation           = -1;
-    private int             serverCollation           = -1;
-    private int             tvSec                     = -1;
-    private BigInteger      ddlXid                    = BigInteger.valueOf(-1L);
-    private String          charsetName;
+	private long            autoIncrementOffset       = -1;
 
-    private String          timezone;
+	private int             clientCharset             = -1;
 
-    public QueryLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
+	private int             clientCollation           = -1;
+
+	private int             serverCollation           = -1;
+
+	private int             tvSec                     = -1;
+
+	private BigInteger      ddlXid                    = BigInteger.valueOf(-1L);
+
+	private String          charsetName;
+
+	private String          timezone;
+
+	public QueryLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
                                                                                                         throws IOException{
         super(header);
 
@@ -477,7 +598,7 @@ public class QueryLogEvent extends LogEvent {
              * errors that can lead to a crash.
              */
             if (statusVarsLen > Math.min(dataLen, MAX_SIZE_LOG_EVENT_STATUS)) {
-                throw new IOException("status_vars_len (" + statusVarsLen + ") > data_len (" + dataLen + ")");
+                throw new IOException(new StringBuilder().append("status_vars_len (").append(statusVarsLen).append(") > data_len (").append(dataLen).append(")").toString());
             }
             dataLen -= statusVarsLen;
         }
@@ -505,9 +626,8 @@ public class QueryLogEvent extends LogEvent {
             if ((charsetName != null) && (Charset.isSupported(charsetName))) {
                 query = buffer.getFixString(queryLen, charsetName);
             } else {
-                logger.warn("unsupported character set in query log: " + "\n    ID = " + clientCharset + ", Charset = "
-                            + CharsetConversion.getCharset(clientCharset) + ", Collation = "
-                            + CharsetConversion.getCollation(clientCharset));
+                logger.warn(new StringBuilder().append("unsupported character set in query log: ").append("\n    ID = ").append(clientCharset).append(", Charset = ").append(CharsetConversion.getCharset(clientCharset)).append(", Collation = ")
+						.append(CharsetConversion.getCollation(clientCharset)).toString());
 
                 query = buffer.getFixString(queryLen);
             }
@@ -516,94 +636,7 @@ public class QueryLogEvent extends LogEvent {
         }
     }
 
-    /* query event post-header */
-    public static final int Q_THREAD_ID_OFFSET                = 0;
-    public static final int Q_EXEC_TIME_OFFSET                = 4;
-    public static final int Q_DB_LEN_OFFSET                   = 8;
-    public static final int Q_ERR_CODE_OFFSET                 = 9;
-    public static final int Q_STATUS_VARS_LEN_OFFSET          = 11;
-    public static final int Q_DATA_OFFSET                     = QUERY_HEADER_LEN;
-
-    /* these are codes, not offsets; not more than 256 values (1 byte). */
-    public static final int Q_FLAGS2_CODE                     = 0;
-    public static final int Q_SQL_MODE_CODE                   = 1;
-
-    /**
-     * Q_CATALOG_CODE is catalog with end zero stored; it is used only by MySQL
-     * 5.0.x where 0<=x<=3. We have to keep it to be able to replicate these old
-     * masters.
-     */
-    public static final int Q_CATALOG_CODE                    = 2;
-    public static final int Q_AUTO_INCREMENT                  = 3;
-    public static final int Q_CHARSET_CODE                    = 4;
-    public static final int Q_TIME_ZONE_CODE                  = 5;
-
-    /**
-     * Q_CATALOG_NZ_CODE is catalog withOUT end zero stored; it is used by MySQL
-     * 5.0.x where x>=4. Saves one byte in every Query_log_event in binlog,
-     * compared to Q_CATALOG_CODE. The reason we didn't simply re-use
-     * Q_CATALOG_CODE is that then a 5.0.3 slave of this 5.0.x (x>=4) master
-     * would crash (segfault etc) because it would expect a 0 when there is
-     * none.
-     */
-    public static final int Q_CATALOG_NZ_CODE                 = 6;
-
-    public static final int Q_LC_TIME_NAMES_CODE              = 7;
-
-    public static final int Q_CHARSET_DATABASE_CODE           = 8;
-
-    public static final int Q_TABLE_MAP_FOR_UPDATE_CODE       = 9;
-
-    public static final int Q_MASTER_DATA_WRITTEN_CODE        = 10;
-
-    public static final int Q_INVOKER                         = 11;
-
-    /**
-     * Q_UPDATED_DB_NAMES status variable collects of the updated databases
-     * total number and their names to be propagated to the slave in order to
-     * facilitate the parallel applying of the Query events.
-     */
-    public static final int Q_UPDATED_DB_NAMES                = 12;
-
-    public static final int Q_MICROSECONDS                    = 13;
-    /**
-     * A old (unused now) code for Query_log_event status similar to
-     * G_COMMIT_TS.
-     */
-    public static final int Q_COMMIT_TS                       = 14;
-    /**
-     * A code for Query_log_event status, similar to G_COMMIT_TS2.
-     */
-    public static final int Q_COMMIT_TS2                      = 15;
-    /**
-     * The master connection @@session.explicit_defaults_for_timestamp which is
-     * recorded for queries, CREATE and ALTER table that is defined with a
-     * TIMESTAMP column, that are dependent on that feature. For pre-WL6292
-     * master's the associated with this code value is zero.
-     */
-    public static final int Q_EXPLICIT_DEFAULTS_FOR_TIMESTAMP = 16;
-
-    /**
-     * The variable carries xid info of 2pc-aware (recoverable) DDL queries.
-     */
-    public static final int Q_DDL_LOGGED_WITH_XID             = 17;
-    /**
-     * This variable stores the default collation for the utf8mb4 character set.
-     * Used to support cross-version replication.
-     */
-    public static final int Q_DEFAULT_COLLATION_FOR_UTF8MB4   = 18;
-
-    /**
-     * Replicate sql_require_primary_key.
-     */
-    public static final int Q_SQL_REQUIRE_PRIMARY_KEY         = 19;
-
-    /**
-     * FROM MariaDB 5.5.34
-     */
-    public static final int Q_HRNOW                           = 128;
-
-    private final void unpackVariables(LogBuffer buffer, final int end) throws IOException {
+	private final void unpackVariables(LogBuffer buffer, final int end) throws IOException {
         int code = -1;
         try {
             while (buffer.position() < end) {
@@ -612,7 +645,7 @@ public class QueryLogEvent extends LogEvent {
                         flags2 = buffer.getUint32();
                         break;
                     case Q_SQL_MODE_CODE:
-                        sql_mode = buffer.getLong64(); // QQ: Fix when sql_mode
+                        sqlMode = buffer.getLong64(); // QQ: Fix when sql_mode
                                                        // is ulonglong
                         break;
                     case Q_CATALOG_NZ_CODE:
@@ -706,17 +739,16 @@ public class QueryLogEvent extends LogEvent {
                          * That's why you must write status vars in growing
                          * order of code
                          */
-                        logger.error("Query_log_event has unknown status vars (first has code: " + code
-                                     + "), skipping the rest of them");
+                        logger.error(new StringBuilder().append("Query_log_event has unknown status vars (first has code: ").append(code).append("), skipping the rest of them").toString());
                         break; // Break loop
                 }
             }
         } catch (RuntimeException e) {
-            throw new IOException("Read " + findCodeName(code) + " error: " + e.getMessage(), e);
+            throw new IOException(new StringBuilder().append("Read ").append(findCodeName(code)).append(" error: ").append(e.getMessage()).toString(), e);
         }
     }
 
-    private static final String findCodeName(final int code) {
+	private static final String findCodeName(final int code) {
         switch (code) {
             case Q_FLAGS2_CODE:
                 return "Q_FLAGS2_CODE";
@@ -754,58 +786,58 @@ public class QueryLogEvent extends LogEvent {
         return "CODE#" + code;
     }
 
-    public final String getUser() {
+	public final String getUser() {
         return user;
     }
 
-    public final String getHost() {
+	public final String getHost() {
         return host;
     }
 
-    public final String getQuery() {
+	public final String getQuery() {
         return query;
     }
 
-    public final String getCatalog() {
+	public final String getCatalog() {
         return catalog;
     }
 
-    public final String getDbName() {
+	public final String getDbName() {
         return dbname;
     }
 
-    /**
+	/**
      * The number of seconds the query took to run on the master.
      */
     public final long getExecTime() {
         return execTime;
     }
 
-    public final int getErrorCode() {
+	public final int getErrorCode() {
         return errorCode;
     }
 
-    public final long getSessionId() {
+	public final long getSessionId() {
         return sessionId;
     }
 
-    public final long getAutoIncrementIncrement() {
+	public final long getAutoIncrementIncrement() {
         return autoIncrementIncrement;
     }
 
-    public final long getAutoIncrementOffset() {
+	public final long getAutoIncrementOffset() {
         return autoIncrementOffset;
     }
 
-    public final String getCharsetName() {
+	public final String getCharsetName() {
         return charsetName;
     }
 
-    public final String getTimezone() {
+	public final String getTimezone() {
         return timezone;
     }
 
-    /**
+	/**
      * Returns the charsetID value.
      * 
      * @return Returns the charsetID.
@@ -814,7 +846,7 @@ public class QueryLogEvent extends LogEvent {
         return clientCharset;
     }
 
-    /**
+	/**
      * Returns the clientCollationId value.
      * 
      * @return Returns the clientCollationId.
@@ -823,7 +855,7 @@ public class QueryLogEvent extends LogEvent {
         return clientCollation;
     }
 
-    /**
+	/**
      * Returns the serverCollationId value.
      * 
      * @return Returns the serverCollationId.
@@ -832,15 +864,15 @@ public class QueryLogEvent extends LogEvent {
         return serverCollation;
     }
 
-    public int getTvSec() {
+	public int getTvSec() {
         return tvSec;
     }
 
-    public BigInteger getDdlXid() {
+	public BigInteger getDdlXid() {
         return ddlXid;
     }
 
-    /**
+	/**
      * Returns the sql_mode value.
      * <p>
      * The sql_mode variable. See the section "SQL Modes" in the MySQL manual,
@@ -886,16 +918,10 @@ public class QueryLogEvent extends LogEvent {
      * written to the binlog.
      */
     public final long getSqlMode() {
-        return sql_mode;
+        return sqlMode;
     }
 
-    /* FLAGS2 values that can be represented inside the binlog */
-    public static final int OPTION_AUTO_IS_NULL          = 1 << 14;
-    public static final int OPTION_NOT_AUTOCOMMIT        = 1 << 19;
-    public static final int OPTION_NO_FOREIGN_KEY_CHECKS = 1 << 26;
-    public static final int OPTION_RELAXED_UNIQUE_CHECKS = 1 << 27;
-
-    /**
+	/**
      * The flags in thd->options, binary AND-ed with OPTIONS_WRITTEN_TO_BIN_LOG.
      * The thd->options bitfield contains options for "SELECT". OPTIONS_WRITTEN
      * identifies those options that need to be written to the binlog (not all
@@ -911,28 +937,28 @@ public class QueryLogEvent extends LogEvent {
         return flags2;
     }
 
-    /**
+	/**
      * Returns the OPTION_AUTO_IS_NULL flag.
      */
     public final boolean isAutoIsNull() {
         return ((flags2 & OPTION_AUTO_IS_NULL) == OPTION_AUTO_IS_NULL);
     }
 
-    /**
+	/**
      * Returns the OPTION_NO_FOREIGN_KEY_CHECKS flag.
      */
     public final boolean isForeignKeyChecks() {
         return ((flags2 & OPTION_NO_FOREIGN_KEY_CHECKS) != OPTION_NO_FOREIGN_KEY_CHECKS);
     }
 
-    /**
+	/**
      * Returns the OPTION_NOT_AUTOCOMMIT flag.
      */
     public final boolean isAutocommit() {
         return ((flags2 & OPTION_NOT_AUTOCOMMIT) != OPTION_NOT_AUTOCOMMIT);
     }
 
-    /**
+	/**
      * Returns the OPTION_NO_FOREIGN_KEY_CHECKS flag.
      */
     public final boolean isUniqueChecks() {

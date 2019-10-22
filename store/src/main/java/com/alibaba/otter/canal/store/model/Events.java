@@ -20,7 +20,7 @@ public class Events<EVENT> implements Serializable {
     private static final long serialVersionUID = -7337454954300706044L;
 
     private PositionRange     positionRange    = new PositionRange();
-    private List<EVENT>       events           = new ArrayList<EVENT>();
+    private List<EVENT>       events           = new ArrayList<>();
 
     public List<EVENT> getEvents() {
         return events;
@@ -38,7 +38,8 @@ public class Events<EVENT> implements Serializable {
         this.positionRange = positionRange;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 }

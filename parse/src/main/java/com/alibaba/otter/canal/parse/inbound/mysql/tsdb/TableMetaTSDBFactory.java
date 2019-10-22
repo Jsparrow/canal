@@ -12,7 +12,7 @@ public interface TableMetaTSDBFactory {
     /**
      * 代理一下tableMetaTSDB的获取,使用隔离的spring定义
      */
-    public TableMetaTSDB build(String destination, String springXml);
+    TableMetaTSDB build(String destination, String springXml);
 
-    public void destory(String destination);
+    void destory(String destination);
 }

@@ -172,7 +172,8 @@ public class Event implements Serializable {
         this.entry = entry;
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 

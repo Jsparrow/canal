@@ -16,10 +16,13 @@ import com.alibaba.otter.canal.parse.CanalHASwitchable;
 import com.alibaba.otter.canal.protocol.ClientIdentity;
 import com.alibaba.otter.canal.protocol.Message;
 import com.alibaba.otter.canal.server.embedded.CanalServerWithEmbedded;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public abstract class BaseCanalServerWithEmbededTest {
 
-    protected static final String   cluster1       = "127.0.0.1:2188";
+    private static final Logger logger = LoggerFactory.getLogger(BaseCanalServerWithEmbededTest.class);
+	protected static final String   cluster1       = "127.0.0.1:2188";
     protected static final String   DESTINATION    = "example";
     protected static final String   DETECTING_SQL  = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
     protected static final String   MYSQL_ADDRESS  = "127.0.0.1";
@@ -33,13 +36,10 @@ public abstract class BaseCanalServerWithEmbededTest {
     @Before
     public void setUp() {
         server = CanalServerWithEmbedded.instance();
-        server.setCanalInstanceGenerator(new CanalInstanceGenerator() {
-
-            public CanalInstance generate(String destination) {
-                Canal canal = buildCanal();
-                return new CanalInstanceWithManager(canal, FILTER);
-            }
-        });
+        server.setCanalInstanceGenerator((String destination) -> {
+		    Canal canal = buildCanal();
+		    return new CanalInstanceWithManager(canal, FILTER);
+		});
         server.start();
         server.start(DESTINATION);
     }
@@ -62,10 +62,11 @@ public abstract class BaseCanalServerWithEmbededTest {
                 try {
                     Thread.sleep(emptyCount * 300L);
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    logger.error(e.getMessage(), e);
+					Assert.fail();
                 }
 
-                System.out.println("empty count : " + emptyCount);
+                logger.info("empty count : " + emptyCount);
             } else {
                 emptyCount = 0;
                 totalCount += message.getEntries().size();
@@ -73,7 +74,7 @@ public abstract class BaseCanalServerWithEmbededTest {
             }
         }
 
-        System.out.println("!!!!!! testGetWithoutAck totalCount : " + totalCount);
+        logger.info("!!!!!! testGetWithoutAck totalCount : " + totalCount);
         server.unsubscribe(clientIdentity);
     }
 
@@ -90,17 +91,18 @@ public abstract class BaseCanalServerWithEmbededTest {
                 try {
                     Thread.sleep(emptyCount * 300L);
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    logger.error(e.getMessage(), e);
+					Assert.fail();
                 }
 
-                System.out.println("empty count : " + emptyCount);
+                logger.info("empty count : " + emptyCount);
             } else {
                 emptyCount = 0;
                 totalCount += message.getEntries().size();
             }
         }
 
-        System.out.println("!!!!!! testGet totalCount : " + totalCount);
+        logger.info("!!!!!! testGet totalCount : " + totalCount);
         server.unsubscribe(clientIdentity);
     }
 
@@ -117,16 +119,17 @@ public abstract class BaseCanalServerWithEmbededTest {
                 try {
                     Thread.sleep(emptyCount * 300L);
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    logger.error(e.getMessage(), e);
+					Assert.fail();
                 }
 
-                System.out.println("empty count : " + emptyCount);
+                logger.info("empty count : " + emptyCount);
             } else {
                 emptyCount = 0;
                 totalCount += message.getEntries().size();
             }
         }
-        System.out.println("!!!!!! testRollback totalCount : " + totalCount);
+        logger.info("!!!!!! testRollback totalCount : " + totalCount);
 
         server.rollback(clientIdentity);// 直接rollback掉，再取一次
         emptyCount = 0;
@@ -138,17 +141,18 @@ public abstract class BaseCanalServerWithEmbededTest {
                 try {
                     Thread.sleep(emptyCount * 300L);
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    logger.error(e.getMessage(), e);
+					Assert.fail();
                 }
 
-                System.out.println("empty count : " + emptyCount);
+                logger.info("empty count : " + emptyCount);
             } else {
                 emptyCount = 0;
                 totalCount += message.getEntries().size();
             }
         }
 
-        System.out.println("!!!!!! testRollback after rollback ,  totalCount : " + totalCount);
+        logger.info("!!!!!! testRollback after rollback ,  totalCount : " + totalCount);
         server.unsubscribe(clientIdentity);
     }
 
@@ -168,10 +172,11 @@ public abstract class BaseCanalServerWithEmbededTest {
                 try {
                     Thread.sleep(emptyCount * 300L);
                 } catch (InterruptedException e) {
-                    Assert.fail();
+                    logger.error(e.getMessage(), e);
+					Assert.fail();
                 }
 
-                System.out.println("empty count : " + emptyCount);
+                logger.info("empty count : " + emptyCount);
             } else {
                 emptyCount = 0;
                 totalCount += message.getEntries().size();
@@ -183,16 +188,17 @@ public abstract class BaseCanalServerWithEmbededTest {
                         try {
                             Thread.sleep(5 * 1000); // 等待parser启动
                         } catch (InterruptedException e) {
-                            Assert.fail();
+                            logger.error(e.getMessage(), e);
+							Assert.fail();
                         }
                     }
                 }
             }
         }
 
-        System.out.println("!!!!!! testGet totalCount : " + totalCount);
+        logger.info("!!!!!! testGet totalCount : " + totalCount);
         server.unsubscribe(clientIdentity);
     }
 
-    abstract protected Canal buildCanal();
+    protected abstract Canal buildCanal();
 }

@@ -148,7 +148,7 @@ public class ESSyncUtil {
                 String v = ((String) val).trim();
                 if (v.length() > 18 && v.charAt(4) == '-' && v.charAt(7) == '-' && v.charAt(10) == ' '
                     && v.charAt(13) == ':' && v.charAt(16) == ':') {
-                    String dt = v.substring(0, 10) + "T" + v.substring(11);
+                    String dt = new StringBuilder().append(v.substring(0, 10)).append("T").append(v.substring(11)).toString();
                     Date date = Util.parseDate(dt);
                     if (date != null) {
                         DateTime dateTime = new DateTime(date);
@@ -258,12 +258,8 @@ public class ESSyncUtil {
 
         TableItem mainTable = schemaItem.getMainTable();
 
-        for (ColumnItem idColumnItem : schemaItem.getIdFieldItem(mapping).getColumnItems()) {
-            if ((mainTable.getAlias() == null && idColumnItem.getOwner() == null)
-                || (mainTable.getAlias() != null && mainTable.getAlias().equals(idColumnItem.getOwner()))) {
-                idColumns.add(idColumnItem);
-            }
-        }
+        schemaItem.getIdFieldItem(mapping).getColumnItems().stream().filter(idColumnItem -> (mainTable.getAlias() == null && idColumnItem.getOwner() == null)
+		    || (mainTable.getAlias() != null && mainTable.getAlias().equals(idColumnItem.getOwner()))).forEach(idColumns::add);
 
         if (idColumns.isEmpty()) {
             throw new RuntimeException("Not found primary key field in main table");
@@ -271,16 +267,18 @@ public class ESSyncUtil {
 
         // 拼接condition
         StringBuilder condition = new StringBuilder(" ");
-        for (ColumnItem idColumn : idColumns) {
+        idColumns.forEach(idColumn -> {
             Object idVal = data.get(idColumn.getColumnName());
-            if (mainTable.getAlias() != null) condition.append(mainTable.getAlias()).append(".");
+            if (mainTable.getAlias() != null) {
+				condition.append(mainTable.getAlias()).append(".");
+			}
             condition.append(idColumn.getColumnName()).append("=");
             if (idVal instanceof String) {
                 condition.append("'").append(idVal).append("' AND ");
             } else {
                 condition.append(idVal).append(" AND ");
             }
-        }
+        });
 
         if (condition.toString().endsWith("AND ")) {
             int len2 = condition.length();
@@ -290,7 +288,7 @@ public class ESSyncUtil {
     }
 
     public static String appendCondition(String sql, String condition) {
-        return sql + " WHERE " + condition + " ";
+        return new StringBuilder().append(sql).append(" WHERE ").append(condition).append(" ").toString();
     }
 
     public static void appendCondition(StringBuilder sql, Object value, String owner, String columnName) {

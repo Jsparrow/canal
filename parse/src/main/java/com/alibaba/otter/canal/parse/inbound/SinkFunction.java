@@ -8,5 +8,5 @@ package com.alibaba.otter.canal.parse.inbound;
 
 public interface SinkFunction<EVENT> {
 
-    public boolean sink(EVENT event);
+    boolean sink(EVENT event);
 }

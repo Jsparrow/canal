@@ -37,7 +37,7 @@ public class JsonDiffConversion {
     public static StringBuilder print_json_diff(LogBuffer buffer, long len, String columnName, int columnIndex,
                                                 String charsetName) {
         int position = buffer.position();
-        List<String> operation_names = new ArrayList<String>();
+        List<String> operation_names = new ArrayList<>();
         while (buffer.hasRemaining()) {
             int operation_int = buffer.getUint8();
             if (operation_int >= JSON_DIFF_OPERATION_COUNT) {
@@ -70,7 +70,7 @@ public class JsonDiffConversion {
         // Print function names in reverse order.
         StringBuilder builder = new StringBuilder();
         for (int i = operation_names.size() - 1; i >= 0; i--) {
-            if (i == 0 || operation_names.get(i - 1) != operation_names.get(i)) {
+            if (i == 0 || !operation_names.get(i - 1).equals(operation_names.get(i))) {
                 builder.append(operation_names.get(i)).append("(");
             }
         }
@@ -123,7 +123,7 @@ public class JsonDiffConversion {
             }
 
             // Print closing parenthesis
-            if (!buffer.hasRemaining() || operation_names.get(diff_i + 1) != operation_names.get(diff_i)) {
+            if (!buffer.hasRemaining() || !operation_names.get(diff_i + 1).equals(operation_names.get(diff_i))) {
                 builder.append(")");
             }
 

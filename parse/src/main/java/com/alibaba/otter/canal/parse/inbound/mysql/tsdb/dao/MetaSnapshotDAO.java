@@ -46,7 +46,8 @@ public class MetaSnapshotDAO extends MetaBaseDAO {
         return getSqlMapClientTemplate().delete("meta_snapshot.deleteByTimestamp", params);
     }
 
-    protected void initDao() throws Exception {
+    @Override
+	protected void initDao() throws Exception {
         initTable("meta_snapshot");
     }
 

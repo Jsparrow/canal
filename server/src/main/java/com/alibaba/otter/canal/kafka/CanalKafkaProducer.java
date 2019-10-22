@@ -35,7 +35,7 @@ import com.alibaba.otter.canal.spi.CanalMQProducer;
  * @author machengyuan 2018-6-11 下午05:30:49
  * @version 1.0.0
  */
-public class CanalKafkaProducer extends AbstractMQProducer implements CanalMQProducer {
+public class CanalKafkaProducer extends AbstractMQProducer {
 
     private static final Logger      logger = LoggerFactory.getLogger(CanalKafkaProducer.class);
 
@@ -80,7 +80,7 @@ public class CanalKafkaProducer extends AbstractMQProducer implements CanalMQPro
         }
 
         properties.put("value.serializer", KafkaMessageSerializer.class.getName());
-        producer = new KafkaProducer<String, byte[]>(properties);
+        producer = new KafkaProducer<>(properties);
     }
 
     @Override
@@ -163,7 +163,7 @@ public class CanalKafkaProducer extends AbstractMQProducer implements CanalMQPro
 
     private List<Future> send(MQProperties.CanalDestination canalDestination, String topicName, Message message,
                               boolean flat) throws Exception {
-        List<ProducerRecord<String, byte[]>> records = new ArrayList<ProducerRecord<String, byte[]>>();
+        List<ProducerRecord<String, byte[]>> records = new ArrayList<>();
         if (!flat) {
             if (canalDestination.getPartitionHash() != null && !canalDestination.getPartitionHash().isEmpty()) {
                 // 并发构造
@@ -198,7 +198,7 @@ public class CanalKafkaProducer extends AbstractMQProducer implements CanalMQPro
             EntryRowData[] datas = MQMessageUtils.buildMessageData(message, executor);
             // 串行分区
             List<FlatMessage> flatMessages = MQMessageUtils.messageConverter(datas, message.getId());
-            for (FlatMessage flatMessage : flatMessages) {
+            flatMessages.forEach(flatMessage -> {
                 if (canalDestination.getPartitionHash() != null && !canalDestination.getPartitionHash().isEmpty()) {
                     FlatMessage[] partitionFlatMessage = MQMessageUtils.messagePartition(flatMessage,
                         canalDestination.getPartitionsNum(),
@@ -221,14 +221,14 @@ public class CanalKafkaProducer extends AbstractMQProducer implements CanalMQPro
                         null,
                         JSON.toJSONBytes(flatMessage, SerializerFeature.WriteMapNullValue)));
                 }
-            }
+            });
         }
 
-        return produce(topicName, records, flat);
+        return produce(records);
     }
 
-    private List<Future> produce(String topicName, List<ProducerRecord<String, byte[]>> records, boolean flatMessage) {
-        List<Future> futures = new ArrayList<Future>();
+    private List<Future> produce(List<ProducerRecord<String, byte[]>> records) {
+        List<Future> futures = new ArrayList<>();
         // 异步发送，因为在partition hash的时候已经按照每个分区合并了消息，走到这一步不需要考虑单个分区内的顺序问题
         for (ProducerRecord record : records) {
             futures.add(producer.send(record));

@@ -51,7 +51,8 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
         // 创建父节点
         dataListener = new IZkDataListener() {
 
-            public void handleDataChange(String dataPath, Object data) throws Exception {
+            @Override
+			public void handleDataChange(String dataPath, Object data) throws Exception {
                 MDC.put("destination", destination);
                 ServerRunningData runningData = JsonUtils.unmarshalFromByte((byte[]) data, ServerRunningData.class);
                 if (!isMine(runningData.getAddress())) {
@@ -65,7 +66,8 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
                 activeData = (ServerRunningData) runningData;
             }
 
-            public void handleDataDeleted(String dataPath) throws Exception {
+            @Override
+			public void handleDataDeleted(String dataPath) throws Exception {
                 MDC.put("destination", destination);
                 mutex.set(false);
                 if (!release && activeData != null && isMine(activeData.getAddress())) {
@@ -75,7 +77,8 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
                     // 否则就是等待delayTime，避免因网络瞬端或者zk异常，导致出现频繁的切换操作
                     delayExector.schedule(new Runnable() {
 
-                        public void run() {
+                        @Override
+						public void run() {
                             initRunning();
                         }
                     }, delayTime, TimeUnit.SECONDS);
@@ -90,7 +93,8 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
         processStart();
     }
 
-    public synchronized void start() {
+    @Override
+	public synchronized void start() {
         super.start();
         try {
             processStart();
@@ -121,7 +125,8 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
         }
     }
 
-    public synchronized void stop() {
+    @Override
+	public synchronized void stop() {
         super.stop();
 
         if (zkClient != null) {
@@ -151,14 +156,16 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
             mutex.set(true);
             release = false;
         } catch (ZkNodeExistsException e) {
-            bytes = zkClient.readData(path, true);
+            logger.error(e.getMessage(), e);
+			bytes = zkClient.readData(path, true);
             if (bytes == null) {// 如果不存在节点，立即尝试一次
                 initRunning();
             } else {
                 activeData = JsonUtils.unmarshalFromByte(bytes, ServerRunningData.class);
             }
         } catch (ZkNoNodeException e) {
-            zkClient.createPersistent(ZookeeperPathUtils.getDestinationPath(destination), true); // 尝试创建父节点
+            logger.error(e.getMessage(), e);
+			zkClient.createPersistent(ZookeeperPathUtils.getDestinationPath(destination), true); // 尝试创建父节点
             initRunning();
         }
     }
@@ -191,29 +198,31 @@ public class ServerRunningMonitor extends AbstractCanalLifeCycle {
             }
             return result;
         } catch (ZkNoNodeException e) {
-            logger.warn("canal is not run any in node");
+            logger.error(e.getMessage(), e);
+			logger.warn("canal is not run any in node");
             return false;
         } catch (ZkInterruptedException e) {
-            logger.warn("canal check is interrupt");
+            logger.error(e.getMessage(), e);
+			logger.warn("canal check is interrupt");
             Thread.interrupted();// 清除interrupt标记
             return check();
         } catch (ZkException e) {
-            logger.warn("canal check is failed");
+            logger.error(e.getMessage(), e);
+			logger.warn("canal check is failed");
             return false;
         }
     }
 
     private boolean releaseRunning() {
-        if (check()) {
-            release = true;
-            String path = ZookeeperPathUtils.getDestinationServerRunning(destination);
-            zkClient.delete(path);
-            mutex.set(false);
-            processActiveExit();
-            return true;
-        }
-
-        return false;
+        if (!check()) {
+			return false;
+		}
+		release = true;
+		String path = ZookeeperPathUtils.getDestinationServerRunning(destination);
+		zkClient.delete(path);
+		mutex.set(false);
+		processActiveExit();
+		return true;
     }
 
     // ====================== helper method ======================

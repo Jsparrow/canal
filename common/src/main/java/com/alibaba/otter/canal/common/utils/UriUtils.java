@@ -17,9 +17,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class UriUtils {
 
-    private final static String SPLIT            = "&";
-    private final static String EQUAL            = "=";
-    private final static String DEFAULT_ENCODING = "ISO_8859_1";
+    private static final String SPLIT            = "&";
+    private static final String EQUAL            = "=";
+    private static final String DEFAULT_ENCODING = "ISO_8859_1";
 
     private UriUtils(){
     }
@@ -53,7 +53,7 @@ public final class UriUtils {
             return Collections.EMPTY_MAP;
         }
         String query = uri.getRawQuery();
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<>();
         @SuppressWarnings("resource")
         Scanner scan = new Scanner(query);
         scan.useDelimiter(SPLIT);

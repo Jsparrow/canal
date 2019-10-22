@@ -24,7 +24,8 @@ public class RegisterSlaveCommandPacket extends CommandPacket {
         setCommand((byte) 0x15);
     }
 
-    public void fromBytes(byte[] data) {
+    @Override
+	public void fromBytes(byte[] data) {
         // bypass
     }
 
@@ -37,7 +38,8 @@ public class RegisterSlaveCommandPacket extends CommandPacket {
         return b;
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(getCommand());
         ByteHelper.writeUnsignedIntLittleEndian(serverId, out);

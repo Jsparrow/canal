@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import com.alibaba.otter.canal.adapter.launcher.config.AdapterCanalConfig;
 import com.alibaba.otter.canal.adapter.launcher.config.CuratorClient;
 import com.alibaba.otter.canal.common.utils.BooleanMutex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 同步开关
@@ -28,7 +30,9 @@ import com.alibaba.otter.canal.common.utils.BooleanMutex;
 @Component
 public class SyncSwitch {
 
-    private static final String                    SYN_SWITCH_ZK_NODE = "/sync-switch/";
+    private static final Logger logger = LoggerFactory.getLogger(SyncSwitch.class);
+
+	private static final String                    SYN_SWITCH_ZK_NODE = "/sync-switch/";
 
     private static final Map<String, BooleanMutex> LOCAL_LOCK         = new ConcurrentHashMap<>();
 
@@ -47,25 +51,23 @@ public class SyncSwitch {
         if (curator != null) {
             mode = Mode.DISTRIBUTED;
             DISTRIBUTED_LOCK.clear();
-            for (String destination : adapterCanalConfig.DESTINATIONS) {
+            adapterCanalConfig.DESTINATIONS.forEach(destination -> {
                 // 对应每个destination注册锁
                 BooleanMutex mutex = new BooleanMutex(true);
                 initMutex(curator, destination, mutex);
                 DISTRIBUTED_LOCK.put(destination, mutex);
                 startListen(destination, mutex);
-            }
+            });
         } else {
             mode = Mode.LOCAL;
             LOCAL_LOCK.clear();
-            for (String destination : adapterCanalConfig.DESTINATIONS) {
-                // 对应每个destination注册锁
-                LOCAL_LOCK.put(destination, new BooleanMutex(true));
-            }
+            // 对应每个destination注册锁
+			adapterCanalConfig.DESTINATIONS.forEach(destination -> LOCAL_LOCK.put(destination, new BooleanMutex(true)));
         }
     }
 
     public synchronized void refresh() {
-        for (String destination : adapterCanalConfig.DESTINATIONS) {
+        adapterCanalConfig.DESTINATIONS.forEach(destination -> {
             BooleanMutex booleanMutex;
             if (mode == Mode.DISTRIBUTED) {
                 CuratorFramework curator = curatorClient.getCurator();
@@ -82,7 +84,7 @@ public class SyncSwitch {
                     LOCAL_LOCK.put(destination, new BooleanMutex(true));
                 }
             }
-        }
+        });
     }
 
     @SuppressWarnings("resource")
@@ -139,7 +141,8 @@ public class SyncSwitch {
                         .withMode(CreateMode.PERSISTENT)
                         .forPath(path, "off".getBytes(StandardCharsets.UTF_8));
                 } catch (Exception e) {
-                    curatorClient.getCurator().setData().forPath(path, "off".getBytes(StandardCharsets.UTF_8));
+                    logger.error(e.getMessage(), e);
+					curatorClient.getCurator().setData().forPath(path, "off".getBytes(StandardCharsets.UTF_8));
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -163,7 +166,8 @@ public class SyncSwitch {
                         .withMode(CreateMode.PERSISTENT)
                         .forPath(path, "on".getBytes(StandardCharsets.UTF_8));
                 } catch (Exception e) {
-                    curatorClient.getCurator().setData().forPath(path, "on".getBytes(StandardCharsets.UTF_8));
+                    logger.error(e.getMessage(), e);
+					curatorClient.getCurator().setData().forPath(path, "on".getBytes(StandardCharsets.UTF_8));
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -178,12 +182,13 @@ public class SyncSwitch {
                 mutex.set(true);
             }
         }
-        if (mode == Mode.DISTRIBUTED) {
-            BooleanMutex mutex = DISTRIBUTED_LOCK.get(destination);
-            if (mutex != null && !mutex.state()) {
-                mutex.set(true);
-            }
-        }
+        if (mode != Mode.DISTRIBUTED) {
+			return;
+		}
+		BooleanMutex mutex = DISTRIBUTED_LOCK.get(destination);
+		if (mutex != null && !mutex.state()) {
+		    mutex.set(true);
+		}
     }
 
     public boolean status(String destination) {

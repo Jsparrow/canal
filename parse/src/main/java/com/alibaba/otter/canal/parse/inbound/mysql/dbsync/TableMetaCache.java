@@ -22,6 +22,8 @@ import com.alibaba.otter.canal.protocol.position.EntryPosition;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 处理table meta解析和缓存
@@ -31,7 +33,8 @@ import com.google.common.cache.LoadingCache;
  */
 public class TableMetaCache {
 
-    public static final String              COLUMN_NAME    = "COLUMN_NAME";
+    private static final Logger logger = LoggerFactory.getLogger(TableMetaCache.class);
+	public static final String              COLUMN_NAME    = "COLUMN_NAME";
     public static final String              COLUMN_TYPE    = "COLUMN_TYPE";
     public static final String              IS_NULLABLE    = "IS_NULLABLE";
     public static final String              COLUMN_KEY     = "COLUMN_KEY";
@@ -57,7 +60,8 @@ public class TableMetaCache {
                     try {
                         return getTableMetaByDB(name);
                     } catch (Throwable e) {
-                        // 尝试做一次retry操作
+                        logger.error(e.getMessage(), e);
+						// 尝试做一次retry操作
                         try {
                             connection.reconnect();
                             return getTableMetaByDB(name);
@@ -78,6 +82,7 @@ public class TableMetaCache {
                 isOnRDS = true;
             }
         } catch (IOException e) {
+			logger.error(e.getMessage(), e);
         }
     }
 
@@ -89,7 +94,8 @@ public class TableMetaCache {
             String table = names[1].substring(0, names[1].length());
             return new TableMeta(schema, table, parseTableMeta(schema, table, packet));
         } catch (Throwable e) { // fallback to desc table
-            ResultSetPacket packet = connection.query("desc " + fullname);
+            logger.error(e.getMessage(), e);
+			ResultSetPacket packet = connection.query("desc " + fullname);
             String[] names = StringUtils.split(fullname, "`.`");
             String schema = names[0];
             String table = names[1].substring(0, names[1].length());
@@ -98,22 +104,21 @@ public class TableMetaCache {
     }
 
     public static List<FieldMeta> parseTableMeta(String schema, String table, ResultSetPacket packet) {
-        if (packet.getFieldValues().size() > 1) {
-            String createDDL = packet.getFieldValues().get(1);
-            MemoryTableMeta memoryTableMeta = new MemoryTableMeta();
-            memoryTableMeta.apply(DatabaseTableMeta.INIT_POSITION, schema, createDDL, null);
-            TableMeta tableMeta = memoryTableMeta.find(schema, table);
-            return tableMeta.getFields();
-        } else {
-            return new ArrayList<FieldMeta>();
-        }
+        if (packet.getFieldValues().size() <= 1) {
+			return new ArrayList<>();
+		}
+		String createDDL = packet.getFieldValues().get(1);
+		MemoryTableMeta memoryTableMeta = new MemoryTableMeta();
+		memoryTableMeta.apply(DatabaseTableMeta.INIT_POSITION, schema, createDDL, null);
+		TableMeta tableMeta = memoryTableMeta.find(schema, table);
+		return tableMeta.getFields();
     }
 
     /**
      * 处理desc table的结果
      */
     public static List<FieldMeta> parseTableMetaByDesc(ResultSetPacket packet) {
-        Map<String, Integer> nameMaps = new HashMap<String, Integer>(6, 1f);
+        Map<String, Integer> nameMaps = new HashMap<>(6, 1f);
         int index = 0;
         for (FieldPacket fieldPacket : packet.getFieldDescriptors()) {
             nameMaps.put(fieldPacket.getOriginalName(), index++);
@@ -121,7 +126,7 @@ public class TableMetaCache {
 
         int size = packet.getFieldDescriptors().size();
         int count = packet.getFieldValues().size() / packet.getFieldDescriptors().size();
-        List<FieldMeta> result = new ArrayList<FieldMeta>();
+        List<FieldMeta> result = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             FieldMeta meta = new FieldMeta();
             // 做一个优化，使用String.intern()，共享String对象，减少内存使用
@@ -172,7 +177,8 @@ public class TableMetaCache {
                     try {
                         packet = connection.query("show create table " + fullName);
                     } catch (Exception e) {
-                        // 尝试做一次retry操作
+                        logger.error(e.getMessage(), e);
+						// 尝试做一次retry操作
                         connection.reconnect();
                         packet = connection.query("show create table " + fullName);
                     }
@@ -208,12 +214,8 @@ public class TableMetaCache {
         if (tableMetaTSDB != null) {
             // tsdb不需要做,会基于ddl sql自动清理
         } else {
-            for (String name : tableMetaDB.asMap().keySet()) {
-                if (StringUtils.startsWithIgnoreCase(name, schema + ".")) {
-                    // removeNames.add(name);
-                    tableMetaDB.invalidate(name);
-                }
-            }
+            // removeNames.add(name);
+			tableMetaDB.asMap().keySet().stream().filter(name -> StringUtils.startsWithIgnoreCase(name, schema + ".")).forEach(tableMetaDB::invalidate);
         }
     }
 

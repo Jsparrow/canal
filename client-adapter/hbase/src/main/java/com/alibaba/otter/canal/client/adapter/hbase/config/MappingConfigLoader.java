@@ -40,7 +40,7 @@ public class MappingConfigLoader {
             try {
                 config.validate();
             } catch (Exception e) {
-                throw new RuntimeException("ERROR load Config: " + fileName + " " + e.getMessage(), e);
+                throw new RuntimeException(new StringBuilder().append("ERROR load Config: ").append(fileName).append(" ").append(e.getMessage()).toString(), e);
             }
             result.put(fileName, config);
         });

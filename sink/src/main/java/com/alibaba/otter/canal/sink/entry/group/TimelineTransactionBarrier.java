@@ -18,7 +18,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
 
     private ThreadLocal<Boolean> inTransaction = new ThreadLocal() {
 
-                                                   protected Object initialValue() {
+                                                   @Override
+												protected Object initialValue() {
                                                        return false;
                                                    }
                                                };
@@ -37,7 +38,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
         super(groupSize);
     }
 
-    public void await(Event event) throws InterruptedException {
+    @Override
+	public void await(Event event) throws InterruptedException {
         try {
             super.await(event);
         } catch (InterruptedException e) {
@@ -48,7 +50,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
         }
     }
 
-    public void await(Event event, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+    @Override
+	public void await(Event event, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         try {
             super.await(event, timeout, unit);
         } catch (InterruptedException e) {
@@ -59,7 +62,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
         }
     }
 
-    public void clear(Event event) {
+    @Override
+	public void clear(Event event) {
         super.clear(event);
 
         // 应该先判断2，再判断是否是事务尾，因为事务尾也可以导致txState的状态为2
@@ -79,7 +83,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
         }
     }
 
-    protected boolean isPermit(Event event, long state) {
+    @Override
+	protected boolean isPermit(Event event, long state) {
         if (txState.intValue() == 1 && inTransaction.get()) { // 如果处于事务中，直接允许通过。因为事务头已经做过判断
             return true;
         } else if (txState.intValue() == 0) {
@@ -101,7 +106,8 @@ public class TimelineTransactionBarrier extends TimelineBarrier {
         return false;
     }
 
-    public void interrupt() {
+    @Override
+	public void interrupt() {
         super.interrupt();
         reset();
     }

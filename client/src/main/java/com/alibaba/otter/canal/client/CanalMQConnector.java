@@ -33,7 +33,7 @@ public interface CanalMQConnector extends CanalConnector {
      * @return
      * @throws CanalClientException
      */
-    List<Message> getList(Long timeout, TimeUnit unit) throws CanalClientException;
+    List<Message> getList(Long timeout, TimeUnit unit);
 
     /**
      * 获取数据，设置timeout时间直到拿到数据为止
@@ -46,7 +46,7 @@ public interface CanalMQConnector extends CanalConnector {
      * 
      * @throws CanalClientException
      */
-    List<Message> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException;
+    List<Message> getListWithoutAck(Long timeout, TimeUnit unit);
 
     /**
      * 获取数据，自动进行确认，设置timeout时间直到拿到数据为止
@@ -60,7 +60,7 @@ public interface CanalMQConnector extends CanalConnector {
      * @return
      * @throws CanalClientException
      */
-    List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) throws CanalClientException;
+    List<FlatMessage> getFlatList(Long timeout, TimeUnit unit);
 
     /**
      * 获取数据，设置timeout时间直到拿到数据为止
@@ -73,19 +73,20 @@ public interface CanalMQConnector extends CanalConnector {
      * 
      * @throws CanalClientException
      */
-    List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException;
+    List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit);
 
     /**
      * 消费确认。
      * 
      * @throws CanalClientException
      */
-    void ack() throws CanalClientException;
+    void ack();
 
     /**
      * 回滚到未进行 {@link #ack} 的地方，下次fetch的时候，可以从最后一个没有 {@link #ack} 的地方开始拿
      * 
      * @throws CanalClientException
      */
-    void rollback() throws CanalClientException;
+    @Override
+	void rollback();
 }

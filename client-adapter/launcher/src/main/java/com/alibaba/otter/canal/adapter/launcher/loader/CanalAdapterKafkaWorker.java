@@ -10,6 +10,8 @@ import com.alibaba.otter.canal.client.adapter.OuterAdapter;
 import com.alibaba.otter.canal.client.adapter.support.CanalClientConfig;
 import com.alibaba.otter.canal.client.adapter.support.Util;
 import com.alibaba.otter.canal.client.kafka.KafkaCanalConnector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * kafka对应的client适配器工作线程
@@ -19,7 +21,8 @@ import com.alibaba.otter.canal.client.kafka.KafkaCanalConnector;
  */
 public class CanalAdapterKafkaWorker extends AbstractCanalAdapterWorker {
 
-    private KafkaCanalConnector connector;
+    private static final Logger logger = LoggerFactory.getLogger(CanalAdapterKafkaWorker.class);
+	private KafkaCanalConnector connector;
     private String              topic;
     private boolean             flatMessage;
 
@@ -46,6 +49,7 @@ public class CanalAdapterKafkaWorker extends AbstractCanalAdapterWorker {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }
@@ -90,6 +94,7 @@ public class CanalAdapterKafkaWorker extends AbstractCanalAdapterWorker {
         try {
             connector.unsubscribe();
         } catch (WakeupException e) {
+			logger.error(e.getMessage(), e);
             // No-op. Continue process
         }
         connector.disconnect();

@@ -39,7 +39,7 @@ public class RemoteAdapterMonitorImpl implements RemoteAdapterMonitor {
         }
         String name = configItem.getName();
         try (OutputStreamWriter writer = new OutputStreamWriter(
-            new FileOutputStream(confPath + category + "/" + configItem.getName()),
+            new FileOutputStream(new StringBuilder().append(confPath).append(category).append("/").append(configItem.getName()).toString()),
             StandardCharsets.UTF_8)) {
             writer.write(configItem.getContent());
             writer.flush();
@@ -52,10 +52,11 @@ public class RemoteAdapterMonitorImpl implements RemoteAdapterMonitor {
     @Override
     public void onDelete(String name) {
         File file = new File(CommonUtils.getConfPath() + name);
-        if (file.exists()) {
-            CommonUtils.deleteDir(file);
-            logger.info("## Deleted and reloaded remote adapter config: {}", name);
-        }
+        if (!file.exists()) {
+			return;
+		}
+		CommonUtils.deleteDir(file);
+		logger.info("## Deleted and reloaded remote adapter config: {}", name);
     }
 
 }

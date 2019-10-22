@@ -76,7 +76,40 @@ public class ChannelFutureAggregator implements ChannelFutureListener {
             this.channelError = builder.channelError;
         }
 
-        // auto-generated
+        // getters
+        public String getDestination() {
+            return destination;
+        }
+
+		public CanalPacket.PacketType getType() {
+            return type;
+        }
+
+		public GeneratedMessageV3 getRequest() {
+            return request;
+        }
+
+		public int getAmount() {
+            return amount;
+        }
+
+		public long getLatency() {
+            return latency;
+        }
+
+		public short getErrorCode() {
+            return errorCode;
+        }
+
+		public boolean getEmpty() {
+            return empty;
+        }
+
+		public Throwable getChannelError() {
+            return channelError;
+        }
+
+		// auto-generated
         public static class Builder {
 
             private String                 destination;
@@ -143,38 +176,6 @@ public class ChannelFutureAggregator implements ChannelFutureListener {
             ClientRequestResult build() {
                 return new ClientRequestResult(this);
             }
-        }
-        // getters
-        public String getDestination() {
-            return destination;
-        }
-
-        public CanalPacket.PacketType getType() {
-            return type;
-        }
-
-        public GeneratedMessageV3 getRequest() {
-            return request;
-        }
-
-        public int getAmount() {
-            return amount;
-        }
-
-        public long getLatency() {
-            return latency;
-        }
-
-        public short getErrorCode() {
-            return errorCode;
-        }
-
-        public boolean getEmpty() {
-            return empty;
-        }
-
-        public Throwable getChannelError() {
-            return channelError;
         }
     }
 }

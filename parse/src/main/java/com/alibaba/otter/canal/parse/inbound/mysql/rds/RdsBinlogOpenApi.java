@@ -33,7 +33,8 @@ public class RdsBinlogOpenApi {
                 URI uri = new URI(url);
                 request.setEndPoint(uri.getHost());
             } catch (URISyntaxException e) {
-                logger.error("resolve url host failed, will use default rds endpoint!");
+                logger.error(e.getMessage(), e);
+				logger.error("resolve url host failed, will use default rds endpoint!");
             }
         }
         request.setStartDate(startTime);
@@ -56,6 +57,7 @@ public class RdsBinlogOpenApi {
                 try {
                     Thread.sleep(100L);
                 } catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
                 }
             }
         }
@@ -76,7 +78,8 @@ public class RdsBinlogOpenApi {
                 URI uri = new URI(url);
                 request.setEndPoint(uri.getHost());
             } catch (URISyntaxException e) {
-                logger.error("resolve url host failed, will use default rds endpoint!");
+                logger.error(e.getMessage(), e);
+				logger.error("resolve url host failed, will use default rds endpoint!");
             }
         }
         request.setRdsInstanceId(dbInstanceId);
@@ -93,6 +96,7 @@ public class RdsBinlogOpenApi {
                 try {
                     Thread.sleep(100L);
                 } catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
                 }
             }
         }

@@ -26,7 +26,8 @@ public class MappingConfig implements AdapterConfig {
 
     private DbMapping dbMapping;          // db映射配置
 
-    public String getDataSourceKey() {
+    @Override
+	public String getDataSourceKey() {
         return dataSourceKey;
     }
 
@@ -74,7 +75,8 @@ public class MappingConfig implements AdapterConfig {
         this.destination = destination;
     }
 
-    public AdapterMapping getMapping() {
+    @Override
+	public AdapterMapping getMapping() {
         return dbMapping;
     }
 
@@ -179,7 +181,8 @@ public class MappingConfig implements AdapterConfig {
             this.targetColumns = targetColumns;
         }
 
-        public String getEtlCondition() {
+        @Override
+		public String getEtlCondition() {
             return etlCondition;
         }
 

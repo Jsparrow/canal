@@ -51,19 +51,11 @@ public class RdbSyncService {
     private BatchExecutor[]                   batchExecutors;
     private ExecutorService[]                 executorThreads;
 
-    public List<SyncItem>[] getDmlsPartition() {
-        return dmlsPartition;
-    }
-
-    public Map<String, Map<String, Integer>> getColumnsTypeCache() {
-        return columnsTypeCache;
-    }
-
     public RdbSyncService(DataSource dataSource, Integer threads, boolean skipDupException){
         this(dataSource, threads, new ConcurrentHashMap<>(), skipDupException);
     }
 
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
     public RdbSyncService(DataSource dataSource, Integer threads, Map<String, Map<String, Integer>> columnsTypeCache,
                           boolean skipDupException){
         this.columnsTypeCache = columnsTypeCache;
@@ -85,7 +77,15 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	public List<SyncItem>[] getDmlsPartition() {
+        return dmlsPartition;
+    }
+
+	public Map<String, Map<String, Integer>> getColumnsTypeCache() {
+        return columnsTypeCache;
+    }
+
+	/**
      * 批量同步回调
      *
      * @param dmls 批量 DML
@@ -142,7 +142,7 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	/**
      * 批量同步
      *
      * @param mappingConfig 配置集合
@@ -152,7 +152,7 @@ public class RdbSyncService {
         sync(dmls, dml -> {
             if (dml.getIsDdl() != null && dml.getIsDdl() && StringUtils.isNotEmpty(dml.getSql())) {
                 // DDL
-            columnsTypeCache.remove(dml.getDestination() + "." + dml.getDatabase() + "." + dml.getTable());
+            columnsTypeCache.remove(new StringBuilder().append(dml.getDestination()).append(".").append(dml.getDatabase()).append(".").append(dml.getTable()).toString());
             return false;
         } else {
             // DML
@@ -162,9 +162,10 @@ public class RdbSyncService {
             String table = dml.getTable();
             Map<String, MappingConfig> configMap;
             if (envProperties != null && !"tcp".equalsIgnoreCase(envProperties.getProperty("canal.conf.mode"))) {
-                configMap = mappingConfig.get(destination + "-" + groupId + "_" + database + "-" + table);
+                configMap = mappingConfig.get(new StringBuilder().append(destination).append("-").append(groupId).append("_").append(database).append("-")
+						.append(table).toString());
             } else {
-                configMap = mappingConfig.get(destination + "_" + database + "-" + table);
+                configMap = mappingConfig.get(new StringBuilder().append(destination).append("_").append(database).append("-").append(table).toString());
             }
 
             if (configMap == null) {
@@ -175,7 +176,7 @@ public class RdbSyncService {
                 return false;
             }
 
-            for (MappingConfig config : configMap.values()) {
+            configMap.values().forEach(config -> {
                 if (config.getConcurrent()) {
                     List<SingleDml> singleDmls = SingleDml.dml2SingleDmls(dml);
                     singleDmls.forEach(singleDml -> {
@@ -186,18 +187,15 @@ public class RdbSyncService {
                 } else {
                     int hash = 0;
                     List<SingleDml> singleDmls = SingleDml.dml2SingleDmls(dml);
-                    singleDmls.forEach(singleDml -> {
-                        SyncItem syncItem = new SyncItem(config, singleDml);
-                        dmlsPartition[hash].add(syncItem);
-                    });
+                    singleDmls.stream().map(singleDml -> new SyncItem(config, singleDml)).forEach(syncItem -> dmlsPartition[hash].add(syncItem));
                 }
-            }
+            });
             return true;
         }
     }   );
     }
 
-    /**
+	/**
      * 单条 dml 同步
      *
      * @param batchExecutor 批量事务执行器
@@ -208,13 +206,13 @@ public class RdbSyncService {
         if (config != null) {
             try {
                 String type = dml.getType();
-                if (type != null && type.equalsIgnoreCase("INSERT")) {
+                if (type != null && "INSERT".equalsIgnoreCase(type)) {
                     insert(batchExecutor, config, dml);
-                } else if (type != null && type.equalsIgnoreCase("UPDATE")) {
+                } else if (type != null && "UPDATE".equalsIgnoreCase(type)) {
                     update(batchExecutor, config, dml);
-                } else if (type != null && type.equalsIgnoreCase("DELETE")) {
+                } else if (type != null && "DELETE".equalsIgnoreCase(type)) {
                     delete(batchExecutor, config, dml);
-                } else if (type != null && type.equalsIgnoreCase("TRUNCATE")) {
+                } else if (type != null && "TRUNCATE".equalsIgnoreCase(type)) {
                     truncate(batchExecutor, config);
                 }
                 if (logger.isDebugEnabled()) {
@@ -226,7 +224,7 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	/**
      * 插入操作
      *
      * @param config 配置项
@@ -267,7 +265,7 @@ public class RdbSyncService {
 
             Integer type = ctype.get(Util.cleanColumn(targetColumnName).toLowerCase());
             if (type == null) {
-                throw new RuntimeException("Target column: " + targetColumnName + " not matched");
+                throw new RuntimeException(new StringBuilder().append("Target column: ").append(targetColumnName).append(" not matched").toString());
             }
             Object value = data.get(srcColumnName);
             BatchExecutor.setValue(values, type, value);
@@ -290,7 +288,7 @@ public class RdbSyncService {
 
     }
 
-    /**
+	/**
      * 更新操作
      *
      * @param config 配置项
@@ -330,7 +328,7 @@ public class RdbSyncService {
                     updateSql.append(targetColumnName).append("=?, ");
                     Integer type = ctype.get(Util.cleanColumn(targetColumnName).toLowerCase());
                     if (type == null) {
-                        throw new RuntimeException("Target column: " + targetColumnName + " not matched");
+                        throw new RuntimeException(new StringBuilder().append("Target column: ").append(targetColumnName).append(" not matched").toString());
                     }
                     BatchExecutor.setValue(values, type, data.get(srcColumnName));
                 }
@@ -351,7 +349,7 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	/**
      * 删除操作
      *
      * @param config
@@ -379,7 +377,7 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	/**
      * truncate操作
      *
      * @param config
@@ -394,7 +392,7 @@ public class RdbSyncService {
         }
     }
 
-    /**
+	/**
      * 获取目标字段类型
      *
      * @param conn sql connection
@@ -403,7 +401,7 @@ public class RdbSyncService {
      */
     private Map<String, Integer> getTargetColumnType(Connection conn, MappingConfig config) {
         DbMapping dbMapping = config.getDbMapping();
-        String cacheKey = config.getDestination() + "." + dbMapping.getDatabase() + "." + dbMapping.getTable();
+        String cacheKey = new StringBuilder().append(config.getDestination()).append(".").append(dbMapping.getDatabase()).append(".").append(dbMapping.getTable()).toString();
         Map<String, Integer> columnType = columnsTypeCache.get(cacheKey);
         if (columnType == null) {
             synchronized (RdbSyncService.class) {
@@ -411,7 +409,7 @@ public class RdbSyncService {
                 if (columnType == null) {
                     columnType = new LinkedHashMap<>();
                     final Map<String, Integer> columnTypeTmp = columnType;
-                    String sql = "SELECT * FROM " + SyncUtil.getDbTableName(dbMapping) + " WHERE 1=2";
+                    String sql = new StringBuilder().append("SELECT * FROM ").append(SyncUtil.getDbTableName(dbMapping)).append(" WHERE 1=2").toString();
                     Util.sqlRS(conn, sql, rs -> {
                         try {
                             ResultSetMetaData rsd = rs.getMetaData();
@@ -430,7 +428,7 @@ public class RdbSyncService {
         return columnType;
     }
 
-    /**
+	/**
      * 拼接主键 where条件
      */
     private void appendCondition(MappingConfig.DbMapping dbMapping, StringBuilder sql, Map<String, Integer> ctype,
@@ -438,7 +436,7 @@ public class RdbSyncService {
         appendCondition(dbMapping, sql, ctype, values, d, null);
     }
 
-    private void appendCondition(MappingConfig.DbMapping dbMapping, StringBuilder sql, Map<String, Integer> ctype,
+	private void appendCondition(MappingConfig.DbMapping dbMapping, StringBuilder sql, Map<String, Integer> ctype,
                                  List<Map<String, ?>> values, Map<String, Object> d, Map<String, Object> o) {
         // 拼接主键
         for (Map.Entry<String, String> entry : dbMapping.getTargetPk().entrySet()) {
@@ -450,7 +448,7 @@ public class RdbSyncService {
             sql.append(targetColumnName).append("=? AND ");
             Integer type = ctype.get(Util.cleanColumn(targetColumnName).toLowerCase());
             if (type == null) {
-                throw new RuntimeException("Target column: " + targetColumnName + " not matched");
+                throw new RuntimeException(new StringBuilder().append("Target column: ").append(targetColumnName).append(" not matched").toString());
             }
             // 如果有修改主键的情况
             if (o != null && o.containsKey(srcColumnName)) {
@@ -463,25 +461,14 @@ public class RdbSyncService {
         sql.delete(len - 4, len);
     }
 
-    public static class SyncItem {
-
-        private MappingConfig config;
-        private SingleDml     singleDml;
-
-        public SyncItem(MappingConfig config, SingleDml singleDml){
-            this.config = config;
-            this.singleDml = singleDml;
-        }
-    }
-
-    /**
+	/**
      * 取主键hash
      */
     public int pkHash(DbMapping dbMapping, Map<String, Object> d) {
         return pkHash(dbMapping, d, null);
     }
 
-    public int pkHash(DbMapping dbMapping, Map<String, Object> d, Map<String, Object> o) {
+	public int pkHash(DbMapping dbMapping, Map<String, Object> d, Map<String, Object> o) {
         int hash = 0;
         // 取主键
         for (Map.Entry<String, String> entry : dbMapping.getTargetPk().entrySet()) {
@@ -504,9 +491,20 @@ public class RdbSyncService {
         return Math.abs(hash);
     }
 
-    public void close() {
+	public void close() {
         for (int i = 0; i < threads; i++) {
             executorThreads[i].shutdown();
+        }
+    }
+
+	public static class SyncItem {
+
+        private MappingConfig config;
+        private SingleDml     singleDml;
+
+        public SyncItem(MappingConfig config, SingleDml singleDml){
+            this.config = config;
+            this.singleDml = singleDml;
         }
     }
 }

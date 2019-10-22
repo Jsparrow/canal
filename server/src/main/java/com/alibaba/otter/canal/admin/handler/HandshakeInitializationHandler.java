@@ -23,16 +23,16 @@ import com.google.protobuf.ByteString;
  */
 public class HandshakeInitializationHandler extends SimpleChannelHandler {
 
-    // support to maintain socket channel.
+    private static final Logger logger = LoggerFactory.getLogger(HandshakeInitializationHandler.class);
+	// support to maintain socket channel.
     private ChannelGroup childGroups;
 
-    public HandshakeInitializationHandler(ChannelGroup childGroups){
+	public HandshakeInitializationHandler(ChannelGroup childGroups){
         this.childGroups = childGroups;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(HandshakeInitializationHandler.class);
-
-    public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+	@Override
+	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // add new socket channel in channel container, used to manage sockets.
         if (childGroups != null) {
             childGroups.add(ctx.getChannel());
@@ -46,17 +46,13 @@ public class HandshakeInitializationHandler extends SimpleChannelHandler {
             .build()
             .toByteArray();
 
-        AdminNettyUtils.write(ctx.getChannel(), body, new ChannelFutureListener() {
-
-            public void operationComplete(ChannelFuture future) throws Exception {
-                logger.info("remove unused channel handlers after authentication is done successfully.");
-                ctx.getPipeline().get(HandshakeInitializationHandler.class.getName());
-                ClientAuthenticationHandler handler = (ClientAuthenticationHandler) ctx.getPipeline()
-                    .get(ClientAuthenticationHandler.class.getName());
-                handler.setSeed(seed);
-            }
-
-        });
+        AdminNettyUtils.write(ctx.getChannel(), body, (ChannelFuture future) -> {
+		    logger.info("remove unused channel handlers after authentication is done successfully.");
+		    ctx.getPipeline().get(HandshakeInitializationHandler.class.getName());
+		    ClientAuthenticationHandler handler = (ClientAuthenticationHandler) ctx.getPipeline()
+		        .get(ClientAuthenticationHandler.class.getName());
+		    handler.setSeed(seed);
+		});
         logger.info("send handshake initialization packet to : {}", ctx.getChannel());
     }
 }

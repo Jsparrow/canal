@@ -57,7 +57,7 @@ public class MySQLPasswordEncrypter {
     }
 
     public static String scramble323(String pass, String seed) {
-        if ((pass == null) || (pass.length() == 0)) {
+        if ((pass == null) || (pass.isEmpty())) {
             return pass;
         }
         byte b;

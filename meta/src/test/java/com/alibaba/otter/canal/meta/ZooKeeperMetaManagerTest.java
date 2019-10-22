@@ -14,7 +14,7 @@ import com.alibaba.otter.canal.protocol.position.PositionRange;
 @Ignore
 public class ZooKeeperMetaManagerTest extends AbstractMetaManagerTest {
 
-    private ZkClientx zkclientx = new ZkClientx(cluster1 + ";" + cluster2);
+    private ZkClientx zkclientx = new ZkClientx(new StringBuilder().append(cluster1).append(";").append(cluster2).toString());
 
     @Before
     public void setUp() {

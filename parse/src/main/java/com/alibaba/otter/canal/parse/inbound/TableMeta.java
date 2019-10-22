@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.taobao.tddl.dbsync.binlog.event.TableMapLogEvent;
+import java.util.stream.Collectors;
 
 /**
  * 描述数据meta对象,mysql binlog中对应的{@linkplain TableMapLogEvent}包含的信息不全
@@ -37,7 +38,7 @@ public class TableMeta {
     }
 
     public String getFullName() {
-        return schema + "." + table;
+        return new StringBuilder().append(schema).append(".").append(table).toString();
     }
 
     public String getSchema() {
@@ -76,11 +77,7 @@ public class TableMeta {
 
     public List<FieldMeta> getPrimaryFields() {
         List<FieldMeta> primarys = new ArrayList<TableMeta.FieldMeta>();
-        for (FieldMeta meta : fields) {
-            if (meta.isKey()) {
-                primarys.add(meta);
-            }
-        }
+        primarys.addAll(fields.stream().filter(FieldMeta::isKey).collect(Collectors.toList()));
 
         return primarys;
     }
@@ -100,21 +97,27 @@ public class TableMeta {
     @Override
     public String toString() {
         StringBuilder data = new StringBuilder();
-        data.append("TableMeta [schema=" + schema + ", table=" + table + ", fileds=");
-        for (FieldMeta field : fields) {
-            data.append("\n\t").append(field.toString());
-        }
+        data.append(new StringBuilder().append("TableMeta [schema=").append(schema).append(", table=").append(table).append(", fileds=").toString());
+        fields.forEach(field -> data.append("\n\t").append(field.toString()));
         data.append("\n]");
         return data.toString();
     }
 
     public static class FieldMeta {
 
-        public FieldMeta(){
+        private String  columnName;
+		private String  columnType;
+		private boolean nullable;
+		private boolean key;
+		private String  defaultValue;
+		private String  extra;
+		private boolean unique;
+
+		public FieldMeta(){
 
         }
 
-        public FieldMeta(String columnName, String columnType, boolean nullable, boolean key, String defaultValue){
+		public FieldMeta(String columnName, String columnType, boolean nullable, boolean key, String defaultValue){
             this.columnName = columnName;
             this.columnType = columnType;
             this.nullable = nullable;
@@ -122,79 +125,71 @@ public class TableMeta {
             this.defaultValue = defaultValue;
         }
 
-        private String  columnName;
-        private String  columnType;
-        private boolean nullable;
-        private boolean key;
-        private String  defaultValue;
-        private String  extra;
-        private boolean unique;
-
-        public String getColumnName() {
+		public String getColumnName() {
             return columnName;
         }
 
-        public void setColumnName(String columnName) {
+		public void setColumnName(String columnName) {
             this.columnName = columnName;
         }
 
-        public String getColumnType() {
+		public String getColumnType() {
             return columnType;
         }
 
-        public void setColumnType(String columnType) {
+		public void setColumnType(String columnType) {
             this.columnType = columnType;
         }
 
-        public void setNullable(boolean nullable) {
+		public void setNullable(boolean nullable) {
             this.nullable = nullable;
         }
 
-        public String getDefaultValue() {
+		public String getDefaultValue() {
             return defaultValue;
         }
 
-        public void setDefaultValue(String defaultValue) {
+		public void setDefaultValue(String defaultValue) {
             this.defaultValue = defaultValue;
         }
 
-        public boolean isUnsigned() {
+		public boolean isUnsigned() {
             return StringUtils.containsIgnoreCase(columnType, "unsigned");
         }
 
-        public boolean isNullable() {
+		public boolean isNullable() {
             return nullable;
         }
 
-        public boolean isKey() {
+		public boolean isKey() {
             return key;
         }
 
-        public void setKey(boolean key) {
+		public void setKey(boolean key) {
             this.key = key;
         }
 
-        public String getExtra() {
+		public String getExtra() {
             return extra;
         }
 
-        public void setExtra(String extra) {
+		public void setExtra(String extra) {
             this.extra = extra;
         }
 
-        public boolean isUnique() {
+		public boolean isUnique() {
             return unique;
         }
 
-        public void setUnique(boolean unique) {
+		public void setUnique(boolean unique) {
             this.unique = unique;
         }
 
-        @Override
+		@Override
         public String toString() {
-            return "FieldMeta [columnName=" + columnName + ", columnType=" + columnType + ", nullable=" + nullable
-                   + ", key=" + key + ", defaultValue=" + defaultValue + ", extra=" + extra + ", unique=" + unique
-                   + "]";
+            return new StringBuilder().append("FieldMeta [columnName=").append(columnName).append(", columnType=").append(columnType).append(", nullable=").append(nullable)
+					.append(", key=").append(key).append(", defaultValue=").append(defaultValue).append(", extra=").append(extra).append(", unique=")
+					.append(unique).append("]").toString();
         }
 
     }

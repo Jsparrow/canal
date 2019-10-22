@@ -60,8 +60,7 @@ public class RdsBinlogEventParserProxyTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<CanalEntry.Entry>>() {
 
             @Override
-            public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                                   throws CanalSinkException {
+            public boolean sink(List<CanalEntry.Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (CanalEntry.Entry entry : entrys) {
                     if (entry.getEntryType() != CanalEntry.EntryType.HEARTBEAT) {
                         entryCount.incrementAndGet();
@@ -84,11 +83,13 @@ public class RdsBinlogEventParserProxyTest {
 
             private LogPosition logPosition;
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
                 this.logPosition = logPosition;
             }
 
-            public LogPosition getLatestIndexBy(String destination) {
+            @Override
+			public LogPosition getLatestIndexBy(String destination) {
                 return logPosition;
             }
         });

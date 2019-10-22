@@ -17,6 +17,7 @@ import com.alibaba.otter.canal.protocol.AdminPacket.InstanceAdmin;
 import com.alibaba.otter.canal.protocol.AdminPacket.LogAdmin;
 import com.alibaba.otter.canal.protocol.AdminPacket.Packet;
 import com.alibaba.otter.canal.protocol.AdminPacket.ServerAdmin;
+import org.apache.commons.lang3.StringUtils;
 
 public class SessionHandler extends SimpleChannelHandler {
 
@@ -30,7 +31,8 @@ public class SessionHandler extends SimpleChannelHandler {
         this.canalAdmin = canalAdmin;
     }
 
-    public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+    @Override
+	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         logger.info("message receives in session handler...");
         ChannelBuffer buffer = (ChannelBuffer) e.getMessage();
         Packet packet = Packet.parseFrom(buffer.readBytes(buffer.readableBytes()).array());
@@ -103,14 +105,14 @@ public class SessionHandler extends SimpleChannelHandler {
                     int count = logAdmin.getCount();
                     switch (type) {
                         case "server":
-                            if ("list".equalsIgnoreCase(action)) {
+                            if (StringUtils.equalsIgnoreCase("list", action)) {
                                 message = canalAdmin.listCanalLog();
                             } else {
                                 message = canalAdmin.canalLog(count);
                             }
                             break;
                         case "instance":
-                            if ("list".equalsIgnoreCase(action)) {
+                            if (StringUtils.equalsIgnoreCase("list", action)) {
                                 message = canalAdmin.listInstanceLog(destination);
                             } else {
                                 message = canalAdmin.instanceLog(destination, file, count);
@@ -139,7 +141,8 @@ public class SessionHandler extends SimpleChannelHandler {
         }
     }
 
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+    @Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("something goes wrong with channel:{}, exception={}",
             ctx.getChannel(),
             ExceptionUtils.getStackTrace(e.getCause()));
@@ -147,7 +150,8 @@ public class SessionHandler extends SimpleChannelHandler {
         ctx.getChannel().close();
     }
 
-    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    @Override
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
     }
 
     public void setCanalAdmin(CanalAdmin canalAdmin) {

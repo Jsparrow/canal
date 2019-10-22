@@ -26,7 +26,7 @@ import com.google.common.collect.MigrateMap;
  * @author agapple 2019年8月26日 下午10:00:20
  * @since 1.1.4
  */
-public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle implements InstanceConfigMonitor, CanalLifeCycle {
+public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle implements InstanceConfigMonitor {
 
     private static final Logger         logger               = LoggerFactory.getLogger(ManagerInstanceConfigMonitor.class);
     private long                        scanIntervalInSecond = 5;
@@ -34,7 +34,8 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
     private Map<String, InstanceAction> actions              = new MapMaker().makeMap();
     private Map<String, PlainCanal>     configs              = MigrateMap.makeComputingMap(new Function<String, PlainCanal>() {
 
-                                                                 public PlainCanal apply(String destination) {
+                                                                 @Override
+																public PlainCanal apply(String destination) {
                                                                      return new PlainCanal();
                                                                  }
                                                              });
@@ -44,31 +45,30 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
     private volatile boolean            isFirst              = true;
     private PlainCanalConfigClient      configClient;
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
-        executor.scheduleWithFixedDelay(new Runnable() {
-
-            public void run() {
-                try {
-                    scan();
-                    if (isFirst) {
-                        isFirst = false;
-                    }
-                } catch (Throwable e) {
-                    logger.error("scan failed", e);
-                }
-            }
-
-        }, 0, scanIntervalInSecond, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(() -> {
+		    try {
+		        scan();
+		        if (isFirst) {
+		            isFirst = false;
+		        }
+		    } catch (Throwable e) {
+		        logger.error("scan failed", e);
+		    }
+		}, 0, scanIntervalInSecond, TimeUnit.SECONDS);
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
         executor.shutdownNow();
         actions.clear();
     }
 
-    public void register(String destination, InstanceAction action) {
+    @Override
+	public void register(String destination, InstanceAction action) {
         if (action != null) {
             actions.put(destination, action);
         } else {
@@ -76,7 +76,8 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
         }
     }
 
-    public void unregister(String destination) {
+    @Override
+	public void unregister(String destination) {
         actions.remove(destination);
     }
 
@@ -90,7 +91,7 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
         List<String> start = Lists.newArrayList();
         List<String> stop = Lists.newArrayList();
         List<String> restart = Lists.newArrayList();
-        for (String instance : is) {
+        is.forEach(instance -> {
             if (!configs.containsKey(instance)) {
                 PlainCanal newPlainCanal = configClient.findInstance(instance, null);
                 if (newPlainCanal != null) {
@@ -106,7 +107,7 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
                     configs.put(instance, newPlainCanal);
                 }
             }
-        }
+        });
 
         configs.forEach((instance, plainCanal) -> {
             if (!is.contains(instance)) {
@@ -114,17 +115,11 @@ public class ManagerInstanceConfigMonitor extends AbstractCanalLifeCycle impleme
             }
         });
 
-        stop.forEach(instance -> {
-            notifyStop(instance);
-        });
+        stop.forEach(this::notifyStop);
 
-        restart.forEach(instance -> {
-            notifyReload(instance);
-        });
+        restart.forEach(this::notifyReload);
 
-        start.forEach(instance -> {
-            notifyStart(instance);
-        });
+        start.forEach(this::notifyStart);
 
     }
 

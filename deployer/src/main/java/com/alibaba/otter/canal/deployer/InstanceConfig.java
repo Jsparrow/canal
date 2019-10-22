@@ -26,7 +26,60 @@ public class InstanceConfig {
         this.globalConfig = globalConfig;
     }
 
-    public static enum InstanceMode {
+    public Boolean getLazy() {
+        if (lazy == null && globalConfig != null) {
+            return globalConfig.getLazy();
+        } else {
+            return lazy;
+        }
+    }
+
+	public void setLazy(Boolean lazy) {
+        this.lazy = lazy;
+    }
+
+	public InstanceMode getMode() {
+        if (mode == null && globalConfig != null) {
+            return globalConfig.getMode();
+        } else {
+            return mode;
+        }
+    }
+
+	public void setMode(InstanceMode mode) {
+        this.mode = mode;
+    }
+
+	public String getManagerAddress() {
+        if (managerAddress == null && globalConfig != null) {
+            return globalConfig.getManagerAddress();
+        } else {
+            return managerAddress;
+        }
+    }
+
+	public void setManagerAddress(String managerAddress) {
+        this.managerAddress = managerAddress;
+    }
+
+	public String getSpringXml() {
+        if (springXml == null && globalConfig != null) {
+            return globalConfig.getSpringXml();
+        } else {
+            return springXml;
+        }
+    }
+
+	public void setSpringXml(String springXml) {
+        this.springXml = springXml;
+    }
+
+	@Override
+	public String toString() {
+        return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
+    }
+
+	public static enum InstanceMode {
         SPRING, MANAGER;
 
         public boolean isSpring() {
@@ -36,58 +89,6 @@ public class InstanceConfig {
         public boolean isManager() {
             return this == InstanceMode.MANAGER;
         }
-    }
-
-    public Boolean getLazy() {
-        if (lazy == null && globalConfig != null) {
-            return globalConfig.getLazy();
-        } else {
-            return lazy;
-        }
-    }
-
-    public void setLazy(Boolean lazy) {
-        this.lazy = lazy;
-    }
-
-    public InstanceMode getMode() {
-        if (mode == null && globalConfig != null) {
-            return globalConfig.getMode();
-        } else {
-            return mode;
-        }
-    }
-
-    public void setMode(InstanceMode mode) {
-        this.mode = mode;
-    }
-
-    public String getManagerAddress() {
-        if (managerAddress == null && globalConfig != null) {
-            return globalConfig.getManagerAddress();
-        } else {
-            return managerAddress;
-        }
-    }
-
-    public void setManagerAddress(String managerAddress) {
-        this.managerAddress = managerAddress;
-    }
-
-    public String getSpringXml() {
-        if (springXml == null && globalConfig != null) {
-            return globalConfig.getSpringXml();
-        } else {
-            return springXml;
-        }
-    }
-
-    public void setSpringXml(String springXml) {
-        this.springXml = springXml;
-    }
-
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this, CanalToStringStyle.DEFAULT_STYLE);
     }
 
 }

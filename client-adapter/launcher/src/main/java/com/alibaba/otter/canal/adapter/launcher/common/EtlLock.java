@@ -13,6 +13,8 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.otter.canal.adapter.launcher.config.CuratorClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Etl 同步锁
@@ -23,7 +25,9 @@ import com.alibaba.otter.canal.adapter.launcher.config.CuratorClient;
 @Component
 public class EtlLock {
 
-    private static final Map<String, ReentrantLock>     LOCAL_LOCK       = new ConcurrentHashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(EtlLock.class);
+
+	private static final Map<String, ReentrantLock>     LOCAL_LOCK       = new ConcurrentHashMap<>();
 
     private static final Map<String, InterProcessMutex> DISTRIBUTED_LOCK = new ConcurrentHashMap<>();
 
@@ -88,7 +92,8 @@ public class EtlLock {
                 return lock.acquire(timeout, unit);
             }
         } catch (Exception e) {
-            return false;
+            logger.error(e.getMessage(), e);
+			return false;
         }
     }
 
@@ -101,7 +106,8 @@ public class EtlLock {
                 return lock.acquire(500, TimeUnit.MILLISECONDS);
             }
         } catch (Exception e) {
-            return false;
+            logger.error(e.getMessage(), e);
+			return false;
         }
     }
 
@@ -113,6 +119,7 @@ public class EtlLock {
             try {
                 lock.release();
             } catch (Exception e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             }
         }

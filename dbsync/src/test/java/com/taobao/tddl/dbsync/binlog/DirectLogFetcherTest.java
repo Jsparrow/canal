@@ -17,10 +17,14 @@ import com.taobao.tddl.dbsync.binlog.event.UpdateRowsLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.WriteRowsLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.XidLogEvent;
 import com.taobao.tddl.dbsync.binlog.event.mariadb.AnnotateRowsEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class DirectLogFetcherTest extends BaseLogFetcherTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(DirectLogFetcherTest.class);
+
+	@Test
     public void testSimple() {
         DirectLogFetcher fecther = new DirectLogFetcher();
         try {
@@ -28,7 +32,7 @@ public class DirectLogFetcherTest extends BaseLogFetcherTest {
             Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306", "root", "hello");
             Statement statement = connection.createStatement();
             statement.execute("SET @master_binlog_checksum='@@global.binlog_checksum'");
-            statement.execute("SET @mariadb_slave_capability='" + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + "'");
+            statement.execute(new StringBuilder().append("SET @mariadb_slave_capability='").append(LogEvent.MARIA_SLAVE_CAPABILITY_MINE).append("'").toString());
 
             fecther.open(connection, "mysql-bin.000007", 89797036L, 2);
 
@@ -71,7 +75,7 @@ public class DirectLogFetcherTest extends BaseLogFetcherTest {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             Assert.fail(e.getMessage());
         } finally {
             try {

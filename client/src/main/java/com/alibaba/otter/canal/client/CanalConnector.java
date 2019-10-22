@@ -20,14 +20,14 @@ public interface CanalConnector {
      * 
      * @throws CanalClientException
      */
-    void connect() throws CanalClientException;
+    void connect();
 
     /**
      * 释放链接
      * 
      * @throws CanalClientException
      */
-    void disconnect() throws CanalClientException;
+    void disconnect();
 
     /**
      * 检查下链接是否合法
@@ -44,7 +44,7 @@ public interface CanalConnector {
      * 
      * @throws CanalClientException
      */
-    boolean checkValid() throws CanalClientException;
+    boolean checkValid();
 
     /**
      * 客户端订阅，重复订阅时会更新对应的filter信息
@@ -59,21 +59,21 @@ public interface CanalConnector {
      * 
      * @throws CanalClientException
      */
-    void subscribe(String filter) throws CanalClientException;
+    void subscribe(String filter);
 
     /**
      * 客户端订阅，不提交客户端filter，以服务端的filter为准
      * 
      * @throws CanalClientException
      */
-    void subscribe() throws CanalClientException;
+    void subscribe();
 
     /**
      * 取消订阅
      * 
      * @throws CanalClientException
      */
-    void unsubscribe() throws CanalClientException;
+    void unsubscribe();
 
     /**
      * 获取数据，自动进行确认，该方法返回的条件：尝试拿batchSize条记录，有多少取多少，不会阻塞等待
@@ -82,7 +82,7 @@ public interface CanalConnector {
      * @return
      * @throws CanalClientException
      */
-    Message get(int batchSize) throws CanalClientException;
+    Message get(int batchSize);
 
     /**
      * 获取数据，自动进行确认
@@ -97,7 +97,7 @@ public interface CanalConnector {
      * @return
      * @throws CanalClientException
      */
-    Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException;
+    Message get(int batchSize, Long timeout, TimeUnit unit);
 
     /**
      * 不指定 position 获取事件，该方法返回的条件: 尝试拿batchSize条记录，有多少取多少，不会阻塞等待<br/>
@@ -107,7 +107,7 @@ public interface CanalConnector {
      * @param batchSize
      * @throws CanalClientException
      */
-    Message getWithoutAck(int batchSize) throws CanalClientException;
+    Message getWithoutAck(int batchSize);
 
     /**
      * 不指定 position 获取事件.
@@ -127,7 +127,7 @@ public interface CanalConnector {
      * @return
      * @throws CanalClientException
      */
-    Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException;
+    Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit);
 
     /**
      * 进行 batch id 的确认。确认之后，小于等于此 batchId 的 Message 都会被确认。
@@ -135,19 +135,19 @@ public interface CanalConnector {
      * @param batchId
      * @throws CanalClientException
      */
-    void ack(long batchId) throws CanalClientException;
+    void ack(long batchId);
 
     /**
      * 回滚到未进行 {@link #ack} 的地方，指定回滚具体的batchId
      * 
      * @throws CanalClientException
      */
-    void rollback(long batchId) throws CanalClientException;
+    void rollback(long batchId);
 
     /**
      * 回滚到未进行 {@link #ack} 的地方，下次fetch的时候，可以从最后一个没有 {@link #ack} 的地方开始拿
      * 
      * @throws CanalClientException
      */
-    void rollback() throws CanalClientException;
+    void rollback();
 }

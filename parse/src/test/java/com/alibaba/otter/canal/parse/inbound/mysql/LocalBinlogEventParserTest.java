@@ -20,10 +20,13 @@ import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.position.EntryPosition;
 import com.alibaba.otter.canal.protocol.position.LogPosition;
 import com.alibaba.otter.canal.sink.exception.CanalSinkException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class LocalBinlogEventParserTest {
 
-    private static final String MYSQL_ADDRESS = "127.0.0.1";
+    private static final Logger logger = LoggerFactory.getLogger(LocalBinlogEventParserTest.class);
+	private static final String MYSQL_ADDRESS = "127.0.0.1";
     private static final String USERNAME      = "canal";
     private static final String PASSWORD      = "canal";
     private String              directory;
@@ -48,8 +51,8 @@ public class LocalBinlogEventParserTest {
         controller.setDirectory(directory);
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            @Override
+			public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 entryCount.incrementAndGet();
 
                 for (Entry entry : entrys) {
@@ -73,8 +76,9 @@ public class LocalBinlogEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
             @Override
@@ -112,8 +116,7 @@ public class LocalBinlogEventParserTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
             @Override
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     entryCount.incrementAndGet();
 
@@ -136,8 +139,9 @@ public class LocalBinlogEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
             @Override
@@ -177,8 +181,8 @@ public class LocalBinlogEventParserTest {
         controller.setDirectory(directory);
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            @Override
+			public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     entryCount.incrementAndGet();
 
@@ -201,8 +205,9 @@ public class LocalBinlogEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
             @Override

@@ -19,18 +19,19 @@ public class CanalException extends NestableRuntimeException {
     }
 
     public CanalException(String errorCode, String errorDesc){
-        super(errorCode + ":" + errorDesc);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString());
     }
 
     public CanalException(String errorCode, String errorDesc, Throwable cause){
-        super(errorCode + ":" + errorDesc, cause);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString(), cause);
     }
 
     public CanalException(Throwable cause){
         super(cause);
     }
 
-    public Throwable fillInStackTrace() {
+    @Override
+	public Throwable fillInStackTrace() {
         return this;
     }
 

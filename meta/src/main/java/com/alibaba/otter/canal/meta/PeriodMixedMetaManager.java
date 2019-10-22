@@ -33,7 +33,7 @@ import com.google.common.collect.MigrateMap;
  * @author jianghang 2012-9-11 下午02:41:15
  * @version 1.0.0
  */
-public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMetaManager {
+public class PeriodMixedMetaManager extends MemoryMetaManager {
 
     private static final Logger      logger     = LoggerFactory.getLogger(PeriodMixedMetaManager.class);
     private ScheduledExecutorService executor;
@@ -44,7 +44,8 @@ public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMe
     private long                     period     = 1000;                                                 // 单位ms
     private Set<ClientIdentity>      updateCursorTasks;
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         Assert.notNull(zooKeeperMetaManager);
         if (!zooKeeperMetaManager.isStart()) {
@@ -54,14 +55,16 @@ public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMe
         executor = Executors.newScheduledThreadPool(1);
         destinations = MigrateMap.makeComputingMap(new Function<String, List<ClientIdentity>>() {
 
-            public List<ClientIdentity> apply(String destination) {
+            @Override
+			public List<ClientIdentity> apply(String destination) {
                 return zooKeeperMetaManager.listAllSubscribeInfo(destination);
             }
         });
 
         cursors = MigrateMap.makeComputingMap(new Function<ClientIdentity, Position>() {
 
-            public Position apply(ClientIdentity clientIdentity) {
+            @Override
+			public Position apply(ClientIdentity clientIdentity) {
                 Position position = zooKeeperMetaManager.getCursor(clientIdentity);
                 if (position == null) {
                     return nullCursor; // 返回一个空对象标识，避免出现异常
@@ -73,7 +76,8 @@ public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMe
 
         batches = MigrateMap.makeComputingMap(new Function<ClientIdentity, MemoryClientIdentityBatch>() {
 
-            public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
+            @Override
+			public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
                 // 读取一下zookeeper信息，初始化一次
                 MemoryClientIdentityBatch batches = MemoryClientIdentityBatch.create(clientIdentity);
                 Map<Long, PositionRange> positionRanges = zooKeeperMetaManager.listAllBatchs(clientIdentity);
@@ -84,28 +88,26 @@ public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMe
             }
         });
 
-        updateCursorTasks = Collections.synchronizedSet(new HashSet<ClientIdentity>());
+        updateCursorTasks = Collections.synchronizedSet(new HashSet<>());
 
         // 启动定时工作任务
-        executor.scheduleAtFixedRate(new Runnable() {
-
-            public void run() {
-                List<ClientIdentity> tasks = new ArrayList<ClientIdentity>(updateCursorTasks);
-                for (ClientIdentity clientIdentity : tasks) {
-                    try {
-                        // 定时将内存中的最新值刷到zookeeper中，多次变更只刷一次
-                        zooKeeperMetaManager.updateCursor(clientIdentity, getCursor(clientIdentity));
-                        updateCursorTasks.remove(clientIdentity);
-                    } catch (Throwable e) {
-                        // ignore
-                        logger.error("period update" + clientIdentity.toString() + " curosr failed!", e);
-                    }
-                }
-            }
-        }, period, period, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(() -> {
+		    List<ClientIdentity> tasks = new ArrayList<>(updateCursorTasks);
+		    tasks.forEach(clientIdentity -> {
+		        try {
+		            // 定时将内存中的最新值刷到zookeeper中，多次变更只刷一次
+		            zooKeeperMetaManager.updateCursor(clientIdentity, getCursor(clientIdentity));
+		            updateCursorTasks.remove(clientIdentity);
+		        } catch (Throwable e) {
+		            // ignore
+		            logger.error(new StringBuilder().append("period update").append(clientIdentity.toString()).append(" curosr failed!").toString(), e);
+		        }
+		    });
+		}, period, period, TimeUnit.MILLISECONDS);
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
 
         if (zooKeeperMetaManager.isStart()) {
@@ -117,36 +119,30 @@ public class PeriodMixedMetaManager extends MemoryMetaManager implements CanalMe
         batches.clear();
     }
 
-    public void subscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void subscribe(final ClientIdentity clientIdentity) {
         super.subscribe(clientIdentity);
 
         // 订阅信息频率发生比较低，不需要做定时merge处理
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.subscribe(clientIdentity);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.subscribe(clientIdentity));
     }
 
-    public void unsubscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void unsubscribe(final ClientIdentity clientIdentity) {
         super.unsubscribe(clientIdentity);
 
         // 订阅信息频率发生比较低，不需要做定时merge处理
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.unsubscribe(clientIdentity);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.unsubscribe(clientIdentity));
     }
 
-    public void updateCursor(ClientIdentity clientIdentity, Position position) throws CanalMetaManagerException {
+    @Override
+	public void updateCursor(ClientIdentity clientIdentity, Position position) {
         super.updateCursor(clientIdentity, position);
         updateCursorTasks.add(clientIdentity);// 添加到任务队列中进行触发
     }
 
-    public Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public Position getCursor(ClientIdentity clientIdentity) {
         Position position = super.getCursor(clientIdentity);
         if (position == nullCursor) {
             return null;

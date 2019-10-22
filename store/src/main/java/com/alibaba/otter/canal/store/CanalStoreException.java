@@ -21,11 +21,11 @@ public class CanalStoreException extends CanalException {
     }
 
     public CanalStoreException(String errorCode, String errorDesc){
-        super(errorCode + ":" + errorDesc);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString());
     }
 
     public CanalStoreException(String errorCode, String errorDesc, Throwable cause){
-        super(errorCode + ":" + errorDesc, cause);
+        super(new StringBuilder().append(errorCode).append(":").append(errorDesc).toString(), cause);
     }
 
     public CanalStoreException(Throwable cause){

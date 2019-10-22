@@ -38,7 +38,8 @@ public class SemiAckCommandPacket extends CommandPacket {
      * 
      * </pre>
      */
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         // 0 write semi mark
         out.write(0xef);

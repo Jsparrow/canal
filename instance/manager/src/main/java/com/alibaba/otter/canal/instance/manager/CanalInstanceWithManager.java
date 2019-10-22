@@ -103,7 +103,8 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
         logger.info("init successful....");
     }
 
-    public void start() {
+    @Override
+	public void start() {
         // 初始化metaManager
         logger.info("start CannalInstance for {}-{} with parameters:{}", canalId, destination, parameters);
         super.start();
@@ -118,13 +119,7 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
         } else {
             try {
                 File externalLibDir = new File(alarmHandlerPluginDir);
-                File[] jarFiles = externalLibDir.listFiles(new FilenameFilter() {
-
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith(".jar");
-                    }
-                });
+                File[] jarFiles = externalLibDir.listFiles((File dir, String name) -> name.endsWith(".jar"));
                 if (jarFiles == null || jarFiles.length == 0) {
                     throw new IllegalStateException(String.format("alarmHandlerPluginDir [%s] can't find any name endswith \".jar\" file.",
                         alarmHandlerPluginDir));
@@ -242,12 +237,12 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
         List<List<DataSourcing>> groupDbAddresses = parameters.getGroupDbAddresses();
         if (!CollectionUtils.isEmpty(groupDbAddresses)) {
             int size = groupDbAddresses.get(0).size();// 取第一个分组的数量，主备分组的数量必须一致
-            List<CanalEventParser> eventParsers = new ArrayList<CanalEventParser>();
+            List<CanalEventParser> eventParsers = new ArrayList<>();
             for (int i = 0; i < size; i++) {
-                List<InetSocketAddress> dbAddress = new ArrayList<InetSocketAddress>();
+                List<InetSocketAddress> dbAddress = new ArrayList<>();
                 SourcingType lastType = null;
                 for (List<DataSourcing> groupDbAddress : groupDbAddresses) {
-                    if (lastType != null && !lastType.equals(groupDbAddress.get(i).getType())) {
+                    if (lastType != null && lastType != groupDbAddress.get(i).getType()) {
                         throw new CanalException(String.format("master/slave Sourcing type is unmatch. %s vs %s",
                             lastType,
                             groupDbAddress.get(i).getType()));
@@ -270,7 +265,7 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
             }
         } else {
             // 创建一个空数据库地址的parser，可能使用了tddl指定地址，启动的时候才会从tddl获取地址
-            this.eventParser = doInitEventParser(type, new ArrayList<InetSocketAddress>());
+            this.eventParser = doInitEventParser(type, new ArrayList<>());
         }
 
         logger.info("init eventParser end! \n\t load CanalEventParser:{}", eventParser.getClass().getName());
@@ -473,7 +468,8 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
         return logPositionManager;
     }
 
-    protected void startEventParserInternal(CanalEventParser eventParser, boolean isGroup) {
+    @Override
+	protected void startEventParserInternal(CanalEventParser eventParser, boolean isGroup) {
         if (eventParser instanceof AbstractEventParser) {
             AbstractEventParser abstractEventParser = (AbstractEventParser) eventParser;
             abstractEventParser.setAlarmHandler(getAlarmHandler());
@@ -494,7 +490,7 @@ public class CanalInstanceWithManager extends AbstractCanalInstance {
 
     private synchronized ZkClientx getZkclientx() {
         // 做一下排序，保证相同的机器只使用同一个链接
-        List<String> zkClusters = new ArrayList<String>(parameters.getZkClusters());
+        List<String> zkClusters = new ArrayList<>(parameters.getZkClusters());
         Collections.sort(zkClusters);
 
         return ZkClientx.getZkClient(StringUtils.join(zkClusters, ";"));

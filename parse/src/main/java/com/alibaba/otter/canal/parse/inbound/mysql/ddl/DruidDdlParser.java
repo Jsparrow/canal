@@ -1,7 +1,6 @@
 package com.alibaba.otter.canal.parse.inbound.mysql.ddl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +37,9 @@ import com.alibaba.fastsql.sql.dialect.mysql.ast.statement.MySqlRenameTableState
 import com.alibaba.fastsql.sql.parser.ParserException;
 import com.alibaba.fastsql.util.JdbcConstants;
 import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 /**
  * @author agapple 2017年7月27日 下午4:05:34
@@ -45,19 +47,22 @@ import com.alibaba.otter.canal.protocol.CanalEntry.EventType;
  */
 public class DruidDdlParser {
 
-    public static List<DdlResult> parse(String queryString, String schmeaName) {
+    private static final Logger logger = LoggerFactory.getLogger(DruidDdlParser.class);
+
+	public static List<DdlResult> parse(String queryString, String schmeaName) {
         List<SQLStatement> stmtList = null;
         try {
             stmtList = SQLUtils.parseStatements(queryString, JdbcConstants.MYSQL, false);
         } catch (ParserException e) {
-            // 可能存在一些SQL是不支持的，比如存储过程
+            logger.error(e.getMessage(), e);
+			// 可能存在一些SQL是不支持的，比如存储过程
             DdlResult ddlResult = new DdlResult();
             ddlResult.setType(EventType.QUERY);
-            return Arrays.asList(ddlResult);
+            return Collections.singletonList(ddlResult);
         }
 
-        List<DdlResult> ddlResults = new ArrayList<DdlResult>();
-        for (SQLStatement statement : stmtList) {
+        List<DdlResult> ddlResults = new ArrayList<>();
+        stmtList.forEach(statement -> {
             if (statement instanceof SQLCreateTableStatement) {
                 DdlResult ddlResult = new DdlResult();
                 SQLCreateTableStatement createTable = (SQLCreateTableStatement) statement;
@@ -66,7 +71,7 @@ public class DruidDdlParser {
                 ddlResults.add(ddlResult);
             } else if (statement instanceof SQLAlterTableStatement) {
                 SQLAlterTableStatement alterTable = (SQLAlterTableStatement) statement;
-                for (SQLAlterTableItem item : alterTable.getItems()) {
+                alterTable.getItems().forEach(item -> {
                     if (item instanceof SQLAlterTableRename) {
                         DdlResult ddlResult = new DdlResult();
                         processName(ddlResult, schmeaName, alterTable.getName(), true);
@@ -102,15 +107,15 @@ public class DruidDdlParser {
                         ddlResult.setType(EventType.ALTER);
                         ddlResults.add(ddlResult);
                     }
-                }
+                });
             } else if (statement instanceof SQLDropTableStatement) {
                 SQLDropTableStatement dropTable = (SQLDropTableStatement) statement;
-                for (SQLExprTableSource tableSource : dropTable.getTableSources()) {
+                dropTable.getTableSources().forEach(tableSource -> {
                     DdlResult ddlResult = new DdlResult();
                     processName(ddlResult, schmeaName, tableSource.getExpr(), false);
                     ddlResult.setType(EventType.ERASE);
                     ddlResults.add(ddlResult);
-                }
+                });
             } else if (statement instanceof SQLCreateIndexStatement) {
                 SQLCreateIndexStatement createIndex = (SQLCreateIndexStatement) statement;
                 SQLTableSource tableSource = createIndex.getTable();
@@ -127,21 +132,21 @@ public class DruidDdlParser {
                 ddlResults.add(ddlResult);
             } else if (statement instanceof SQLTruncateStatement) {
                 SQLTruncateStatement truncate = (SQLTruncateStatement) statement;
-                for (SQLExprTableSource tableSource : truncate.getTableSources()) {
+                truncate.getTableSources().forEach(tableSource -> {
                     DdlResult ddlResult = new DdlResult();
                     processName(ddlResult, schmeaName, tableSource.getExpr(), false);
                     ddlResult.setType(EventType.TRUNCATE);
                     ddlResults.add(ddlResult);
-                }
+                });
             } else if (statement instanceof MySqlRenameTableStatement) {
                 MySqlRenameTableStatement rename = (MySqlRenameTableStatement) statement;
-                for (Item item : rename.getItems()) {
+                rename.getItems().forEach(item -> {
                     DdlResult ddlResult = new DdlResult();
                     processName(ddlResult, schmeaName, item.getName(), true);
                     processName(ddlResult, schmeaName, item.getTo(), false);
                     ddlResult.setType(EventType.RENAME);
                     ddlResults.add(ddlResult);
-                }
+                });
             } else if (statement instanceof SQLInsertStatement) {
                 DdlResult ddlResult = new DdlResult();
                 SQLInsertStatement insert = (SQLInsertStatement) statement;
@@ -175,7 +180,7 @@ public class DruidDdlParser {
                 processName(ddlResult, drop.getDatabaseName(), null, false);
                 ddlResults.add(ddlResult);
             }
-        }
+        });
 
         return ddlResults;
     }

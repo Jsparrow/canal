@@ -29,12 +29,14 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
     protected Map<ClientIdentity, MemoryClientIdentityBatch> batches;
     protected Map<ClientIdentity, Position>                  cursors;
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
 
         batches = MigrateMap.makeComputingMap(new Function<ClientIdentity, MemoryClientIdentityBatch>() {
 
-            public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
+            @Override
+			public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
                 return MemoryClientIdentityBatch.create(clientIdentity);
             }
 
@@ -44,23 +46,24 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
 
         destinations = MigrateMap.makeComputingMap(new Function<String, List<ClientIdentity>>() {
 
-            public List<ClientIdentity> apply(String destination) {
+            @Override
+			public List<ClientIdentity> apply(String destination) {
                 return Lists.newArrayList();
             }
         });
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
 
         destinations.clear();
         cursors.clear();
-        for (MemoryClientIdentityBatch batch : batches.values()) {
-            batch.clearPositionRanges();
-        }
+        batches.values().forEach(MemoryClientIdentityBatch::clearPositionRanges);
     }
 
-    public synchronized void subscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public synchronized void subscribe(ClientIdentity clientIdentity) {
         List<ClientIdentity> clientIdentitys = destinations.get(clientIdentity.getDestination());
 
         if (clientIdentitys.contains(clientIdentity)) {
@@ -70,61 +73,73 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
         clientIdentitys.add(clientIdentity);
     }
 
-    public synchronized boolean hasSubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public synchronized boolean hasSubscribe(ClientIdentity clientIdentity) {
         List<ClientIdentity> clientIdentitys = destinations.get(clientIdentity.getDestination());
         return clientIdentitys != null && clientIdentitys.contains(clientIdentity);
     }
 
-    public synchronized void unsubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public synchronized void unsubscribe(ClientIdentity clientIdentity) {
         List<ClientIdentity> clientIdentitys = destinations.get(clientIdentity.getDestination());
         if (clientIdentitys != null && clientIdentitys.contains(clientIdentity)) {
             clientIdentitys.remove(clientIdentity);
         }
     }
 
-    public synchronized List<ClientIdentity> listAllSubscribeInfo(String destination) throws CanalMetaManagerException {
+    @Override
+	public synchronized List<ClientIdentity> listAllSubscribeInfo(String destination) {
         // fixed issue #657, fixed ConcurrentModificationException
         return Lists.newArrayList(destinations.get(destination));
     }
 
-    public Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public Position getCursor(ClientIdentity clientIdentity) {
         return cursors.get(clientIdentity);
     }
 
-    public void updateCursor(ClientIdentity clientIdentity, Position position) throws CanalMetaManagerException {
+    @Override
+	public void updateCursor(ClientIdentity clientIdentity, Position position) {
         cursors.put(clientIdentity, position);
     }
 
-    public Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange) throws CanalMetaManagerException {
+    @Override
+	public Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange) {
         return batches.get(clientIdentity).addPositionRange(positionRange);
     }
 
-    public void addBatch(ClientIdentity clientIdentity, PositionRange positionRange, Long batchId)
-                                                                                                  throws CanalMetaManagerException {
+    @Override
+	public void addBatch(ClientIdentity clientIdentity, PositionRange positionRange, Long batchId) {
         batches.get(clientIdentity).addPositionRange(positionRange, batchId);// 添加记录到指定batchId
     }
 
-    public PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException {
+    @Override
+	public PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId) {
         return batches.get(clientIdentity).removePositionRange(batchId);
     }
 
-    public PositionRange getBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException {
+    @Override
+	public PositionRange getBatch(ClientIdentity clientIdentity, Long batchId) {
         return batches.get(clientIdentity).getPositionRange(batchId);
     }
 
-    public PositionRange getLastestBatch(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public PositionRange getLastestBatch(ClientIdentity clientIdentity) {
         return batches.get(clientIdentity).getLastestPositionRange();
     }
 
-    public PositionRange getFirstBatch(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public PositionRange getFirstBatch(ClientIdentity clientIdentity) {
         return batches.get(clientIdentity).getFirstPositionRange();
     }
 
-    public Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity) {
         return batches.get(clientIdentity).listAllPositionRange();
     }
 
-    public void clearAllBatchs(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void clearAllBatchs(ClientIdentity clientIdentity) {
         batches.get(clientIdentity).clearPositionRanges();
     }
 
@@ -136,50 +151,49 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
         private Map<Long, PositionRange> batches          = new MapMaker().makeMap();
         private AtomicLong               atomicMaxBatchId = new AtomicLong(1);
 
-        public static MemoryClientIdentityBatch create(ClientIdentity clientIdentity) {
-            return new MemoryClientIdentityBatch(clientIdentity);
-        }
-
         public MemoryClientIdentityBatch(){
 
         }
 
-        protected MemoryClientIdentityBatch(ClientIdentity clientIdentity){
+		protected MemoryClientIdentityBatch(ClientIdentity clientIdentity){
             this.clientIdentity = clientIdentity;
         }
 
-        public synchronized void addPositionRange(PositionRange positionRange, Long batchId) {
+		public static MemoryClientIdentityBatch create(ClientIdentity clientIdentity) {
+            return new MemoryClientIdentityBatch(clientIdentity);
+        }
+
+		public synchronized void addPositionRange(PositionRange positionRange, Long batchId) {
             updateMaxId(batchId);
             batches.put(batchId, positionRange);
         }
 
-        public synchronized Long addPositionRange(PositionRange positionRange) {
+		public synchronized Long addPositionRange(PositionRange positionRange) {
             Long batchId = atomicMaxBatchId.getAndIncrement();
             batches.put(batchId, positionRange);
             return batchId;
         }
 
-        public synchronized PositionRange removePositionRange(Long batchId) {
-            if (batches.containsKey(batchId)) {
-                Long minBatchId = Collections.min(batches.keySet());
-                if (!minBatchId.equals(batchId)) {
-                    // 检查一下提交的ack/rollback，必须按batchId分出去的顺序提交，否则容易出现丢数据
-                    throw new CanalMetaManagerException(String.format("batchId:%d is not the firstly:%d",
-                        batchId,
-                        minBatchId));
-                }
-                return batches.remove(batchId);
-            } else {
-                return null;
-            }
+		public synchronized PositionRange removePositionRange(Long batchId) {
+            if (!batches.containsKey(batchId)) {
+				return null;
+			}
+			Long minBatchId = Collections.min(batches.keySet());
+			if (!minBatchId.equals(batchId)) {
+			    // 检查一下提交的ack/rollback，必须按batchId分出去的顺序提交，否则容易出现丢数据
+			    throw new CanalMetaManagerException(String.format("batchId:%d is not the firstly:%d",
+			        batchId,
+			        minBatchId));
+			}
+			return batches.remove(batchId);
         }
 
-        public synchronized PositionRange getPositionRange(Long batchId) {
+		public synchronized PositionRange getPositionRange(Long batchId) {
             return batches.get(batchId);
         }
 
-        public synchronized PositionRange getLastestPositionRange() {
-            if (batches.size() == 0) {
+		public synchronized PositionRange getLastestPositionRange() {
+            if (batches.isEmpty()) {
                 return null;
             } else {
                 Long batchId = Collections.max(batches.keySet());
@@ -187,8 +201,8 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
             }
         }
 
-        public synchronized PositionRange getFirstPositionRange() {
-            if (batches.size() == 0) {
+		public synchronized PositionRange getFirstPositionRange() {
+            if (batches.isEmpty()) {
                 return null;
             } else {
                 Long batchId = Collections.min(batches.keySet());
@@ -196,7 +210,7 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
             }
         }
 
-        public synchronized Map<Long, PositionRange> listAllPositionRange() {
+		public synchronized Map<Long, PositionRange> listAllPositionRange() {
             Set<Long> batchIdSets = batches.keySet();
             List<Long> batchIds = Lists.newArrayList(batchIdSets);
             Collections.sort(Lists.newArrayList(batchIds));
@@ -204,23 +218,23 @@ public class MemoryMetaManager extends AbstractCanalLifeCycle implements CanalMe
             return Maps.newHashMap(batches);
         }
 
-        public synchronized void clearPositionRanges() {
+		public synchronized void clearPositionRanges() {
             batches.clear();
         }
 
-        private synchronized void updateMaxId(Long batchId) {
+		private synchronized void updateMaxId(Long batchId) {
             if (atomicMaxBatchId.get() < batchId + 1) {
                 atomicMaxBatchId.set(batchId + 1);
             }
         }
 
-        // ============ setter & getter =========
+		// ============ setter & getter =========
 
         public ClientIdentity getClientIdentity() {
             return clientIdentity;
         }
 
-        public void setClientIdentity(ClientIdentity clientIdentity) {
+		public void setClientIdentity(ClientIdentity clientIdentity) {
             this.clientIdentity = clientIdentity;
         }
 

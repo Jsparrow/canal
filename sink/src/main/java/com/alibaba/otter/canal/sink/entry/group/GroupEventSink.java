@@ -1,11 +1,13 @@
 package com.alibaba.otter.canal.sink.entry.group;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.alibaba.otter.canal.sink.CanalEventDownStreamHandler;
 import com.alibaba.otter.canal.sink.entry.EntryEventSink;
 import com.alibaba.otter.canal.store.model.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Collections;
 
 /**
  * 基于归并排序的sink处理
@@ -22,7 +24,8 @@ import com.alibaba.otter.canal.store.model.Event;
  */
 public class GroupEventSink extends EntryEventSink {
 
-    private int          groupSize;
+    private static final Logger logger = LoggerFactory.getLogger(GroupEventSink.class);
+	private int          groupSize;
     private GroupBarrier barrier;  // 归并排序需要预先知道组的大小，用于判断是否组内所有的sink都已经开始正常取数据
 
     public GroupEventSink(){
@@ -30,11 +33,11 @@ public class GroupEventSink extends EntryEventSink {
     }
 
     public GroupEventSink(int groupSize){
-        super();
         this.groupSize = groupSize;
     }
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
 
         if (filterTransactionEntry) {
@@ -44,21 +47,23 @@ public class GroupEventSink extends EntryEventSink {
         }
     }
 
-    protected boolean doSink(List<Event> events) {
+    @Override
+	protected boolean doSink(List<Event> events) {
         int size = events.size();
         for (int i = 0; i < events.size(); i++) {
             Event event = events.get(i);
             try {
                 barrier.await(event);// 进行timeline的归并调度处理
                 if (filterTransactionEntry) {
-                    super.doSink(Arrays.asList(event));
+                    super.doSink(Collections.singletonList(event));
                 } else if (i == size - 1) {
                     // 针对事务数据，只有到最后一条数据都通过后，才进行sink操作，保证原子性
                     // 同时批量sink，也要保证在最后一条数据释放状态之前写出数据，否则就有并发问题
                     return super.doSink(events);
                 }
             } catch (InterruptedException e) {
-                return false;
+                logger.error(e.getMessage(), e);
+				return false;
             } finally {
                 barrier.clear(event);
             }
@@ -67,7 +72,8 @@ public class GroupEventSink extends EntryEventSink {
         return false;
     }
 
-    public void interrupt() {
+    @Override
+	public void interrupt() {
         super.interrupt();
         barrier.interrupt();
     }

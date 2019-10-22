@@ -11,10 +11,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class DBTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(DBTest.class);
+
+	@Test
     public void test01() throws SQLException {
         DruidDataSource dataSource = new DruidDataSource();
         // dataSource.setDriverClassName("oracle.jdbc.OracleDriver");
@@ -102,7 +106,7 @@ public class DBTest {
             }
             content = sb.toString();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return content;
     }

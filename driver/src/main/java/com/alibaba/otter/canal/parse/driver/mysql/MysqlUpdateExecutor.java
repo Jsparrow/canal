@@ -46,7 +46,7 @@ public class MysqlUpdateExecutor {
         if (body[0] < 0) {
             ErrorPacket packet = new ErrorPacket();
             packet.fromBytes(body);
-            throw new IOException(packet + "\n with command: " + updateString);
+            throw new IOException(new StringBuilder().append(packet).append("\n with command: ").append(updateString).toString());
         }
 
         OKPacket packet = new OKPacket();

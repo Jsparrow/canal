@@ -15,6 +15,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.AbstractPropertyBindingResult;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.DataBinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Binder implementation that allows caller to bind to maps and also allows
@@ -29,10 +31,12 @@ import org.springframework.validation.DataBinder;
  */
 public class RelaxedDataBinder extends DataBinder {
 
-    private static final Set<Class<?>> EXCLUDED_EDITORS;
+    private static final Logger logger = LoggerFactory.getLogger(RelaxedDataBinder.class);
+
+	private static final Set<Class<?>> EXCLUDED_EDITORS;
 
     static {
-        Set<Class<?>> excluded = new HashSet<Class<?>>();
+        Set<Class<?>> excluded = new HashSet<>();
         excluded.add(FileEditor.class);
         EXCLUDED_EDITORS = Collections.unmodifiableSet(excluded);
     }
@@ -43,7 +47,7 @@ public class RelaxedDataBinder extends DataBinder {
 
     private boolean                       ignoreNestedProperties;
 
-    private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<String, String>();
+    private MultiValueMap<String, String> nameAliases = new LinkedMultiValueMap<>();
 
     /**
      * Create a new {@link RelaxedDataBinder} instance.
@@ -89,7 +93,7 @@ public class RelaxedDataBinder extends DataBinder {
      * @param aliases a map of property name to aliases
      */
     public void setNameAliases(Map<String, List<String>> aliases) {
-        this.nameAliases = new LinkedMultiValueMap<String, String>(aliases);
+        this.nameAliases = new LinkedMultiValueMap<>(aliases);
     }
 
     /**
@@ -129,8 +133,8 @@ public class RelaxedDataBinder extends DataBinder {
         BeanWrapper wrapper = new BeanWrapperImpl(target);
         wrapper.setConversionService(new RelaxedConversionService(getConversionService()));
         wrapper.setAutoGrowNestedPaths(true);
-        List<PropertyValue> sortedValues = new ArrayList<PropertyValue>();
-        Set<String> modifiedNames = new HashSet<String>();
+        List<PropertyValue> sortedValues = new ArrayList<>();
+        Set<String> modifiedNames = new HashSet<>();
         List<String> sortedNames = getSortedPropertyNames(propertyValues);
         for (String name : sortedNames) {
             PropertyValue propertyValue = propertyValues.getPropertyValue(name);
@@ -143,10 +147,8 @@ public class RelaxedDataBinder extends DataBinder {
     }
 
     private List<String> getSortedPropertyNames(MutablePropertyValues propertyValues) {
-        List<String> names = new LinkedList<String>();
-        for (PropertyValue propertyValue : propertyValues.getPropertyValueList()) {
-            names.add(propertyValue.getName());
-        }
+        List<String> names = new LinkedList<>();
+        propertyValues.getPropertyValueList().forEach(propertyValue -> names.add(propertyValue.getName()));
         sortPropertyNames(names);
         return names;
     }
@@ -161,18 +163,17 @@ public class RelaxedDataBinder extends DataBinder {
      * @param names the names to sort
      */
     private void sortPropertyNames(List<String> names) {
-        for (String name : new ArrayList<String>(names)) {
+        new ArrayList<String>(names).forEach(name -> {
             int propertyIndex = names.indexOf(name);
             RelaxedDataBinder.BeanPath path = new RelaxedDataBinder.BeanPath(name);
-            for (String prefix : path.prefixes()) {
-                int prefixIndex = names.indexOf(prefix);
-                if (prefixIndex >= propertyIndex) {
+            path.prefixes().stream().mapToInt(names::indexOf).forEach(prefixIndex -> {
+				if (prefixIndex >= propertyIndex) {
                     // The child property has a parent in the list in the wrong order
                     names.remove(name);
                     names.add(prefixIndex, name);
                 }
-            }
-        }
+			});
+        });
     }
 
     private MutablePropertyValues addMapPrefix(MutablePropertyValues propertyValues) {
@@ -302,11 +303,10 @@ public class RelaxedDataBinder extends DataBinder {
     @SuppressWarnings("rawtypes")
     private boolean isBlanked(BeanWrapper wrapper, String propertyName, String key) {
         Object value = (wrapper.isReadableProperty(propertyName) ? wrapper.getPropertyValue(propertyName) : null);
-        if (value instanceof Map) {
-            if (((Map) value).get(key) == BLANK) {
-                return true;
-            }
-        }
+        boolean condition = value instanceof Map && ((Map) value).get(key) == BLANK;
+		if (condition) {
+		    return true;
+		}
         return false;
     }
 
@@ -373,7 +373,7 @@ public class RelaxedDataBinder extends DataBinder {
                 Class<?> type = target.getPropertyType(nested);
                 if ((type != null) && Map.class.isAssignableFrom(type)) {
                     // Special case for map property (gh-3836).
-                    return nested + "[" + name.substring(candidate.length() + 1) + "]";
+                    return new StringBuilder().append(nested).append("[").append(name.substring(candidate.length() + 1)).append("]").toString();
                 }
                 String propertyName = resolvePropertyName(target,
                     joinString(prefix, nested),
@@ -395,6 +395,7 @@ public class RelaxedDataBinder extends DataBinder {
                         return candidate;
                     }
                 } catch (InvalidPropertyException ex) {
+					logger.error(ex.getMessage(), ex);
                     // swallow and continue
                 }
             }
@@ -403,7 +404,7 @@ public class RelaxedDataBinder extends DataBinder {
     }
 
     private String joinString(String prefix, String name) {
-        return (StringUtils.hasLength(prefix) ? prefix + "." + name : name);
+        return (StringUtils.hasLength(prefix) ? new StringBuilder().append(prefix).append(".").append(name).toString() : name);
     }
 
     private Iterable<String> getNameAndAliases(String name) {
@@ -411,7 +412,7 @@ public class RelaxedDataBinder extends DataBinder {
         if (aliases == null) {
             return Collections.singleton(name);
         }
-        List<String> nameAndAliases = new ArrayList<String>(aliases.size() + 1);
+        List<String> nameAndAliases = new ArrayList<>(aliases.size() + 1);
         nameAndAliases.add(name);
         nameAndAliases.addAll(aliases);
         return nameAndAliases;
@@ -473,7 +474,7 @@ public class RelaxedDataBinder extends DataBinder {
         }
 
         public List<String> prefixes() {
-            List<String> prefixes = new ArrayList<String>();
+            List<String> prefixes = new ArrayList<>();
             for (int index = 1; index < this.nodes.size(); index++) {
                 prefixes.add(prefix(index));
             }
@@ -485,7 +486,7 @@ public class RelaxedDataBinder extends DataBinder {
         }
 
         private List<PathNode> splitPath(String path) {
-            List<PathNode> nodes = new ArrayList<PathNode>();
+            List<PathNode> nodes = new ArrayList<>();
             String current = extractIndexedPaths(path, nodes);
             for (String name : StringUtils.delimitedListToStringArray(current, ".")) {
                 if (StringUtils.hasText(name)) {
@@ -518,7 +519,7 @@ public class RelaxedDataBinder extends DataBinder {
         }
 
         public void collapseKeys(int index) {
-            List<PathNode> revised = new ArrayList<PathNode>();
+            List<PathNode> revised = new ArrayList<>();
             for (int i = 0; i < index; i++) {
                 revised.add(this.nodes.get(i));
             }
@@ -599,7 +600,7 @@ public class RelaxedDataBinder extends DataBinder {
 
             @Override
             public String toString() {
-                return "[" + this.name + "]";
+                return new StringBuilder().append("[").append(this.name).append("]").toString();
             }
 
         }
@@ -612,7 +613,7 @@ public class RelaxedDataBinder extends DataBinder {
 
             @Override
             public String toString() {
-                return "[" + this.name + "]";
+                return new StringBuilder().append("[").append(this.name).append("]").toString();
             }
 
         }
@@ -668,7 +669,7 @@ public class RelaxedDataBinder extends DataBinder {
         private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES;
 
         static {
-            Set<String> names = new HashSet<String>();
+            Set<String> names = new HashSet<>();
             names.add(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
             names.add(StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
             BENIGN_PROPERTY_SOURCE_NAMES = Collections.unmodifiableSet(names);
@@ -679,7 +680,7 @@ public class RelaxedDataBinder extends DataBinder {
         }
 
         @Override
-        public void setPropertyValue(PropertyValue pv) throws BeansException {
+        public void setPropertyValue(PropertyValue pv) {
             try {
                 super.setPropertyValue(pv);
             } catch (NotWritablePropertyException ex) {
@@ -711,9 +712,8 @@ public class RelaxedDataBinder extends DataBinder {
         RelaxedBindingNotWritablePropertyException(NotWritablePropertyException ex, PropertyOrigin propertyOrigin){
             super(ex.getBeanClass(), ex.getPropertyName());
             this.propertyOrigin = propertyOrigin;
-            this.message = "Failed to bind '" + propertyOrigin.getName() + "' from '"
-                           + propertyOrigin.getSource().getName() + "' to '" + ex.getPropertyName() + "' property on '"
-                           + ex.getBeanClass().getName() + "'";
+            this.message = new StringBuilder().append("Failed to bind '").append(propertyOrigin.getName()).append("' from '").append(propertyOrigin.getSource().getName()).append("' to '").append(ex.getPropertyName())
+					.append("' property on '").append(ex.getBeanClass().getName()).append("'").toString();
         }
 
         @Override

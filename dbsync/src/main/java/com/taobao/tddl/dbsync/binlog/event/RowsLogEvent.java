@@ -16,7 +16,24 @@ import com.taobao.tddl.dbsync.binlog.event.TableMapLogEvent.ColumnInfo;
  */
 public abstract class RowsLogEvent extends LogEvent {
 
-    /**
+    /** Last event of a statement */
+    public static final int  STMT_END_F              = 1;
+	/** Value of the OPTION_NO_FOREIGN_KEY_CHECKS flag in thd->options */
+    public static final int  NO_FOREIGN_KEY_CHECKS_F = (1 << 1);
+	/** Value of the OPTION_RELAXED_UNIQUE_CHECKS flag in thd->options */
+    public static final int  RELAXED_UNIQUE_CHECKS_F = (1 << 2);
+	/**
+     * Indicates that rows in this event are complete, that is contain values
+     * for all columns of the table.
+     */
+    public static final int  COMPLETE_ROWS_F         = (1 << 3);
+	/* RW = "RoWs" */
+    public static final int  RW_MAPID_OFFSET         = 0;
+	public static final int  RW_FLAGS_OFFSET         = 6;
+	public static final int  RW_VHLEN_OFFSET         = 8;
+	public static final int  RW_V_TAG_LEN            = 1;
+	public static final int  RW_V_EXTRAINFO_TAG      = 0;
+	/**
      * Fixed data part:
      * <ul>
      * <li>6 bytes. The table ID.</li>
@@ -55,35 +72,30 @@ public abstract class RowsLogEvent extends LogEvent {
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log
      */
     private final long       tableId;                           /* Table ID */
-    private TableMapLogEvent table;                             /*
+	private TableMapLogEvent table;                             /*
                                                                   * The table
                                                                   * the rows
                                                                   * belong to
                                                                   */
-
-    /** Bitmap denoting columns available */
+	/** Bitmap denoting columns available */
     protected final int      columnLen;
-    protected final boolean  partial;
-    protected final BitSet   columns;
-
-    /**
+	protected final boolean  partial;
+	protected final BitSet   columns;
+	/**
      * Bitmap for columns available in the after image, if present. These fields
      * are only available for Update_rows events. Observe that the width of both
      * the before image COLS vector and the after image COLS vector is the same:
      * the number of columns of the table on the master.
      */
     protected final BitSet   changeColumns;
-
-    protected int            jsonColumnCount         = 0;
-
-    /** XXX: Don't handle buffer in another thread. */
+	protected int            jsonColumnCount         = 0;
+	/** XXX: Don't handle buffer in another thread. */
     private final LogBuffer  rowsBuf;                           /*
                                                                   * The rows in
                                                                   * packed
                                                                   * format
                                                                   */
-
-    /**
+	/**
      * enum enum_flag These definitions allow you to combine the flags into an
      * appropriate flag set using the normal bitwise operators. The implicit
      * conversion from an enum-constant to an integer is accepted by the
@@ -91,33 +103,11 @@ public abstract class RowsLogEvent extends LogEvent {
      */
     private final int        flags;
 
-    /** Last event of a statement */
-    public static final int  STMT_END_F              = 1;
-
-    /** Value of the OPTION_NO_FOREIGN_KEY_CHECKS flag in thd->options */
-    public static final int  NO_FOREIGN_KEY_CHECKS_F = (1 << 1);
-
-    /** Value of the OPTION_RELAXED_UNIQUE_CHECKS flag in thd->options */
-    public static final int  RELAXED_UNIQUE_CHECKS_F = (1 << 2);
-
-    /**
-     * Indicates that rows in this event are complete, that is contain values
-     * for all columns of the table.
-     */
-    public static final int  COMPLETE_ROWS_F         = (1 << 3);
-
-    /* RW = "RoWs" */
-    public static final int  RW_MAPID_OFFSET         = 0;
-    public static final int  RW_FLAGS_OFFSET         = 6;
-    public static final int  RW_VHLEN_OFFSET         = 8;
-    public static final int  RW_V_TAG_LEN            = 1;
-    public static final int  RW_V_EXTRAINFO_TAG      = 0;
-
-    public RowsLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	public RowsLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         this(header, buffer, descriptionEvent, false);
     }
 
-    public RowsLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent, boolean partial){
+	public RowsLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent, boolean partial){
         super(header);
 
         final int commonHeaderLen = descriptionEvent.commonHeaderLen;
@@ -177,7 +167,7 @@ public abstract class RowsLogEvent extends LogEvent {
         rowsBuf = buffer.duplicate(dataSize);
     }
 
-    public final void fillTable(LogContext context) {
+	public final void fillTable(LogContext context) {
         table = context.getTable(tableId);
 
         if (table == null) {
@@ -203,27 +193,27 @@ public abstract class RowsLogEvent extends LogEvent {
         this.jsonColumnCount = jsonColumnCount;
     }
 
-    public final long getTableId() {
+	public final long getTableId() {
         return tableId;
     }
 
-    public final TableMapLogEvent getTable() {
+	public final TableMapLogEvent getTable() {
         return table;
     }
 
-    public final BitSet getColumns() {
+	public final BitSet getColumns() {
         return columns;
     }
 
-    public final BitSet getChangeColumns() {
+	public final BitSet getChangeColumns() {
         return changeColumns;
     }
 
-    public final RowsLogBuffer getRowsBuf(String charsetName) {
+	public final RowsLogBuffer getRowsBuf(String charsetName) {
         return new RowsLogBuffer(rowsBuf, columnLen, charsetName, jsonColumnCount, partial);
     }
 
-    public final int getFlags(final int flags) {
+	public final int getFlags(final int flags) {
         return this.flags & flags;
     }
 }

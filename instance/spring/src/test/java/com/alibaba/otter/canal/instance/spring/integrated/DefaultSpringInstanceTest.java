@@ -11,6 +11,8 @@ import org.springframework.util.Assert;
 
 import com.alibaba.otter.canal.instance.core.CanalInstance;
 import com.alibaba.otter.canal.instance.core.CanalInstanceGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author zebin.xuzb @ 2012-7-13
@@ -19,7 +21,8 @@ import com.alibaba.otter.canal.instance.core.CanalInstanceGenerator;
 @Ignore
 public class DefaultSpringInstanceTest {
 
-    private ApplicationContext context;
+    private static final Logger logger = LoggerFactory.getLogger(DefaultSpringInstanceTest.class);
+	private ApplicationContext context;
 
     @Before
     public void start() {
@@ -29,7 +32,7 @@ public class DefaultSpringInstanceTest {
 
     @After
     public void close() {
-        if (context != null && context instanceof AbstractApplicationContext) {
+        if (context instanceof AbstractApplicationContext) {
             ((AbstractApplicationContext) context).close();
         }
     }
@@ -44,6 +47,7 @@ public class DefaultSpringInstanceTest {
         try {
             Thread.sleep(10 * 1000);
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
         canalInstance.stop();
     }

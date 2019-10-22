@@ -9,36 +9,36 @@ public class MirrorDbConfig {
     private MappingConfig      mappingConfig;
     private Map<String, MappingConfig> tableConfig = new ConcurrentHashMap<>();
 
-    public static MirrorDbConfig create(String fileName, MappingConfig mappingConfig) {
-        return new MirrorDbConfig(fileName, mappingConfig);
-    }
-
     public MirrorDbConfig(String fileName, MappingConfig mappingConfig){
         this.fileName = fileName;
         this.mappingConfig = mappingConfig;
     }
 
-    public String getFileName() {
+	public static MirrorDbConfig create(String fileName, MappingConfig mappingConfig) {
+        return new MirrorDbConfig(fileName, mappingConfig);
+    }
+
+	public String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+	public void setFileName(String fileName) {
         this.fileName = fileName;
     }
 
-    public MappingConfig getMappingConfig() {
+	public MappingConfig getMappingConfig() {
         return mappingConfig;
     }
 
-    public void setMappingConfig(MappingConfig mappingConfig) {
+	public void setMappingConfig(MappingConfig mappingConfig) {
         this.mappingConfig = mappingConfig;
     }
 
-    public Map<String, MappingConfig> getTableConfig() {
+	public Map<String, MappingConfig> getTableConfig() {
         return tableConfig;
     }
 
-    public void setTableConfig(Map<String, MappingConfig> tableConfig) {
+	public void setTableConfig(Map<String, MappingConfig> tableConfig) {
         this.tableConfig = tableConfig;
     }
 }

@@ -20,7 +20,7 @@ public abstract class AbstractEtlService {
 
     private String        type;
     private AdapterConfig config;
-    private final long    CNT_PER_TASK = 10000L;
+    private final long    cntPerTask = 10000L;
 
     public AbstractEtlService(String type, AdapterConfig config){
         this.type = type;
@@ -58,7 +58,7 @@ public abstract class AbstractEtlService {
             }
 
             // 获取总数
-            String countSql = "SELECT COUNT(1) FROM ( " + sql + ") _CNT ";
+            String countSql = new StringBuilder().append("SELECT COUNT(1) FROM ( ").append(sql).append(") _CNT ").toString();
             long cnt = (Long) Util.sqlRS(dataSource, countSql, values, rs -> {
                 Long count = null;
                 try {
@@ -76,7 +76,7 @@ public abstract class AbstractEtlService {
                 int threadCount = Runtime.getRuntime().availableProcessors();
 
                 long offset;
-                long size = CNT_PER_TASK;
+                long size = cntPerTask;
                 long workerCnt = cnt / size + (cnt % size == 0 ? 0 : 1);
 
                 if (logger.isDebugEnabled()) {
@@ -87,7 +87,7 @@ public abstract class AbstractEtlService {
                 List<Future<Boolean>> futures = new ArrayList<>();
                 for (long i = 0; i < workerCnt; i++) {
                     offset = size * i;
-                    String sqlFinal = sql + " LIMIT " + offset + "," + size;
+                    String sqlFinal = new StringBuilder().append(sql).append(" LIMIT ").append(offset).append(",").append(size).toString();
                     Future<Boolean> future = executor.submit(() -> executeSqlImport(dataSource,
                         sqlFinal,
                         values,
@@ -106,10 +106,10 @@ public abstract class AbstractEtlService {
             }
 
             logger.info("数据全量导入完成, 一共导入 {} 条数据, 耗时: {}", impCount.get(), System.currentTimeMillis() - start);
-            etlResult.setResultMessage("导入" + type + " 数据：" + impCount.get() + " 条");
+            etlResult.setResultMessage(new StringBuilder().append("导入").append(type).append(" 数据：").append(impCount.get()).append(" 条").toString());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            errMsg.add(type + " 数据导入异常 =>" + e.getMessage());
+            errMsg.add(new StringBuilder().append(type).append(" 数据导入异常 =>").append(e.getMessage()).toString());
         }
         if (errMsg.isEmpty()) {
             etlResult.setSucceeded(true);

@@ -40,12 +40,11 @@ public class WebConfig implements WebMvcConfigurer {
                 httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
                 httpServletResponse.setHeader("Access-Control-Max-Age", String.valueOf(3600 * 24));
 
-                if (HttpMethod.OPTIONS.toString().equals(httpServletRequest.getMethod())) {
-                    httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
-                    return false;
-                }
-
-                return true;
+                if (!HttpMethod.OPTIONS.toString().equals(httpServletRequest.getMethod())) {
+					return true;
+				}
+				httpServletResponse.setStatus(HttpStatus.NO_CONTENT.value());
+				return false;
             }
         }).addPathPatterns("/api/**");
 
@@ -64,23 +63,22 @@ public class WebConfig implements WebMvcConfigurer {
                         httpServletRequest.setAttribute("token", token);
                     }
                 }
-                if (!valid) {
-                    BaseModel baseModel = BaseModel.getInstance(null);
-                    baseModel.setCode(50014);
-                    baseModel.setMessage("Expired token");
-                    ObjectMapper mapper = new ObjectMapper();
-                    String json = mapper.writeValueAsString(baseModel);
-                    try {
-                        httpServletResponse.setContentType("application/json;charset=UTF-8");
-                        PrintWriter out = httpServletResponse.getWriter();
-                        out.print(json);
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                    return false;
-                }
-
-                return true;
+                if (valid) {
+					return true;
+				}
+				BaseModel baseModel = BaseModel.getInstance(null);
+				baseModel.setCode(50014);
+				baseModel.setMessage("Expired token");
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(baseModel);
+				try {
+				    httpServletResponse.setContentType("application/json;charset=UTF-8");
+				    PrintWriter out = httpServletResponse.getWriter();
+				    out.print(json);
+				} catch (Throwable e) {
+				    throw new RuntimeException(e);
+				}
+				return false;
             }
         })
             .addPathPatterns("/api/**")

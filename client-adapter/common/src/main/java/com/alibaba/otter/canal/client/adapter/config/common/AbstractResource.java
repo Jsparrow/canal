@@ -10,6 +10,8 @@ import java.net.URL;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -24,7 +26,9 @@ import org.springframework.util.ResourceUtils;
  */
 public abstract class AbstractResource implements Resource {
 
-    /**
+    private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
+
+	/**
      * This implementation checks whether a File can be opened, falling back to
      * whether an InputStream can be opened. This will cover both directories and
      * content resources.
@@ -35,13 +39,13 @@ public abstract class AbstractResource implements Resource {
         try {
             return getFile().exists();
         } catch (IOException ex) {
-            // Fall back to stream existence: can we open the stream?
-            try {
-                InputStream is = getInputStream();
-                is.close();
+            logger.error(ex.getMessage(), ex);
+			// Fall back to stream existence: can we open the stream?
+            try (InputStream is = getInputStream()) {
                 return true;
             } catch (Throwable isEx) {
-                return false;
+                logger.error(isEx.getMessage(), isEx);
+				return false;
             }
         }
     }
@@ -81,7 +85,7 @@ public abstract class AbstractResource implements Resource {
         try {
             return ResourceUtils.toURI(url);
         } catch (URISyntaxException ex) {
-            throw new RuntimeException("Invalid URI [" + url + "]", ex);
+            throw new RuntimeException(new StringBuilder().append("Invalid URI [").append(url).append("]").toString(), ex);
         }
     }
 
@@ -117,6 +121,7 @@ public abstract class AbstractResource implements Resource {
             try {
                 is.close();
             } catch (IOException ex) {
+				logger.error(ex.getMessage(), ex);
             }
         }
     }

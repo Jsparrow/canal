@@ -10,10 +10,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.alibaba.otter.canal.filter.aviater.AviaterRegexFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MutliAviaterFilterTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(MutliAviaterFilterTest.class);
+
+	@Test
     public void test_simple() {
         int count = 5;
         ExecutorService executor = Executors.newFixedThreadPool(count);
@@ -21,29 +25,27 @@ public class MutliAviaterFilterTest {
         final CountDownLatch countDown = new CountDownLatch(count);
         final AtomicInteger successed = new AtomicInteger(0);
         for (int i = 0; i < count; i++) {
-            executor.submit(new Runnable() {
+            executor.submit(() -> {
+			    try {
+			        for (int i1 = 0; i1 < 100; i1++) {
+			            doRegexTest();
+			            // try {
+			            // Thread.sleep(10);
+			            // } catch (InterruptedException e) {
+			            // }
+			        }
 
-                public void run() {
-                    try {
-                        for (int i = 0; i < 100; i++) {
-                            doRegexTest();
-                            // try {
-                            // Thread.sleep(10);
-                            // } catch (InterruptedException e) {
-                            // }
-                        }
-
-                        successed.incrementAndGet();
-                    } finally {
-                        countDown.countDown();
-                    }
-                }
-            });
+			        successed.incrementAndGet();
+			    } finally {
+			        countDown.countDown();
+			    }
+			});
         }
 
         try {
             countDown.await();
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
 
         Assert.assertEquals(count, successed.get());

@@ -50,17 +50,13 @@ public class ESConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(ESConnection.class);
 
-    public enum ESClientMode {
-                              TRANSPORT, REST
-    }
+	private ESClientMode        mode;
 
-    private ESClientMode        mode;
+	private TransportClient     transportClient;
 
-    private TransportClient     transportClient;
+	private RestHighLevelClient restHighLevelClient;
 
-    private RestHighLevelClient restHighLevelClient;
-
-    public ESConnection(String[] hosts, Map<String, String> properties, ESClientMode mode) throws UnknownHostException{
+	public ESConnection(String[] hosts, Map<String, String> properties, ESClientMode mode) throws UnknownHostException{
         this.mode = mode;
         if (mode == ESClientMode.TRANSPORT) {
             Settings.Builder settingBuilder = Settings.builder();
@@ -95,7 +91,7 @@ public class ESConnection {
         }
     }
 
-    public void close() {
+	public void close() {
         if (mode == ESClientMode.TRANSPORT) {
             transportClient.close();
         } else {
@@ -107,7 +103,7 @@ public class ESConnection {
         }
     }
 
-    public MappingMetaData getMapping(String index, String type) {
+	public MappingMetaData getMapping(String index, String type) {
         MappingMetaData mappingMetaData = null;
         if (mode == ESClientMode.TRANSPORT) {
             ImmutableOpenMap<String, MappingMetaData> mappings;
@@ -123,7 +119,8 @@ public class ESConnection {
                     .get(index)
                     .getMappings();
             } catch (NullPointerException e) {
-                throw new IllegalArgumentException("Not found the mapping info of index: " + index);
+                logger.error(e.getMessage(), e);
+				throw new IllegalArgumentException("Not found the mapping info of index: " + index);
             }
             mappingMetaData = mappings.get(type);
 
@@ -145,7 +142,8 @@ public class ESConnection {
 
                 mappings = response.mappings();
             } catch (NullPointerException e) {
-                throw new IllegalArgumentException("Not found the mapping info of index: " + index);
+                logger.error(e.getMessage(), e);
+				throw new IllegalArgumentException("Not found the mapping info of index: " + index);
             } catch (IOException e) {
                 logger.error(e.getMessage(), e);
                 return null;
@@ -153,6 +151,35 @@ public class ESConnection {
             mappingMetaData = mappings.get(index).get(type);
         }
         return mappingMetaData;
+    }
+
+	// ------ get/set ------
+    public ESClientMode getMode() {
+        return mode;
+    }
+
+	public void setMode(ESClientMode mode) {
+        this.mode = mode;
+    }
+
+	public TransportClient getTransportClient() {
+        return transportClient;
+    }
+
+	public void setTransportClient(TransportClient transportClient) {
+        this.transportClient = transportClient;
+    }
+
+	public RestHighLevelClient getRestHighLevelClient() {
+        return restHighLevelClient;
+    }
+
+	public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
+        this.restHighLevelClient = restHighLevelClient;
+    }
+
+	public enum ESClientMode {
+                              TRANSPORT, REST
     }
 
     public class ES6xIndexRequest implements ESBulkRequest.ESIndexRequest {
@@ -169,7 +196,8 @@ public class ESConnection {
             }
         }
 
-        public ES6xIndexRequest setSource(Map<String, ?> source) {
+        @Override
+		public ES6xIndexRequest setSource(Map<String, ?> source) {
             if (mode == ESClientMode.TRANSPORT) {
                 indexRequestBuilder.setSource(source);
             } else {
@@ -178,7 +206,8 @@ public class ESConnection {
             return this;
         }
 
-        public ES6xIndexRequest setRouting(String routing) {
+        @Override
+		public ES6xIndexRequest setRouting(String routing) {
             if (mode == ESClientMode.TRANSPORT) {
                 indexRequestBuilder.setRouting(routing);
             } else {
@@ -218,7 +247,8 @@ public class ESConnection {
             }
         }
 
-        public ES6xUpdateRequest setDoc(Map source) {
+        @Override
+		public ES6xUpdateRequest setDoc(Map source) {
             if (mode == ESClientMode.TRANSPORT) {
                 updateRequestBuilder.setDoc(source);
             } else {
@@ -227,7 +257,8 @@ public class ESConnection {
             return this;
         }
 
-        public ES6xUpdateRequest setDocAsUpsert(boolean shouldUpsertDoc) {
+        @Override
+		public ES6xUpdateRequest setDocAsUpsert(boolean shouldUpsertDoc) {
             if (mode == ESClientMode.TRANSPORT) {
                 updateRequestBuilder.setDocAsUpsert(shouldUpsertDoc);
             } else {
@@ -236,7 +267,8 @@ public class ESConnection {
             return this;
         }
 
-        public ES6xUpdateRequest setRouting(String routing) {
+        @Override
+		public ES6xUpdateRequest setRouting(String routing) {
             if (mode == ESClientMode.TRANSPORT) {
                 updateRequestBuilder.setRouting(routing);
             } else {
@@ -372,7 +404,8 @@ public class ESConnection {
             }
         }
 
-        public void resetBulk() {
+        @Override
+		public void resetBulk() {
             if (mode == ESClientMode.TRANSPORT) {
                 bulkRequestBuilder = transportClient.prepareBulk();
             } else {
@@ -380,7 +413,8 @@ public class ESConnection {
             }
         }
 
-        public ES6xBulkRequest add(ESIndexRequest esIndexRequest) {
+        @Override
+		public ES6xBulkRequest add(ESIndexRequest esIndexRequest) {
             ES6xIndexRequest eir = (ES6xIndexRequest) esIndexRequest;
             if (mode == ESClientMode.TRANSPORT) {
                 bulkRequestBuilder.add(eir.indexRequestBuilder);
@@ -390,7 +424,8 @@ public class ESConnection {
             return this;
         }
 
-        public ES6xBulkRequest add(ESUpdateRequest esUpdateRequest) {
+        @Override
+		public ES6xBulkRequest add(ESUpdateRequest esUpdateRequest) {
             ES6xUpdateRequest eur = (ES6xUpdateRequest) esUpdateRequest;
             if (mode == ESClientMode.TRANSPORT) {
                 bulkRequestBuilder.add(eur.updateRequestBuilder);
@@ -400,7 +435,8 @@ public class ESConnection {
             return this;
         }
 
-        public ES6xBulkRequest add(ESDeleteRequest esDeleteRequest) {
+        @Override
+		public ES6xBulkRequest add(ESDeleteRequest esDeleteRequest) {
             ES6xDeleteRequest edr = (ES6xDeleteRequest) esDeleteRequest;
             if (mode == ESClientMode.TRANSPORT) {
                 bulkRequestBuilder.add(edr.deleteRequestBuilder);
@@ -410,7 +446,8 @@ public class ESConnection {
             return this;
         }
 
-        public int numberOfActions() {
+        @Override
+		public int numberOfActions() {
             if (mode == ESClientMode.TRANSPORT) {
                 return bulkRequestBuilder.numberOfActions();
             } else {
@@ -418,7 +455,8 @@ public class ESConnection {
             }
         }
 
-        public ESBulkResponse bulk() {
+        @Override
+		public ESBulkResponse bulk() {
             if (mode == ESClientMode.TRANSPORT) {
                 BulkResponse responses = bulkRequestBuilder.execute().actionGet();
                 return new ES6xBulkResponse(responses);
@@ -476,30 +514,5 @@ public class ESConnection {
                 }
             }
         }
-    }
-
-    // ------ get/set ------
-    public ESClientMode getMode() {
-        return mode;
-    }
-
-    public void setMode(ESClientMode mode) {
-        this.mode = mode;
-    }
-
-    public TransportClient getTransportClient() {
-        return transportClient;
-    }
-
-    public void setTransportClient(TransportClient transportClient) {
-        this.transportClient = transportClient;
-    }
-
-    public RestHighLevelClient getRestHighLevelClient() {
-        return restHighLevelClient;
-    }
-
-    public void setRestHighLevelClient(RestHighLevelClient restHighLevelClient) {
-        this.restHighLevelClient = restHighLevelClient;
     }
 }

@@ -11,11 +11,11 @@ public interface HeartBeatCallback {
     /**
      * 心跳发送成功
      */
-    public void onSuccess(long costTime);
+    void onSuccess(long costTime);
 
     /**
      * 心跳发送失败
      */
-    public void onFailed(Throwable e);
+    void onFailed(Throwable e);
 
 }

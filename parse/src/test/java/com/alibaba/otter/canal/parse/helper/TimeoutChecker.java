@@ -8,41 +8,39 @@ package com.alibaba.otter.canal.parse.helper;
 public class TimeoutChecker {
 
     /**
+     * default 3s
+     */
+    private static final long DEFAULT_TIMEOUT_MILLIS = 3 * 1000;
+	/**
      * 最后一次动作的时间
      */
     private long              lastTouch;
-    /**
+	/**
      * 超时时间
      */
     private long              timeoutMillis;
-
-    /**
+	/**
      * 运行标志
      */
     private boolean           running                = true;
 
-    /**
-     * default 3s
-     */
-    private static final long DEFAULT_TIMEOUT_MILLIS = 3 * 1000;
-
-    public TimeoutChecker(long timeoutMillis){
+	public TimeoutChecker(long timeoutMillis){
         this.timeoutMillis = timeoutMillis;
         touch();
     }
 
-    public TimeoutChecker(){
+	public TimeoutChecker(){
         this(DEFAULT_TIMEOUT_MILLIS);
     }
 
-    /**
+	/**
      * 更新
      */
     public void touch() {
         this.lastTouch = System.currentTimeMillis();
     }
 
-    /**
+	/**
      * 等待空闲
      * 
      * @throws InterruptedException
@@ -53,7 +51,7 @@ public class TimeoutChecker {
         }
     }
 
-    public void stop() {
+	public void stop() {
         this.running = false;
     }
 }

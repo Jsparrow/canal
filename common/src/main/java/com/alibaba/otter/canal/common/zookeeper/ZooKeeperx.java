@@ -40,7 +40,7 @@ public class ZooKeeperx extends ZkConnection {
     private static final Field  zookeeperFiled          = ReflectionUtils.findField(ZkConnection.class, "_zk");
     private static final int    DEFAULT_SESSION_TIMEOUT = 90000;
 
-    private final List<String>  _serversList;
+    private final List<String>  serversList;
     private final int           _sessionTimeOut;
 
     public ZooKeeperx(String zkServers){
@@ -49,7 +49,7 @@ public class ZooKeeperx extends ZkConnection {
 
     public ZooKeeperx(String zkServers, int sessionTimeOut){
         super(zkServers, sessionTimeOut);
-        _serversList = Arrays.asList(StringUtils.split(this.getServers(), SERVER_COMMA));
+        serversList = Arrays.asList(StringUtils.split(this.getServers(), SERVER_COMMA));
         _sessionTimeOut = sessionTimeOut;
     }
 
@@ -65,10 +65,10 @@ public class ZooKeeperx extends ZkConnection {
             if (_zk != null) {
                 throw new IllegalStateException("zk client has already been started");
             }
-            String zkServers = _serversList.get(0);
+            String zkServers = serversList.get(0);
 
             try {
-                logger.debug("Creating new ZookKeeper instance to connect to " + zkServers + ".");
+                logger.debug(new StringBuilder().append("Creating new ZookKeeper instance to connect to ").append(zkServers).append(".").toString());
                 _zk = new ZooKeeper(zkServers, _sessionTimeOut, watcher);
                 configMutliCluster(_zk);
                 ReflectionUtils.setField(zookeeperFiled, this, _zk);
@@ -83,20 +83,20 @@ public class ZooKeeperx extends ZkConnection {
     // ===============================
 
     public void configMutliCluster(ZooKeeper zk) {
-        if (_serversList.size() == 1) {
+        if (serversList.size() == 1) {
             return;
         }
-        String cluster1 = _serversList.get(0);
+        String cluster1 = serversList.get(0);
         try {
-            if (_serversList.size() > 1) {
+            if (serversList.size() > 1) {
                 // 强制的声明accessible
                 ReflectionUtils.makeAccessible(clientCnxnField);
                 ReflectionUtils.makeAccessible(hostProviderField);
                 ReflectionUtils.makeAccessible(serverAddressesField);
 
                 // 添加第二组集群列表
-                for (int i = 1; i < _serversList.size(); i++) {
-                    String cluster = _serversList.get(i);
+                for (int i = 1; i < serversList.size(); i++) {
+                    String cluster = serversList.get(i);
                     // 强制获取zk中的地址信息
                     ClientCnxn cnxn = (ClientCnxn) ReflectionUtils.getField(clientCnxnField, zk);
                     HostProvider hostProvider = (HostProvider) ReflectionUtils.getField(hostProviderField, cnxn);
@@ -112,6 +112,7 @@ public class ZooKeeperx extends ZkConnection {
                     zk.close();
                 }
             } catch (InterruptedException ie) {
+				logger.error(ie.getMessage(), ie);
                 // ignore interrupt
             }
             throw new ZkException("zookeeper_create_error, serveraddrs=" + cluster1, e);

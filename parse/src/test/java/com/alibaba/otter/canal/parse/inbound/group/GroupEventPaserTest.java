@@ -17,10 +17,13 @@ import com.alibaba.otter.canal.protocol.position.LogPosition;
 import com.alibaba.otter.canal.sink.entry.EntryEventSink;
 import com.alibaba.otter.canal.sink.entry.group.GroupEventSink;
 import com.taobao.tddl.dbsync.binlog.LogEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GroupEventPaserTest {
 
-    private static final String DETECTING_SQL = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
+    private static final Logger logger = LoggerFactory.getLogger(GroupEventPaserTest.class);
+	private static final String DETECTING_SQL = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
     private static final String MYSQL_ADDRESS = "127.0.0.1";
     private static final String USERNAME      = "xxxxx";
     private static final String PASSWORD      = "xxxxx";
@@ -53,6 +56,7 @@ public class GroupEventPaserTest {
         try {
             Thread.sleep(30 * 10 * 1000L);
         } catch (InterruptedException e) {
+			logger.error(e.getMessage(), e);
         }
 
         mysqlEventPaser1.stop();
@@ -69,7 +73,7 @@ public class GroupEventPaserTest {
         mysqlEventPaser.setDetectingSQL(DETECTING_SQL);
         mysqlEventPaser.setMasterInfo(buildAuthentication());
         mysqlEventPaser.setMasterPosition(defaultPosition);
-        mysqlEventPaser.setBinlogParser(buildParser(buildAuthentication()));
+        mysqlEventPaser.setBinlogParser(buildParser());
         mysqlEventPaser.setEventSink(new EntryEventSink());
         mysqlEventPaser.setLogPositionManager(new AbstractLogPositionManager() {
 
@@ -79,18 +83,18 @@ public class GroupEventPaserTest {
             }
 
             @Override
-            public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
-                System.out.println(logPosition);
+            public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
         });
         return mysqlEventPaser;
     }
 
-    private BinlogParser buildParser(AuthenticationInfo info) {
+    private BinlogParser buildParser() {
         return new AbstractBinlogParser<LogEvent>() {
 
             @Override
-            public Entry parse(LogEvent event, boolean isSeek) throws CanalParseException {
+            public Entry parse(LogEvent event, boolean isSeek) {
                 return null;
             }
         };

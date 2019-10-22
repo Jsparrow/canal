@@ -21,7 +21,7 @@ import com.google.common.collect.MigrateMap;
  * @version 1.0.0
  */
 
-public class MixedMetaManager extends MemoryMetaManager implements CanalMetaManager {
+public class MixedMetaManager extends MemoryMetaManager {
 
     private ExecutorService      executor;
     private ZooKeeperMetaManager zooKeeperMetaManager;
@@ -29,7 +29,8 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
     private final Position       nullCursor = new Position() {
                                             };
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         Assert.notNull(zooKeeperMetaManager);
         if (!zooKeeperMetaManager.isStart()) {
@@ -39,14 +40,16 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
         executor = Executors.newFixedThreadPool(1);
         destinations = MigrateMap.makeComputingMap(new Function<String, List<ClientIdentity>>() {
 
-            public List<ClientIdentity> apply(String destination) {
+            @Override
+			public List<ClientIdentity> apply(String destination) {
                 return zooKeeperMetaManager.listAllSubscribeInfo(destination);
             }
         });
 
         cursors = MigrateMap.makeComputingMap(new Function<ClientIdentity, Position>() {
 
-            public Position apply(ClientIdentity clientIdentity) {
+            @Override
+			public Position apply(ClientIdentity clientIdentity) {
                 Position position = zooKeeperMetaManager.getCursor(clientIdentity);
                 if (position == null) {
                     return nullCursor; // 返回一个空对象标识，避免出现异常
@@ -58,7 +61,8 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
 
         batches = MigrateMap.makeComputingMap(new Function<ClientIdentity, MemoryClientIdentityBatch>() {
 
-            public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
+            @Override
+			public MemoryClientIdentityBatch apply(ClientIdentity clientIdentity) {
                 // 读取一下zookeeper信息，初始化一次
                 MemoryClientIdentityBatch batches = MemoryClientIdentityBatch.create(clientIdentity);
                 Map<Long, PositionRange> positionRanges = zooKeeperMetaManager.listAllBatchs(clientIdentity);
@@ -70,7 +74,8 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
         });
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
 
         if (zooKeeperMetaManager.isStart()) {
@@ -82,43 +87,30 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
         batches.clear();
     }
 
-    public void subscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void subscribe(final ClientIdentity clientIdentity) {
         super.subscribe(clientIdentity);
 
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.subscribe(clientIdentity);
-            }
-        });
-    }
-
-    public void unsubscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
-        super.unsubscribe(clientIdentity);
-
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.unsubscribe(clientIdentity);
-            }
-        });
-    }
-
-    public void updateCursor(final ClientIdentity clientIdentity, final Position position)
-                                                                                          throws CanalMetaManagerException {
-        super.updateCursor(clientIdentity, position);
-
-        // 异步刷新
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.updateCursor(clientIdentity, position);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.subscribe(clientIdentity));
     }
 
     @Override
-    public Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+	public void unsubscribe(final ClientIdentity clientIdentity) {
+        super.unsubscribe(clientIdentity);
+
+        executor.submit(() -> zooKeeperMetaManager.unsubscribe(clientIdentity));
+    }
+
+    @Override
+	public void updateCursor(final ClientIdentity clientIdentity, final Position position) {
+        super.updateCursor(clientIdentity, position);
+
+        // 异步刷新
+        executor.submit(() -> zooKeeperMetaManager.updateCursor(clientIdentity, position));
+    }
+
+    @Override
+    public Position getCursor(ClientIdentity clientIdentity) {
         Position position = super.getCursor(clientIdentity);
         if (position == nullCursor) {
             return null;
@@ -127,55 +119,38 @@ public class MixedMetaManager extends MemoryMetaManager implements CanalMetaMana
         }
     }
 
-    public Long addBatch(final ClientIdentity clientIdentity, final PositionRange positionRange)
-                                                                                                throws CanalMetaManagerException {
+    @Override
+	public Long addBatch(final ClientIdentity clientIdentity, final PositionRange positionRange) {
         final Long batchId = super.addBatch(clientIdentity, positionRange);
         // 异步刷新
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.addBatch(clientIdentity, positionRange, batchId);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.addBatch(clientIdentity, positionRange, batchId));
         return batchId;
     }
 
-    public void addBatch(final ClientIdentity clientIdentity, final PositionRange positionRange, final Long batchId)
-                                                                                                                    throws CanalMetaManagerException {
+    @Override
+	public void addBatch(final ClientIdentity clientIdentity, final PositionRange positionRange, final Long batchId) {
         super.addBatch(clientIdentity, positionRange, batchId);
         // 异步刷新
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.addBatch(clientIdentity, positionRange, batchId);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.addBatch(clientIdentity, positionRange, batchId));
     }
 
-    public PositionRange removeBatch(final ClientIdentity clientIdentity, final Long batchId)
-                                                                                             throws CanalMetaManagerException {
+    @Override
+	public PositionRange removeBatch(final ClientIdentity clientIdentity, final Long batchId) {
         PositionRange positionRange = super.removeBatch(clientIdentity, batchId);
         // 异步刷新
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.removeBatch(clientIdentity, batchId);
-            }
-        });
+        executor.submit(() -> {
+		    zooKeeperMetaManager.removeBatch(clientIdentity, batchId);
+		});
 
         return positionRange;
     }
 
-    public void clearAllBatchs(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void clearAllBatchs(final ClientIdentity clientIdentity) {
         super.clearAllBatchs(clientIdentity);
 
         // 异步刷新
-        executor.submit(new Runnable() {
-
-            public void run() {
-                zooKeeperMetaManager.clearAllBatchs(clientIdentity);
-            }
-        });
+        executor.submit(() -> zooKeeperMetaManager.clearAllBatchs(clientIdentity));
     }
 
     // =============== setter / getter ================

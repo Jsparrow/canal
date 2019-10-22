@@ -21,10 +21,14 @@ import com.alibaba.otter.canal.protocol.CanalEntry.RowData;
 import com.alibaba.otter.canal.protocol.position.EntryPosition;
 import com.alibaba.otter.canal.protocol.position.LogPosition;
 import com.alibaba.otter.canal.sink.exception.CanalSinkException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class LocalBinlogDumpTest {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(LocalBinlogDumpTest.class);
+
+	@Test
     public void testSimple() {
         String directory = "/Users/wanshao/projects/canal/parse/src/test/resources/binlog/tsdb";
         final LocalBinlogEventParser controller = new LocalBinlogEventParser();
@@ -36,9 +40,9 @@ public class LocalBinlogDumpTest {
         controller.setMasterPosition(startPosition);
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException,
-                                                                                                        InterruptedException {
+            @Override
+			public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
+                                                                                                        throws InterruptedException {
 
                 for (Entry entry : entrys) {
                     if (entry.getEntryType() == EntryType.TRANSACTIONBEGIN
@@ -56,25 +60,25 @@ public class LocalBinlogDumpTest {
                         }
 
                         EventType eventType = rowChage.getEventType();
-                        System.out.println(String.format("================> binlog[%s:%s] , name[%s,%s] , eventType : %s",
+                        logger.info(String.format("================> binlog[%s:%s] , name[%s,%s] , eventType : %s",
                             entry.getHeader().getLogfileName(),
                             entry.getHeader().getLogfileOffset(),
                             entry.getHeader().getSchemaName(),
                             entry.getHeader().getTableName(),
                             eventType));
 
-                        for (RowData rowData : rowChage.getRowDatasList()) {
+                        rowChage.getRowDatasList().forEach(rowData -> {
                             if (eventType == EventType.DELETE) {
                                 print(rowData.getBeforeColumnsList());
                             } else if (eventType == EventType.INSERT) {
                                 print(rowData.getAfterColumnsList());
                             } else {
-                                System.out.println("-------> before");
+                                logger.info("-------> before");
                                 print(rowData.getBeforeColumnsList());
-                                System.out.println("-------> after");
+                                logger.info("-------> after");
                                 print(rowData.getAfterColumnsList());
                             }
-                        }
+                        });
                     }
                 }
 
@@ -90,8 +94,8 @@ public class LocalBinlogDumpTest {
             }
 
             @Override
-            public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
-                System.out.println(logPosition);
+            public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
         });
 
@@ -106,8 +110,6 @@ public class LocalBinlogDumpTest {
     }
 
     private void print(List<Column> columns) {
-        for (Column column : columns) {
-            System.out.println(column.getName() + " : " + column.getValue() + "    update=" + column.getUpdated());
-        }
+        columns.forEach(column -> logger.info(new StringBuilder().append(column.getName()).append(" : ").append(column.getValue()).append("    update=").append(column.getUpdated()).toString()));
     }
 }

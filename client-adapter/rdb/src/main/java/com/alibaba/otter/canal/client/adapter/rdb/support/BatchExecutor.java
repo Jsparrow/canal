@@ -68,7 +68,7 @@ public class BatchExecutor implements Closeable {
     public void commit() throws SQLException {
         getConn().commit();
         if (logger.isTraceEnabled()) {
-            logger.trace("Batch executor commit " + idx.get() + " rows");
+            logger.trace(new StringBuilder().append("Batch executor commit ").append(idx.get()).append(" rows").toString());
         }
         idx.set(0);
     }
@@ -76,7 +76,7 @@ public class BatchExecutor implements Closeable {
     public void rollback() throws SQLException {
         getConn().rollback();
         if (logger.isTraceEnabled()) {
-            logger.trace("Batch executor rollback " + idx.get() + " rows");
+            logger.trace(new StringBuilder().append("Batch executor rollback ").append(idx.get()).append(" rows").toString());
         }
         idx.set(0);
     }

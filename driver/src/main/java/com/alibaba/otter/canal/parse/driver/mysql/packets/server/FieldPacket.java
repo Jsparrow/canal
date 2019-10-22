@@ -43,7 +43,8 @@ public class FieldPacket extends PacketWithHeaderPacket {
      * 
      * </pre>
      */
-    public void fromBytes(byte[] data) throws IOException {
+    @Override
+	public void fromBytes(byte[] data) throws IOException {
 
         int index = 0;
         LengthCodedStringReader reader = new LengthCodedStringReader(null, index);
@@ -76,13 +77,15 @@ public class FieldPacket extends PacketWithHeaderPacket {
         //
         index += 2;// skip filter
         //
-        if (index < data.length) {
-            reader.setIndex(index);
-            this.definition = reader.readLengthCodedString(data);
-        }
+		if (index >= data.length) {
+			return;
+		}
+		reader.setIndex(index);
+		this.definition = reader.readLengthCodedString(data);
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 
@@ -182,11 +185,12 @@ public class FieldPacket extends PacketWithHeaderPacket {
         this.definition = definition;
     }
 
-    public String toString() {
-        return "FieldPacket [catalog=" + catalog + ", character=" + character + ", db=" + db + ", decimals=" + decimals
-               + ", definition=" + definition + ", flags=" + flags + ", length=" + length + ", name=" + name
-               + ", originalName=" + originalName + ", originalTable=" + originalTable + ", table=" + table + ", type="
-               + type + "]";
+    @Override
+	public String toString() {
+        return new StringBuilder().append("FieldPacket [catalog=").append(catalog).append(", character=").append(character).append(", db=").append(db).append(", decimals=")
+				.append(decimals).append(", definition=").append(definition).append(", flags=").append(flags).append(", length=").append(length)
+				.append(", name=").append(name).append(", originalName=").append(originalName).append(", originalTable=").append(originalTable).append(", table=")
+				.append(table).append(", type=").append(type).append("]").toString();
     }
 
 }

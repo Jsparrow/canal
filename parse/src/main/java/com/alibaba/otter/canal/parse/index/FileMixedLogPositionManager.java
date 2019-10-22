@@ -36,8 +36,8 @@ import com.google.common.collect.MigrateMap;
  */
 public class FileMixedLogPositionManager extends AbstractLogPositionManager {
 
-    private final static Logger      logger       = LoggerFactory.getLogger(FileMixedLogPositionManager.class);
-    private final static Charset     charset      = Charset.forName("UTF-8");
+    private static final Logger      logger       = LoggerFactory.getLogger(FileMixedLogPositionManager.class);
+    private static final Charset     charset      = Charset.forName("UTF-8");
 
     private File                     dataDir;
 
@@ -70,13 +70,14 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
 
         this.dataFileCaches = MigrateMap.makeComputingMap(new Function<String, File>() {
 
-            public File apply(String destination) {
+            @Override
+			public File apply(String destination) {
                 return getDataFile(destination);
             }
         });
 
         this.executorService = Executors.newScheduledThreadPool(1);
-        this.persistTasks = Collections.synchronizedSet(new HashSet<String>());
+        this.persistTasks = Collections.synchronizedSet(new HashSet<>());
     }
 
     @Override
@@ -92,7 +93,7 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
         }
 
         if (!dataDir.canRead() || !dataDir.canWrite()) {
-            throw new CanalMetaManagerException("dir[" + dataDir.getPath() + "] can not read/write");
+            throw new CanalMetaManagerException(new StringBuilder().append("dir[").append(dataDir.getPath()).append("] can not read/write").toString());
         }
 
         if (!memoryLogPositionManager.isStart()) {
@@ -100,22 +101,19 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
         }
 
         // 启动定时工作任务
-        executorService.scheduleAtFixedRate(new Runnable() {
-
-            public void run() {
-                List<String> tasks = new ArrayList<String>(persistTasks);
-                for (String destination : tasks) {
-                    try {
-                        // 定时将内存中的最新值刷到file中，多次变更只刷一次
-                        flushDataToFile(destination);
-                        persistTasks.remove(destination);
-                    } catch (Throwable e) {
-                        // ignore
-                        logger.error("period update" + destination + " curosr failed!", e);
-                    }
-                }
-            }
-        }, period, period, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(() -> {
+		    List<String> tasks = new ArrayList<>(persistTasks);
+		    tasks.forEach(destination -> {
+		        try {
+		            // 定时将内存中的最新值刷到file中，多次变更只刷一次
+		            flushDataToFile(destination);
+		            persistTasks.remove(destination);
+		        } catch (Throwable e) {
+		            // ignore
+		            logger.error(new StringBuilder().append("period update").append(destination).append(" curosr failed!").toString(), e);
+		        }
+		    });
+		}, period, period, TimeUnit.MILLISECONDS);
 
     }
 
@@ -142,7 +140,7 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
     }
 
     @Override
-    public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+    public void persistLogPosition(String destination, LogPosition logPosition) {
         persistTasks.add(destination);
         memoryLogPositionManager.persistLogPosition(destination, logPosition);
     }
@@ -164,9 +162,7 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
     }
 
     private void flushDataToFile() {
-        for (String destination : memoryLogPositionManager.destinations()) {
-            flushDataToFile(destination);
-        }
+        memoryLogPositionManager.destinations().forEach(this::flushDataToFile);
     }
 
     private void flushDataToFile(String destination) {
@@ -175,14 +171,15 @@ public class FileMixedLogPositionManager extends AbstractLogPositionManager {
 
     private void flushDataToFile(String destination, File dataFile) {
         LogPosition position = memoryLogPositionManager.getLatestIndexBy(destination);
-        if (position != null && position != nullPosition) {
-            String json = JsonUtils.marshalToString(position);
-            try {
-                FileUtils.writeStringToFile(dataFile, json);
-            } catch (IOException e) {
-                throw new CanalMetaManagerException(e);
-            }
-        }
+        if (!(position != null && position != nullPosition)) {
+			return;
+		}
+		String json = JsonUtils.marshalToString(position);
+		try {
+		    FileUtils.writeStringToFile(dataFile, json);
+		} catch (IOException e) {
+		    throw new CanalMetaManagerException(e);
+		}
     }
 
     private LogPosition loadDataFromFile(File dataFile) {

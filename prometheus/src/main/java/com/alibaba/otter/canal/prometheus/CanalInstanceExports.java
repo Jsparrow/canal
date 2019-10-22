@@ -33,15 +33,11 @@ public class CanalInstanceExports {
         this.parserCollector = ParserCollector.instance();
     }
 
-    private static class SingletonHolder {
-        private static final CanalInstanceExports SINGLETON = new CanalInstanceExports();
-    }
-
     public static CanalInstanceExports instance() {
         return SingletonHolder.SINGLETON;
     }
 
-    public void initialize() {
+	public void initialize() {
         storeCollector.register();
         entryCollector.register();
         metaCollector.register();
@@ -49,7 +45,7 @@ public class CanalInstanceExports {
         parserCollector.register();
     }
 
-    public void terminate() {
+	public void terminate() {
         CollectorRegistry.defaultRegistry.unregister(storeCollector);
         CollectorRegistry.defaultRegistry.unregister(entryCollector);
         CollectorRegistry.defaultRegistry.unregister(metaCollector);
@@ -57,7 +53,7 @@ public class CanalInstanceExports {
         CollectorRegistry.defaultRegistry.unregister(parserCollector);
     }
 
-    void register(CanalInstance instance) {
+	void register(CanalInstance instance) {
         requiredInstanceRegistry(storeCollector).register(instance);
         requiredInstanceRegistry(entryCollector).register(instance);
         requiredInstanceRegistry(metaCollector).register(instance);
@@ -66,7 +62,7 @@ public class CanalInstanceExports {
         logger.info("Successfully register metrics for instance {}.", instance.getDestination());
     }
 
-    void unregister(CanalInstance instance) {
+	void unregister(CanalInstance instance) {
         requiredInstanceRegistry(storeCollector).unregister(instance);
         requiredInstanceRegistry(entryCollector).unregister(instance);
         requiredInstanceRegistry(metaCollector).unregister(instance);
@@ -75,11 +71,15 @@ public class CanalInstanceExports {
         logger.info("Successfully unregister metrics for instance {}.", instance.getDestination());
     }
 
-    private InstanceRegistry requiredInstanceRegistry(Collector collector) {
+	private InstanceRegistry requiredInstanceRegistry(Collector collector) {
         if (!(collector instanceof InstanceRegistry)) {
             throw new IllegalArgumentException("Canal prometheus collector need to implement InstanceRegistry.");
         }
         return (InstanceRegistry) collector;
+    }
+
+	private static class SingletonHolder {
+        private static final CanalInstanceExports SINGLETON = new CanalInstanceExports();
     }
 
 }

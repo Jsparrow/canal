@@ -28,7 +28,7 @@ public class MutablePropertySources implements PropertySources {
 
     private final Log                     logger;
 
-    private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<PropertySource<?>>();
+    private final List<PropertySource<?>> propertySourceList = new CopyOnWriteArrayList<>();
 
     /**
      * Create a new {@link MutablePropertySources}
@@ -80,7 +80,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public void addFirst(PropertySource<?> propertySource) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Adding PropertySource '" + propertySource.getName() + "' with highest search precedence");
+            logger.debug(new StringBuilder().append("Adding PropertySource '").append(propertySource.getName()).append("' with highest search precedence").toString());
         }
         removeIfPresent(propertySource);
         this.propertySourceList.add(0, propertySource);
@@ -91,7 +91,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public void addLast(PropertySource<?> propertySource) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Adding PropertySource '" + propertySource.getName() + "' with lowest search precedence");
+            logger.debug(new StringBuilder().append("Adding PropertySource '").append(propertySource.getName()).append("' with lowest search precedence").toString());
         }
         removeIfPresent(propertySource);
         this.propertySourceList.add(propertySource);
@@ -103,8 +103,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public void addBefore(String relativePropertySourceName, PropertySource<?> propertySource) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Adding PropertySource '" + propertySource.getName()
-                         + "' with search precedence immediately higher than '" + relativePropertySourceName + "'");
+            logger.debug(new StringBuilder().append("Adding PropertySource '").append(propertySource.getName()).append("' with search precedence immediately higher than '").append(relativePropertySourceName).append("'").toString());
         }
         assertLegalRelativeAddition(relativePropertySourceName, propertySource);
         removeIfPresent(propertySource);
@@ -118,8 +117,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public void addAfter(String relativePropertySourceName, PropertySource<?> propertySource) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Adding PropertySource '" + propertySource.getName()
-                         + "' with search precedence immediately lower than '" + relativePropertySourceName + "'");
+            logger.debug(new StringBuilder().append("Adding PropertySource '").append(propertySource.getName()).append("' with search precedence immediately lower than '").append(relativePropertySourceName).append("'").toString());
         }
         assertLegalRelativeAddition(relativePropertySourceName, propertySource);
         removeIfPresent(propertySource);
@@ -142,7 +140,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public PropertySource<?> remove(String name) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Removing PropertySource '" + name + "'");
+            logger.debug(new StringBuilder().append("Removing PropertySource '").append(name).append("'").toString());
         }
         int index = this.propertySourceList.indexOf(PropertySource.named(name));
         return (index != -1 ? this.propertySourceList.remove(index) : null);
@@ -160,7 +158,7 @@ public class MutablePropertySources implements PropertySources {
      */
     public void replace(String name, PropertySource<?> propertySource) {
         if (logger.isDebugEnabled()) {
-            logger.debug("Replacing PropertySource '" + name + "' with '" + propertySource.getName() + "'");
+            logger.debug(new StringBuilder().append("Replacing PropertySource '").append(name).append("' with '").append(propertySource.getName()).append("'").toString());
         }
         int index = assertPresentAndGetIndex(name);
         this.propertySourceList.set(index, propertySource);
@@ -185,7 +183,7 @@ public class MutablePropertySources implements PropertySources {
         String newPropertySourceName = propertySource.getName();
         if (relativePropertySourceName.equals(newPropertySourceName)) {
             throw new IllegalArgumentException(
-                "PropertySource named '" + newPropertySourceName + "' cannot be added relative to itself");
+                new StringBuilder().append("PropertySource named '").append(newPropertySourceName).append("' cannot be added relative to itself").toString());
         }
     }
 
@@ -214,7 +212,7 @@ public class MutablePropertySources implements PropertySources {
     private int assertPresentAndGetIndex(String name) {
         int index = this.propertySourceList.indexOf(PropertySource.named(name));
         if (index == -1) {
-            throw new IllegalArgumentException("PropertySource named '" + name + "' does not exist");
+            throw new IllegalArgumentException(new StringBuilder().append("PropertySource named '").append(name).append("' does not exist").toString());
         }
         return index;
     }

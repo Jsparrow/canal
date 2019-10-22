@@ -16,6 +16,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.alibaba.fastsql.sql.repository.Schema;
 import com.alibaba.otter.canal.parse.inbound.TableMeta;
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author agapple 2017年8月1日 下午7:15:54
@@ -24,7 +26,9 @@ import com.google.common.collect.Lists;
 @ContextConfiguration(locations = { "/tsdb/h2-tsdb.xml" })
 public class MemoryTableMeta_DDL_Test {
 
-    @Test
+    private static final Logger logger = LoggerFactory.getLogger(MemoryTableMeta_DDL_Test.class);
+
+	@Test
     public void test1() throws Throwable {
         MemoryTableMeta memoryTableMeta = new MemoryTableMeta();
         URL url = Thread.currentThread().getContextClassLoader().getResource("dummy.txt");
@@ -34,7 +38,7 @@ public class MemoryTableMeta_DDL_Test {
         memoryTableMeta.apply(null, "test", sql, null);
 
         TableMeta meta = memoryTableMeta.find("yushitai_test", "card_record");
-        System.out.println(meta);
+        logger.info(String.valueOf(meta));
         Assert.assertNotNull(meta.getFieldMetaByName("customization_id"));
 
         meta = memoryTableMeta.find("yushitai_test", "_card_record_gho");
@@ -51,7 +55,7 @@ public class MemoryTableMeta_DDL_Test {
         memoryTableMeta.apply(null, "test", sql, null);
 
         TableMeta meta = memoryTableMeta.find("yushitai_test", "card_record");
-        System.out.println(meta);
+        logger.info(String.valueOf(meta));
         Assert.assertEquals(meta.getFieldMetaByName("id").isKey(), true);
         Assert.assertEquals(meta.getFieldMetaByName("name").isUnique(), true);
     }
@@ -66,8 +70,8 @@ public class MemoryTableMeta_DDL_Test {
         memoryTableMeta.apply(null, "test", sql, null);
 
         TableMeta meta = memoryTableMeta.find("test", "quniya4");
-        System.out.println(meta);
-        Assert.assertTrue(meta.getFields().get(0).getColumnName().equalsIgnoreCase("id"));
+        logger.info(String.valueOf(meta));
+        Assert.assertTrue("id".equalsIgnoreCase(meta.getFields().get(0).getColumnName()));
     }
 
     @Test
@@ -80,13 +84,8 @@ public class MemoryTableMeta_DDL_Test {
         memoryTableMeta.apply(null, "test", sql, null);
         
         List<String> tableNames = Lists.newArrayList();
-        for (Schema schema : memoryTableMeta.getRepository().getSchemas()) {
-            tableNames.addAll(schema.showTables());
-        }
+        memoryTableMeta.getRepository().getSchemas().forEach(schema -> tableNames.addAll(schema.showTables()));
 
-        for (String table : tableNames) {
-            TableMeta sourceMeta = memoryTableMeta.find("test", table);
-            System.out.println(sourceMeta.toString());
-        }
+        tableNames.stream().map(table -> memoryTableMeta.find("test", table)).forEach(sourceMeta -> logger.info(sourceMeta.toString()));
     }
 }

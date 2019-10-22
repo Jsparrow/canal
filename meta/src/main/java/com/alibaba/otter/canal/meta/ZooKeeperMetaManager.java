@@ -23,6 +23,8 @@ import com.alibaba.otter.canal.protocol.position.Position;
 import com.alibaba.otter.canal.protocol.position.PositionRange;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * zk 版本的 canal manager， 存储结构：
@@ -46,82 +48,87 @@ import com.google.common.collect.Maps;
  */
 public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements CanalMetaManager {
 
-    private static final String ENCODE = "UTF-8";
+    private static final Logger logger = LoggerFactory.getLogger(ZooKeeperMetaManager.class);
+	private static final String ENCODE = "UTF-8";
     private ZkClientx           zkClientx;
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
 
         Assert.notNull(zkClientx);
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         zkClientx = null; //关闭时置空
         super.stop();
     }
 
-    public void subscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void subscribe(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getClientIdNodePath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
 
         try {
             zkClientx.createPersistent(path, true);
         } catch (ZkNodeExistsException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
-        if (clientIdentity.hasFilter()) {
-            String filterPath = ZookeeperPathUtils.getFilterPath(clientIdentity.getDestination(),
-                clientIdentity.getClientId());
-
-            byte[] bytes = null;
-            try {
-                bytes = clientIdentity.getFilter().getBytes(ENCODE);
-            } catch (UnsupportedEncodingException e) {
-                throw new CanalMetaManagerException(e);
-            }
-
-            try {
-                zkClientx.createPersistent(filterPath, bytes);
-            } catch (ZkNodeExistsException e) {
-                // ignore
-                zkClientx.writeData(filterPath, bytes);
-            }
-        }
+        if (!clientIdentity.hasFilter()) {
+			return;
+		}
+		String filterPath = ZookeeperPathUtils.getFilterPath(clientIdentity.getDestination(),
+		    clientIdentity.getClientId());
+		byte[] bytes = null;
+		try {
+		    bytes = clientIdentity.getFilter().getBytes(ENCODE);
+		} catch (UnsupportedEncodingException e) {
+		    throw new CanalMetaManagerException(e);
+		}
+		try {
+		    zkClientx.createPersistent(filterPath, bytes);
+		} catch (ZkNodeExistsException e) {
+		    logger.error(e.getMessage(), e);
+			// ignore
+		    zkClientx.writeData(filterPath, bytes);
+		}
     }
 
-    public boolean hasSubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public boolean hasSubscribe(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getClientIdNodePath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         return zkClientx.exists(path);
     }
 
-    public void unsubscribe(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void unsubscribe(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getClientIdNodePath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         zkClientx.deleteRecursive(path); // 递归删除所有信息
     }
 
-    public List<ClientIdentity> listAllSubscribeInfo(String destination) throws CanalMetaManagerException {
+    @Override
+	public List<ClientIdentity> listAllSubscribeInfo(String destination) {
         if (zkClientx == null) { //重新加载时可能为空
-            return new ArrayList<ClientIdentity>();
+            return new ArrayList<>();
         }
         String path = ZookeeperPathUtils.getDestinationPath(destination);
         List<String> childs = null;
         try {
             childs = zkClientx.getChildren(path);
         } catch (ZkNoNodeException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
         if (CollectionUtils.isEmpty(childs)) {
-            return new ArrayList<ClientIdentity>();
+            return new ArrayList<>();
         }
-        List<Short> clientIds = new ArrayList<Short>();
-        for (String child : childs) {
-            if (StringUtils.isNumeric(child)) {
-                clientIds.add(ZookeeperPathUtils.getClientId(child));
-            }
-        }
+        List<Short> clientIds = new ArrayList<>();
+        childs.stream().filter(StringUtils::isNumeric).forEach(child -> clientIds.add(ZookeeperPathUtils.getClientId(child)));
 
         Collections.sort(clientIds); // 进行一个排序
         List<ClientIdentity> clientIdentities = Lists.newArrayList();
@@ -142,7 +149,8 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         return clientIdentities;
     }
 
-    public Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public Position getCursor(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getCursorPath(clientIdentity.getDestination(), clientIdentity.getClientId());
 
         byte[] data = zkClientx.readData(path, true);
@@ -153,17 +161,20 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         return JsonUtils.unmarshalFromByte(data, Position.class);
     }
 
-    public void updateCursor(ClientIdentity clientIdentity, Position position) throws CanalMetaManagerException {
+    @Override
+	public void updateCursor(ClientIdentity clientIdentity, Position position) {
         String path = ZookeeperPathUtils.getCursorPath(clientIdentity.getDestination(), clientIdentity.getClientId());
         byte[] data = JsonUtils.marshalToByte(position, SerializerFeature.WriteClassName);
         try {
             zkClientx.writeData(path, data);
         } catch (ZkNoNodeException e) {
-            zkClientx.createPersistent(path, data, true);// 第一次节点不存在，则尝试重建
+            logger.error(e.getMessage(), e);
+			zkClientx.createPersistent(path, data, true);// 第一次节点不存在，则尝试重建
         }
     }
 
-    public Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange) throws CanalMetaManagerException {
+    @Override
+	public Long addBatch(ClientIdentity clientIdentity, PositionRange positionRange) {
         String path = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         byte[] data = JsonUtils.marshalToByte(positionRange, SerializerFeature.WriteClassName);
@@ -173,15 +184,17 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         return ZookeeperPathUtils.getBatchMarkId(batchIdString);
     }
 
-    public void addBatch(ClientIdentity clientIdentity, PositionRange positionRange,
-                         Long batchId) throws CanalMetaManagerException {
+    @Override
+	public void addBatch(ClientIdentity clientIdentity, PositionRange positionRange,
+                         Long batchId) {
         String path = ZookeeperPathUtils
             .getBatchMarkWithIdPath(clientIdentity.getDestination(), clientIdentity.getClientId(), batchId);
         byte[] data = JsonUtils.marshalToByte(positionRange, SerializerFeature.WriteClassName);
         zkClientx.createPersistent(path, data, true);
     }
 
-    public PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException {
+    @Override
+	public PositionRange removeBatch(ClientIdentity clientIdentity, Long batchId) {
         String batchsPath = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         List<String> nodes = zkClientx.getChildren(batchsPath);
@@ -191,7 +204,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         }
 
         // 找到最小的Id
-        ArrayList<Long> batchIds = new ArrayList<Long>(nodes.size());
+        ArrayList<Long> batchIds = new ArrayList<>(nodes.size());
         for (String batchIdString : nodes) {
             batchIds.add(Long.valueOf(batchIdString));
         }
@@ -215,7 +228,8 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         return positionRange;
     }
 
-    public PositionRange getBatch(ClientIdentity clientIdentity, Long batchId) throws CanalMetaManagerException {
+    @Override
+	public PositionRange getBatch(ClientIdentity clientIdentity, Long batchId) {
         String path = ZookeeperPathUtils
             .getBatchMarkWithIdPath(clientIdentity.getDestination(), clientIdentity.getClientId(), batchId);
         byte[] data = zkClientx.readData(path, true);
@@ -227,24 +241,24 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         return positionRange;
     }
 
-    public void clearAllBatchs(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void clearAllBatchs(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         List<String> batchChilds = zkClientx.getChildren(path);
 
-        for (String batchChild : batchChilds) {
-            String batchPath = path + ZookeeperPathUtils.ZOOKEEPER_SEPARATOR + batchChild;
-            zkClientx.delete(batchPath);
-        }
+        batchChilds.stream().map(batchChild -> new StringBuilder().append(path).append(ZookeeperPathUtils.ZOOKEEPER_SEPARATOR).append(batchChild).toString()).forEach(zkClientx::delete);
     }
 
-    public PositionRange getLastestBatch(ClientIdentity clientIdentity) {
+    @Override
+	public PositionRange getLastestBatch(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         List<String> nodes = null;
         try {
             nodes = zkClientx.getChildren(path);
         } catch (ZkNoNodeException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
@@ -252,7 +266,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
             return null;
         }
         // 找到最大的Id
-        ArrayList<Long> batchIds = new ArrayList<Long>(nodes.size());
+        ArrayList<Long> batchIds = new ArrayList<>(nodes.size());
         for (String batchIdString : nodes) {
             batchIds.add(Long.valueOf(batchIdString));
         }
@@ -265,13 +279,15 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         }
     }
 
-    public PositionRange getFirstBatch(ClientIdentity clientIdentity) {
+    @Override
+	public PositionRange getFirstBatch(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         List<String> nodes = null;
         try {
             nodes = zkClientx.getChildren(path);
         } catch (ZkNoNodeException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
@@ -279,7 +295,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
             return null;
         }
         // 找到最小的Id
-        ArrayList<Long> batchIds = new ArrayList<Long>(nodes.size());
+        ArrayList<Long> batchIds = new ArrayList<>(nodes.size());
         for (String batchIdString : nodes) {
             batchIds.add(Long.valueOf(batchIdString));
         }
@@ -292,13 +308,15 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
         }
     }
 
-    public Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity) {
+    @Override
+	public Map<Long, PositionRange> listAllBatchs(ClientIdentity clientIdentity) {
         String path = ZookeeperPathUtils.getBatchMarkPath(clientIdentity.getDestination(),
             clientIdentity.getClientId());
         List<String> nodes = null;
         try {
             nodes = zkClientx.getChildren(path);
         } catch (ZkNoNodeException e) {
+			logger.error(e.getMessage(), e);
             // ignore
         }
 
@@ -306,7 +324,7 @@ public class ZooKeeperMetaManager extends AbstractCanalLifeCycle implements Cana
             return Maps.newHashMap();
         }
         // 找到最大的Id
-        ArrayList<Long> batchIds = new ArrayList<Long>(nodes.size());
+        ArrayList<Long> batchIds = new ArrayList<>(nodes.size());
         for (String batchIdString : nodes) {
             batchIds.add(Long.valueOf(batchIdString));
         }

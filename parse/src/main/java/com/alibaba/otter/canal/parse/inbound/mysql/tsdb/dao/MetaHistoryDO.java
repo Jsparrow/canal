@@ -137,11 +137,11 @@ public class MetaHistoryDO {
 
     @Override
     public String toString() {
-        return "MetaHistoryDO [id=" + id + ", gmtCreate=" + gmtCreate + ", gmtModified=" + gmtModified
-               + ", destination=" + destination + ", binlogFile=" + binlogFile + ", binlogOffest=" + binlogOffest
-               + ", binlogMasterId=" + binlogMasterId + ", binlogTimestamp=" + binlogTimestamp + ", useSchema="
-               + useSchema + ", sqlSchema=" + sqlSchema + ", sqlTable=" + sqlTable + ", sqlText=" + sqlText
-               + ", sqlType=" + sqlType + ", extra=" + extra + "]";
+        return new StringBuilder().append("MetaHistoryDO [id=").append(id).append(", gmtCreate=").append(gmtCreate).append(", gmtModified=").append(gmtModified).append(", destination=")
+				.append(destination).append(", binlogFile=").append(binlogFile).append(", binlogOffest=").append(binlogOffest).append(", binlogMasterId=").append(binlogMasterId)
+				.append(", binlogTimestamp=").append(binlogTimestamp).append(", useSchema=").append(useSchema).append(", sqlSchema=").append(sqlSchema).append(", sqlTable=")
+				.append(sqlTable).append(", sqlText=").append(sqlText).append(", sqlType=").append(sqlType).append(", extra=").append(extra)
+				.append("]").toString();
     }
 
 }

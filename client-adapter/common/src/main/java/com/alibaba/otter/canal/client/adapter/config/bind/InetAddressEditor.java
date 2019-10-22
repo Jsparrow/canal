@@ -20,7 +20,7 @@ class InetAddressEditor extends PropertyEditorSupport {
     }
 
     @Override
-    public void setAsText(String text) throws IllegalArgumentException {
+    public void setAsText(String text) {
         try {
             setValue(InetAddress.getByName(text));
         } catch (UnknownHostException ex) {

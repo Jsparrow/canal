@@ -1,5 +1,8 @@
 package com.taobao.tddl.dbsync.binlog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implements binlog position.
  * 
@@ -8,7 +11,9 @@ package com.taobao.tddl.dbsync.binlog;
  */
 public class LogPosition implements Cloneable, Comparable<LogPosition> {
 
-    /* binlog file's name */
+    private static final Logger logger = LoggerFactory.getLogger(LogPosition.class);
+
+	/* binlog file's name */
     protected String fileName;
 
     /* position in file */
@@ -51,11 +56,13 @@ public class LogPosition implements Cloneable, Comparable<LogPosition> {
     }
 
     /* Clone binlog position without CloneNotSupportedException */
-    public LogPosition clone() {
+    @Override
+	public LogPosition clone() {
         try {
             return (LogPosition) super.clone();
         } catch (CloneNotSupportedException e) {
-            // Never happend
+            logger.error(e.getMessage(), e);
+			// Never happend
             return null;
         }
     }
@@ -77,7 +84,8 @@ public class LogPosition implements Cloneable, Comparable<LogPosition> {
      * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(LogPosition o) {
+    @Override
+	public int compareTo(LogPosition o) {
         final int val = fileName.compareTo(o.fileName);
 
         if (val == 0) {
@@ -91,12 +99,13 @@ public class LogPosition implements Cloneable, Comparable<LogPosition> {
      * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    public boolean equals(Object obj) {
-        if (obj instanceof LogPosition) {
-            LogPosition pos = ((LogPosition) obj);
-            return fileName.equals(pos.fileName) && (this.position == pos.position);
-        }
-        return false;
+    @Override
+	public boolean equals(Object obj) {
+        if (!(obj instanceof LogPosition)) {
+			return false;
+		}
+		LogPosition pos = ((LogPosition) obj);
+		return fileName.equals(pos.fileName) && (this.position == pos.position);
     }
 
     /**
@@ -104,7 +113,8 @@ public class LogPosition implements Cloneable, Comparable<LogPosition> {
      * 
      * @see java.lang.Object#toString()
      */
-    public String toString() {
-        return fileName + ':' + position;
+    @Override
+	public String toString() {
+        return new StringBuilder().append(fileName).append(':').append(position).toString();
     }
 }

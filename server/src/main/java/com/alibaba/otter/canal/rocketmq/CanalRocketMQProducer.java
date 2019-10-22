@@ -33,14 +33,14 @@ import com.alibaba.otter.canal.protocol.FlatMessage;
 import com.alibaba.otter.canal.server.exception.CanalServerException;
 import com.alibaba.otter.canal.spi.CanalMQProducer;
 
-public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQProducer {
+public class CanalRocketMQProducer extends AbstractMQProducer {
 
     private static final Logger logger               = LoggerFactory.getLogger(CanalRocketMQProducer.class);
-    private DefaultMQProducer   defaultMQProducer;
-    private MQProperties        mqProperties;
-    private static final String CLOUD_ACCESS_CHANNEL = "cloud";
+	private static final String CLOUD_ACCESS_CHANNEL = "cloud";
+	private DefaultMQProducer   defaultMQProducer;
+	private MQProperties        mqProperties;
 
-    @Override
+	@Override
     public void init(MQProperties rocketMQProperties) {
         super.init(rocketMQProperties);
         this.mqProperties = rocketMQProperties;
@@ -74,7 +74,7 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         }
     }
 
-    @Override
+	@Override
     public void send(final MQProperties.CanalDestination destination, com.alibaba.otter.canal.protocol.Message data,
                      Callback callback) {
         ExecutorTemplate template = new ExecutorTemplate(executor);
@@ -88,17 +88,13 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
                 for (Map.Entry<String, com.alibaba.otter.canal.protocol.Message> entry : messageMap.entrySet()) {
                     String topicName = entry.getKey().replace('.', '_');
                     com.alibaba.otter.canal.protocol.Message messageSub = entry.getValue();
-                    template.submit(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                send(destination, topicName, messageSub);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    });
+                    template.submit(() -> {
+					    try {
+					        send(destination, topicName, messageSub);
+					    } catch (Exception e) {
+					        throw new RuntimeException(e);
+					    }
+					});
                 }
 
                 template.waitForResult();
@@ -115,7 +111,7 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         }
     }
 
-    public void send(final MQProperties.CanalDestination destination, String topicName,
+	public void send(final MQProperties.CanalDestination destination, String topicName,
                      com.alibaba.otter.canal.protocol.Message message) throws Exception {
         if (!mqProperties.getFlatMessage()) {
             if (destination.getPartitionHash() != null && !destination.getPartitionHash().isEmpty()) {
@@ -134,15 +130,11 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
                     com.alibaba.otter.canal.protocol.Message dataPartition = messages[i];
                     if (dataPartition != null) {
                         final int index = i;
-                        template.submit(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                Message data = new Message(topicName, CanalMessageSerializer.serializer(dataPartition,
-                                    mqProperties.isFilterTransactionEntry()));
-                                sendMessage(data, index);
-                            }
-                        });
+                        template.submit(() -> {
+						    Message data = new Message(topicName, CanalMessageSerializer.serializer(dataPartition,
+						        mqProperties.isFilterTransactionEntry()));
+						    sendMessage(data, index);
+						});
                     }
                 }
                 // 等所有分片发送完毕
@@ -161,12 +153,12 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
             if (flatMessages != null) {
                 // 初始化分区合并队列
                 if (destination.getPartitionHash() != null && !destination.getPartitionHash().isEmpty()) {
-                    List<List<FlatMessage>> partitionFlatMessages = new ArrayList<List<FlatMessage>>();
+                    List<List<FlatMessage>> partitionFlatMessages = new ArrayList<>();
                     for (int i = 0; i < destination.getPartitionsNum(); i++) {
                         partitionFlatMessages.add(new ArrayList<FlatMessage>());
                     }
 
-                    for (FlatMessage flatMessage : flatMessages) {
+                    flatMessages.forEach(flatMessage -> {
                         FlatMessage[] partitionFlatMessage = MQMessageUtils.messagePartition(flatMessage,
                             destination.getPartitionsNum(),
                             destination.getPartitionHash(),
@@ -175,25 +167,21 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
                         for (int i = 0; i < length; i++) {
                             partitionFlatMessages.get(i).add(partitionFlatMessage[i]);
                         }
-                    }
+                    });
 
                     ExecutorTemplate template = new ExecutorTemplate(executor);
                     for (int i = 0; i < partitionFlatMessages.size(); i++) {
                         final List<FlatMessage> flatMessagePart = partitionFlatMessages.get(i);
                         if (flatMessagePart != null) {
                             final int index = i;
-                            template.submit(new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    List<Message> messages = flatMessagePart.stream()
-                                        .map(flatMessage -> new Message(topicName, JSON.toJSONBytes(flatMessage,
-                                            SerializerFeature.WriteMapNullValue)))
-                                        .collect(Collectors.toList());
-                                    // 批量发送
-                                    sendMessage(messages, index);
-                                }
-                            });
+                            template.submit(() -> {
+							    List<Message> messages = flatMessagePart.stream()
+							        .map(flatMessage1 -> new Message(topicName, JSON.toJSONBytes(flatMessage1,
+							            SerializerFeature.WriteMapNullValue)))
+							        .collect(Collectors.toList());
+							    // 批量发送
+							    sendMessage(messages, index);
+							});
                         }
                     }
 
@@ -212,19 +200,15 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         }
     }
 
-    private void sendMessage(Message message, int partition) {
+	private void sendMessage(Message message, int partition) {
         try {
-            SendResult sendResult = this.defaultMQProducer.send(message, new MessageQueueSelector() {
-
-                @Override
-                public MessageQueue select(List<MessageQueue> mqs, Message msg, Object arg) {
-                    if (partition > mqs.size()) {
-                        return mqs.get(partition % mqs.size());
-                    } else {
-                        return mqs.get(partition);
-                    }
-                }
-            }, null);
+            SendResult sendResult = this.defaultMQProducer.send(message, (List<MessageQueue> mqs, Message msg, Object arg) -> {
+			    if (partition > mqs.size()) {
+			        return mqs.get(partition % mqs.size());
+			    } else {
+			        return mqs.get(partition);
+			    }
+			}, null);
 
             if (logger.isDebugEnabled()) {
                 logger.debug("Send Message Result: {}", sendResult);
@@ -234,7 +218,7 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         }
     }
 
-    @SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation")
     private void sendMessage(List<Message> messages, int partition) {
         if (messages.isEmpty()) {
             return;
@@ -244,18 +228,14 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         DefaultMQProducerImpl innerProducer = this.defaultMQProducer.getDefaultMQProducerImpl();
         TopicPublishInfo topicInfo = innerProducer.getTopicPublishInfoTable().get(messages.get(0).getTopic());
         if (topicInfo == null) {
-            for (Message message : messages) {
-                sendMessage(message, partition);
-            }
+            messages.forEach(message -> sendMessage(message, partition));
         } else {
             // 批量发送
             List<MessageQueue> queues = topicInfo.getMessageQueueList();
             int size = queues.size();
             if (size <= 0) {
                 // 可能是第一次创建
-                for (Message message : messages) {
-                    sendMessage(message, partition);
-                }
+				messages.forEach(message -> sendMessage(message, partition));
             } else {
                 MessageQueue queue = null;
                 if (partition > size) {
@@ -276,7 +256,7 @@ public class CanalRocketMQProducer extends AbstractMQProducer implements CanalMQ
         }
     }
 
-    @Override
+	@Override
     public void stop() {
         logger.info("## Stop RocketMQ producer##");
         this.defaultMQProducer.shutdown();

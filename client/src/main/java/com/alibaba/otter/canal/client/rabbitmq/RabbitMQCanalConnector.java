@@ -63,7 +63,8 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
         this.messageBlockingQueue = new LinkedBlockingQueue<>(1024);
     }
 
-    public void connect() throws CanalClientException {
+    @Override
+	public void connect() {
         ConnectionFactory factory = new ConnectionFactory();
         if (accessKey.length() > 0 && secretKey.length() > 0) {
             factory.setCredentialsProvider(new AliyunCredentialsProvider(accessKey, secretKey, resourceOwnerId));
@@ -84,7 +85,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void disconnect() throws CanalClientException {
+    public void disconnect() {
         if (connect != null) {
             try {
                 connect.close();
@@ -102,7 +103,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public boolean checkValid() throws CanalClientException {
+    public boolean checkValid() {
         return true; // 永远true
     }
 
@@ -113,7 +114,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
      * @throws CanalClientException
      */
     @Override
-    public void subscribe(String filter) throws CanalClientException {
+    public void subscribe(String filter) {
         // 不存在连接 则重新连接
         if (connect == null) {
             this.connect();
@@ -138,49 +139,49 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void subscribe() throws CanalClientException {
+    public void subscribe() {
         this.subscribe(null);
     }
 
     @Override
-    public void unsubscribe() throws CanalClientException {
+    public void unsubscribe() {
         // 取消订阅 直接强行断开吧
         this.disconnect();
     }
 
     @Override
-    public Message get(int batchSize) throws CanalClientException {
+    public Message get(int batchSize) {
         return null;
     }
 
     @Override
-    public Message get(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message get(int batchSize, Long timeout, TimeUnit unit) {
         return null;
     }
 
     @Override
-    public Message getWithoutAck(int batchSize) throws CanalClientException {
+    public Message getWithoutAck(int batchSize) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) throws CanalClientException {
+    public Message getWithoutAck(int batchSize, Long timeout, TimeUnit unit) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void ack(long batchId) throws CanalClientException {
+    public void ack(long batchId) {
         throw new CanalClientException("mq not support this method");
     }
 
     @Override
-    public void rollback(long batchId) throws CanalClientException {
+    public void rollback(long batchId) {
         throw new CanalClientException("mq not support this method");
 
     }
 
     @Override
-    public List<Message> getList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getList(Long timeout, TimeUnit unit) {
         List<Message> messages = getListWithoutAck(timeout, unit);
         if (messages != null && !messages.isEmpty()) {
             ack();
@@ -189,7 +190,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<Message> getListWithoutAck(Long timeout, TimeUnit unit) {
         try {
             if (this.lastGetBatchMessage != null) {
                 throw new CanalClientException("mq get/ack not support concurrent & async ack");
@@ -208,7 +209,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatList(Long timeout, TimeUnit unit) {
         List<FlatMessage> messages = getFlatListWithoutAck(timeout, unit);
         if (messages != null && !messages.isEmpty()) {
             ack();
@@ -217,7 +218,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) throws CanalClientException {
+    public List<FlatMessage> getFlatListWithoutAck(Long timeout, TimeUnit unit) {
         try {
             if (this.lastGetBatchMessage != null) {
                 throw new CanalClientException("mq get/ack not support concurrent & async ack");
@@ -271,13 +272,14 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void ack() throws CanalClientException {
+    public void ack() {
         try {
             if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.ack();
             }
         } catch (Throwable e) {
-            if (this.lastGetBatchMessage != null) {
+            logger.error(e.getMessage(), e);
+			if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.fail();
             }
         } finally {
@@ -286,7 +288,7 @@ public class RabbitMQCanalConnector implements CanalMQConnector {
     }
 
     @Override
-    public void rollback() throws CanalClientException {
+    public void rollback() {
         try {
             if (this.lastGetBatchMessage != null) {
                 this.lastGetBatchMessage.fail();

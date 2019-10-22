@@ -30,12 +30,12 @@ public class BufferedFileDataInput {
     private long                offset;
     private FileChannel         fileChannel;
 
-    public BufferedFileDataInput(File file, int size) throws FileNotFoundException, IOException, InterruptedException{
+    public BufferedFileDataInput(File file, int size) throws IOException, InterruptedException{
         this.file = file;
         this.size = size;
     }
 
-    public BufferedFileDataInput(File file) throws FileNotFoundException, IOException, InterruptedException{
+    public BufferedFileDataInput(File file) throws IOException, InterruptedException{
         this(file, 1024);
     }
 
@@ -49,14 +49,15 @@ public class BufferedFileDataInput {
         return bytesSkipped;
     }
 
-    public void seek(long seekBytes) throws FileNotFoundException, IOException, InterruptedException {
+    public void seek(long seekBytes) throws IOException, InterruptedException {
         fileInput = new FileInputStream(file);
         fileChannel = fileInput.getChannel();
 
         try {
             fileChannel.position(seekBytes);
         } catch (ClosedByInterruptException e) {
-            throw new InterruptedException();
+            logger.error(e.getMessage(), e);
+			throw new InterruptedException();
         }
         bufferedInput = new BufferedInputStream(fileInput, size);
         dataInput = new DataInputStream(bufferedInput);
@@ -79,7 +80,7 @@ public class BufferedFileDataInput {
                 fileInput.close();
             }
         } catch (IOException e) {
-            logger.warn("Unable to close buffered file reader: file=" + file.getName() + " exception=" + e.getMessage());
+            logger.warn(new StringBuilder().append("Unable to close buffered file reader: file=").append(file.getName()).append(" exception=").append(e.getMessage()).toString());
         }
 
         fileChannel = null;

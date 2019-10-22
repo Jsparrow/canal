@@ -11,7 +11,8 @@ import org.junit.Ignore;
 @Ignore
 public class CanalServerWithEmbedded_FileModeTest extends BaseCanalServerWithEmbededTest {
 
-    protected Canal buildCanal() {
+    @Override
+	protected Canal buildCanal() {
         Canal canal = new Canal();
         canal.setId(1L);
         canal.setName(DESTINATION);

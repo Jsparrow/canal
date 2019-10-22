@@ -49,7 +49,7 @@ import com.alibaba.otter.canal.protocol.position.EntryPosition;
 public class MemoryTableMeta implements TableMetaTSDB {
 
     private Logger                       logger     = LoggerFactory.getLogger(MemoryTableMeta.class);
-    private Map<List<String>, TableMeta> tableMetas = new ConcurrentHashMap<List<String>, TableMeta>();
+    private Map<List<String>, TableMeta> tableMetas = new ConcurrentHashMap<>();
     private SchemaRepository             repository = new SchemaRepository(JdbcConstants.MYSQL);
 
     public MemoryTableMeta(){
@@ -65,7 +65,8 @@ public class MemoryTableMeta implements TableMetaTSDB {
         tableMetas.clear();
     }
 
-    public boolean apply(EntryPosition position, String schema, String ddl, String extra) {
+    @Override
+	public boolean apply(EntryPosition position, String schema, String ddl, String extra) {
         tableMetas.clear();
         synchronized (this) {
             if (StringUtils.isNotEmpty(schema)) {
@@ -142,33 +143,32 @@ public class MemoryTableMeta implements TableMetaTSDB {
         throw new RuntimeException("not support for memory");
     }
 
-    public Map<String, String> snapshot() {
-        Map<String, String> schemaDdls = new HashMap<String, String>();
-        for (Schema schema : repository.getSchemas()) {
+    @Override
+	public Map<String, String> snapshot() {
+        Map<String, String> schemaDdls = new HashMap<>();
+        repository.getSchemas().forEach(schema -> {
             StringBuffer data = new StringBuffer(4 * 1024);
-            for (String table : schema.showTables()) {
-                SchemaObject schemaObject = schema.findTable(table);
-                schemaObject.getStatement().output(data);
-                data.append("; \n");
-            }
+            schema.showTables().stream().map(schema::findTable).forEach(schemaObject -> {
+				schemaObject.getStatement().output(data);
+				data.append("; \n");
+			});
             schemaDdls.put(schema.getName(), data.toString());
-        }
+        });
 
         return schemaDdls;
     }
 
     private TableMeta parse(SQLCreateTableStatement statement) {
         int size = statement.getTableElementList().size();
-        if (size > 0) {
-            TableMeta tableMeta = new TableMeta();
-            for (int i = 0; i < size; ++i) {
-                SQLTableElement element = statement.getTableElementList().get(i);
-                processTableElement(element, tableMeta);
-            }
-            return tableMeta;
-        }
-
-        return null;
+        if (size <= 0) {
+			return null;
+		}
+		TableMeta tableMeta = new TableMeta();
+		for (int i = 0; i < size; ++i) {
+		    SQLTableElement element = statement.getTableElementList().get(i);
+		    processTableElement(element, tableMeta);
+		}
+		return tableMeta;
     }
 
     private void processTableElement(SQLTableElement element, TableMeta tableMeta) {
@@ -179,14 +179,13 @@ public class MemoryTableMeta implements TableMetaTSDB {
             // String charset = getSqlName(column.getCharsetExpr());
             SQLDataType dataType = column.getDataType();
             String dataTypStr = dataType.getName();
-            if (StringUtils.equalsIgnoreCase(dataTypStr, "float")) {
-                if (dataType.getArguments().size() == 1) {
-                    int num = Integer.valueOf(dataType.getArguments().get(0).toString());
-                    if (num > 24) {
-                        dataTypStr = "double";
-                    }
-                }
-            }
+            boolean condition = StringUtils.equalsIgnoreCase(dataTypStr, "float") && dataType.getArguments().size() == 1;
+			if (condition) {
+			    int num = Integer.valueOf(dataType.getArguments().get(0).toString());
+			    if (num > 24) {
+			        dataTypStr = "double";
+			    }
+			}
 
             if (dataType.getArguments().size() > 0) {
                 dataTypStr += "(";
@@ -227,7 +226,7 @@ public class MemoryTableMeta implements TableMetaTSDB {
             fieldMeta.setColumnType(dataTypStr);
             fieldMeta.setNullable(true);
             List<SQLColumnConstraint> constraints = column.getConstraints();
-            for (SQLColumnConstraint constraint : constraints) {
+            constraints.forEach(constraint -> {
                 if (constraint instanceof SQLNotNullConstraint) {
                     fieldMeta.setNullable(false);
                 } else if (constraint instanceof SQLNullConstraint) {
@@ -238,25 +237,23 @@ public class MemoryTableMeta implements TableMetaTSDB {
                 } else if (constraint instanceof SQLColumnUniqueKey) {
                     fieldMeta.setUnique(true);
                 }
-            }
+            });
             tableMeta.addFieldMeta(fieldMeta);
         } else if (element instanceof MySqlPrimaryKey) {
             MySqlPrimaryKey column = (MySqlPrimaryKey) element;
             List<SQLSelectOrderByItem> pks = column.getColumns();
-            for (SQLSelectOrderByItem pk : pks) {
-                String name = getSqlName(pk.getExpr());
-                FieldMeta field = tableMeta.getFieldMetaByName(name);
-                field.setKey(true);
-                field.setNullable(false);
-            }
+            pks.stream().map(pk -> getSqlName(pk.getExpr())).forEach(name -> {
+				FieldMeta field = tableMeta.getFieldMetaByName(name);
+				field.setKey(true);
+				field.setNullable(false);
+			});
         } else if (element instanceof MySqlUnique) {
             MySqlUnique column = (MySqlUnique) element;
             List<SQLSelectOrderByItem> uks = column.getColumns();
-            for (SQLSelectOrderByItem uk : uks) {
-                String name = getSqlName(uk.getExpr());
-                FieldMeta field = tableMeta.getFieldMetaByName(name);
-                field.setUnique(true);
-            }
+            uks.stream().map(uk -> getSqlName(uk.getExpr())).forEach(name -> {
+				FieldMeta field = tableMeta.getFieldMetaByName(name);
+				field.setUnique(true);
+			});
         }
     }
 
@@ -267,8 +264,7 @@ public class MemoryTableMeta implements TableMetaTSDB {
 
         if (sqlName instanceof SQLPropertyExpr) {
             SQLIdentifierExpr owner = (SQLIdentifierExpr) ((SQLPropertyExpr) sqlName).getOwner();
-            return DruidDdlParser.unescapeName(owner.getName()) + "."
-                   + DruidDdlParser.unescapeName(((SQLPropertyExpr) sqlName).getName());
+            return new StringBuilder().append(DruidDdlParser.unescapeName(owner.getName())).append(".").append(DruidDdlParser.unescapeName(((SQLPropertyExpr) sqlName).getName())).toString();
         } else if (sqlName instanceof SQLIdentifierExpr) {
             return DruidDdlParser.unescapeName(((SQLIdentifierExpr) sqlName).getName());
         } else if (sqlName instanceof SQLCharExpr) {

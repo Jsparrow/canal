@@ -13,11 +13,13 @@ import org.I0Itec.zkclient.serialize.ZkSerializer;
  */
 public class ByteSerializer implements ZkSerializer {
 
-    public Object deserialize(final byte[] bytes) throws ZkMarshallingError {
+    @Override
+	public Object deserialize(final byte[] bytes) {
         return bytes;
     }
 
-    public byte[] serialize(final Object data) throws ZkMarshallingError {
+    @Override
+	public byte[] serialize(final Object data) {
         try {
             if (data instanceof byte[]) {
                 return (byte[]) data;

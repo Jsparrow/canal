@@ -16,7 +16,7 @@ import com.alibaba.otter.canal.protocol.position.LogPosition;
  */
 public class FailbackLogPositionManager extends AbstractLogPositionManager {
 
-    private final static Logger           logger = LoggerFactory.getLogger(FailbackLogPositionManager.class);
+    private static final Logger           logger = LoggerFactory.getLogger(FailbackLogPositionManager.class);
 
     private final CanalLogPositionManager primary;
     private final CanalLogPositionManager secondary;
@@ -69,7 +69,7 @@ public class FailbackLogPositionManager extends AbstractLogPositionManager {
     }
 
     @Override
-    public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
+    public void persistLogPosition(String destination, LogPosition logPosition) {
         try {
             primary.persistLogPosition(destination, logPosition);
         } catch (CanalParseException e) {

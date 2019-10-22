@@ -83,7 +83,7 @@ public class DirectLogFetcherTest {
                     case LogEvent.ROTATE_EVENT:
                         // binlogFileName = ((RotateLogEvent)
                         // event).getFilename();
-                        System.out.println(((RotateLogEvent) event).getFilename());
+                        logger.info(((RotateLogEvent) event).getFilename());
                         break;
                     case LogEvent.WRITE_ROWS_EVENT_V1:
                     case LogEvent.WRITE_ROWS_EVENT:
@@ -113,7 +113,7 @@ public class DirectLogFetcherTest {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             Assert.fail(e.getMessage());
         } finally {
             try {
@@ -213,7 +213,7 @@ public class DirectLogFetcherTest {
 
         try {
             // mariadb针对特殊的类型，需要设置session变量
-            update("SET @mariadb_slave_capability='" + LogEvent.MARIA_SLAVE_CAPABILITY_MINE + "'", connector);
+            update(new StringBuilder().append("SET @mariadb_slave_capability='").append(LogEvent.MARIA_SLAVE_CAPABILITY_MINE).append("'").toString(), connector);
         } catch (Exception e) {
             logger.warn("update mariadb_slave_capability failed", e);
         }
@@ -235,7 +235,7 @@ public class DirectLogFetcherTest {
         }
 
         List<String> columnValues = rs.getFieldValues();
-        if (columnValues != null && columnValues.size() >= 1 && columnValues.get(0).toUpperCase().equals("CRC32")) {
+        if (columnValues != null && columnValues.size() >= 1 && "CRC32".equals(columnValues.get(0).toUpperCase())) {
             binlogChecksum = LogEvent.BINLOG_CHECKSUM_ALG_CRC32;
         } else {
             binlogChecksum = LogEvent.BINLOG_CHECKSUM_ALG_OFF;
@@ -253,34 +253,34 @@ public class DirectLogFetcherTest {
     }
 
     protected void parseQueryEvent(QueryLogEvent event) {
-        System.out.println(String.format("================> binlog[%s:%s] , name[%s]",
+        logger.info(String.format("================> binlog[%s:%s] , name[%s]",
             binlogFileName,
             event.getHeader().getLogPos() - event.getHeader().getEventLen(),
             event.getCatalog()));
-        System.out.println("sql : " + event.getQuery());
+        logger.info("sql : " + event.getQuery());
     }
 
     protected void parseRowsQueryEvent(RowsQueryLogEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
+        logger.info("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
     }
 
     protected void parseAnnotateRowsEvent(AnnotateRowsEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
+        logger.info("sql : " + new String(event.getRowsQuery().getBytes("ISO-8859-1"), charset.name()));
     }
 
     protected void parseXidEvent(XidLogEvent event) throws Exception {
-        System.out.println(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
+        logger.info(String.format("================> binlog[%s:%s]", binlogFileName, event.getHeader()
             .getLogPos() - event.getHeader().getEventLen()));
-        System.out.println("xid : " + event.getXid());
+        logger.info("xid : " + event.getXid());
     }
 
     protected void parseRowsEvent(RowsLogEvent event) {
         try {
-            System.out.println(String.format("================> binlog[%s:%s] , name[%s,%s]",
+            logger.info(String.format("================> binlog[%s:%s] , name[%s,%s]",
                 binlogFileName,
                 event.getHeader().getLogPos() - event.getHeader().getEventLen(),
                 event.getTable().getDbName(),
@@ -299,12 +299,12 @@ public class DirectLogFetcherTest {
                     parseOneRow(event, buffer, columns, false);
                 } else {
                     // update需要处理before/after
-                    System.out.println("-------> before");
+                    logger.info("-------> before");
                     parseOneRow(event, buffer, columns, false);
                     if (!buffer.nextOneRow(changeColumns, true)) {
                         break;
                     }
-                    System.out.println("-------> after");
+                    logger.info("-------> after");
                     parseOneRow(event, buffer, changeColumns, true);
                 }
 
@@ -337,9 +337,9 @@ public class DirectLogFetcherTest {
             } else {
                 final Serializable value = buffer.getValue();
                 if (value instanceof byte[]) {
-                    System.out.println(new String((byte[]) value));
+                    logger.info(new String((byte[]) value));
                 } else {
-                    System.out.println(value);
+                    logger.info(String.valueOf(value));
                 }
             }
         }

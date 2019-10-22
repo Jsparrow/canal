@@ -11,11 +11,14 @@ import org.junit.Test;
 
 import com.alibaba.otter.canal.client.adapter.es7x.support.ESConnection;
 import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Ignore
 public class ESConnectionTest {
 
-    ESConnection esConnection;
+    private static final Logger logger = LoggerFactory.getLogger(ESConnectionTest.class);
+	ESConnection esConnection;
 
     @Before
     public void init() throws UnknownHostException {
@@ -31,15 +34,15 @@ public class ESConnectionTest {
 
         Map<String, Object> sourceMap = mappingMetaData.getSourceAsMap();
         Map<String, Object> esMapping = (Map<String, Object>) sourceMap.get("properties");
-        for (Map.Entry<String, Object> entry : esMapping.entrySet()) {
+        esMapping.entrySet().forEach(entry -> {
             Map<String, Object> value = (Map<String, Object>) entry.getValue();
             if (value.containsKey("properties")) {
-                System.out.println(entry.getKey() + " object");
+                logger.info(entry.getKey() + " object");
             } else {
-                System.out.println(entry.getKey() + " " + value.get("type"));
+                logger.info(new StringBuilder().append(entry.getKey()).append(" ").append(value.get("type")).toString());
                 Assert.notNull(entry.getKey(), "null column name");
                 Assert.notNull(value.get("type"), "null column type");
             }
-        }
+        });
     }
 }

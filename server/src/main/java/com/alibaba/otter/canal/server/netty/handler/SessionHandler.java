@@ -50,7 +50,8 @@ public class SessionHandler extends SimpleChannelHandler {
         this.embeddedServer = embeddedServer;
     }
 
-    @SuppressWarnings({ "deprecation" })
+    @Override
+	@SuppressWarnings({ "deprecation" })
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         logger.info("message receives in session handler...");
         long start = System.nanoTime();
@@ -161,8 +162,8 @@ public class SessionHandler extends SimpleChannelHandler {
                             messageSize += com.google.protobuf.CodedOutputStream.computeInt64Size(1, message.getId());
 
                             int dataSize = 0;
-                            for (int i = 0; i < rowEntries.size(); i++) {
-                                dataSize += com.google.protobuf.CodedOutputStream.computeBytesSizeNoTag(rowEntries.get(i));
+                            for (ByteString rowEntrie : rowEntries) {
+                                dataSize += com.google.protobuf.CodedOutputStream.computeBytesSizeNoTag(rowEntrie);
                             }
                             messageSize += dataSize;
                             messageSize += 1 * rowEntries.size();
@@ -194,8 +195,8 @@ public class SessionHandler extends SimpleChannelHandler {
                             output.writeRawVarint32(messageSize);
                             // message
                             output.writeInt64(1, message.getId());
-                            for (int i = 0; i < rowEntries.size(); i++) {
-                                output.writeBytes(2, rowEntries.get(i));
+                            for (ByteString rowEntrie : rowEntries) {
+                                output.writeBytes(2, rowEntrie);
                             }
                             output.checkNoSpaceLeft();
                             NettyUtils.write(ctx.getChannel(), body, new ChannelFutureAggregator(get.getDestination(),
@@ -219,9 +220,7 @@ public class SessionHandler extends SimpleChannelHandler {
                                 if (message.isRaw() && !CollectionUtils.isEmpty(message.getRawEntries())) {
                                     messageBuilder.addAllMessages(message.getRawEntries());
                                 } else if (!CollectionUtils.isEmpty(message.getEntries())) {
-                                    for (Entry entry : message.getEntries()) {
-                                        messageBuilder.addMessages(entry.toByteString());
-                                    }
+                                    message.getEntries().forEach(entry -> messageBuilder.addMessages(entry.toByteString()));
                                 }
                             }
                             byte[] body = packetBuilder.setBody(messageBuilder.build().toByteString())
@@ -338,7 +337,8 @@ public class SessionHandler extends SimpleChannelHandler {
         }
     }
 
-    public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
+    @Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         logger.error("something goes wrong with channel:{}, exception={}",
             ctx.getChannel(),
             ExceptionUtils.getStackTrace(e.getCause()));
@@ -346,7 +346,8 @@ public class SessionHandler extends SimpleChannelHandler {
         ctx.getChannel().close();
     }
 
-    public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+    @Override
+	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         // logger.info("remove binding subscription value object if any...");
         // ClientIdentity clientIdentity = (ClientIdentity) ctx.getAttachment();
         // // 如果唯一的订阅者都取消了订阅，直接关闭服务，针对内部版本模式下可以减少资源浪费
@@ -357,12 +358,13 @@ public class SessionHandler extends SimpleChannelHandler {
 
     private void stopCanalInstanceIfNecessary(ClientIdentity clientIdentity) {
         List<ClientIdentity> clientIdentitys = embeddedServer.listAllSubscribe(clientIdentity.getDestination());
-        if (clientIdentitys != null && clientIdentitys.size() == 1 && clientIdentitys.contains(clientIdentity)) {
-            ServerRunningMonitor runningMonitor = ServerRunningMonitors.getRunningMonitor(clientIdentity.getDestination());
-            if (runningMonitor.isStart()) {
-                runningMonitor.release();
-            }
-        }
+        if (!(clientIdentitys != null && clientIdentitys.size() == 1 && clientIdentitys.contains(clientIdentity))) {
+			return;
+		}
+		ServerRunningMonitor runningMonitor = ServerRunningMonitors.getRunningMonitor(clientIdentity.getDestination());
+		if (runningMonitor.isStart()) {
+		    runningMonitor.release();
+		}
     }
 
     private TimeUnit convertTimeUnit(int unit) {

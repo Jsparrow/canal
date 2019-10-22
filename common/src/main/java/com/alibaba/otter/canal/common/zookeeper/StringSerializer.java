@@ -13,7 +13,8 @@ import org.I0Itec.zkclient.serialize.ZkSerializer;
  */
 public class StringSerializer implements ZkSerializer {
 
-    public Object deserialize(final byte[] bytes) throws ZkMarshallingError {
+    @Override
+	public Object deserialize(final byte[] bytes) {
         try {
             return new String(bytes, "utf-8");
         } catch (final UnsupportedEncodingException e) {
@@ -21,7 +22,8 @@ public class StringSerializer implements ZkSerializer {
         }
     }
 
-    public byte[] serialize(final Object data) throws ZkMarshallingError {
+    @Override
+	public byte[] serialize(final Object data) {
         try {
             return ((String) data).getBytes("utf-8");
         } catch (final UnsupportedEncodingException e) {

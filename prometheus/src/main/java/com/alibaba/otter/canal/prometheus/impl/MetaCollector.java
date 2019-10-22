@@ -28,21 +28,17 @@ public class MetaCollector extends Collector implements InstanceRegistry {
     private static final String                            INSTANCE_HELP     = "Canal instance";
     private static final String                            SUBSCRIPTION      = "canal_instance_subscriptions";
     private static final String                            SUBSCRIPTION_HELP = "Canal instance subscriptions";
-    private final ConcurrentMap<String, MetaMetricsHolder> instances         = new ConcurrentHashMap<String, MetaMetricsHolder>();
+    private final ConcurrentMap<String, MetaMetricsHolder> instances         = new ConcurrentHashMap<>();
 
     private MetaCollector() {}
-
-    private static class SingletonHolder {
-        private static final MetaCollector SINGLETON = new MetaCollector();
-    }
 
     public static MetaCollector instance() {
         return SingletonHolder.SINGLETON;
     }
 
-    @Override
+	@Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
         GaugeMetricFamily instanceInfo = new GaugeMetricFamily(INSTANCE,
                 INSTANCE_HELP, INFO_LABELS_LIST);
         GaugeMetricFamily subsInfo = new GaugeMetricFamily(SUBSCRIPTION,
@@ -60,7 +56,7 @@ public class MetaCollector extends Collector implements InstanceRegistry {
         return mfs;
     }
 
-    @Override
+	@Override
     public void register(CanalInstance instance) {
         final String destination = instance.getDestination();
         MetaMetricsHolder holder = new MetaMetricsHolder();
@@ -75,10 +71,14 @@ public class MetaCollector extends Collector implements InstanceRegistry {
         }
     }
 
-    @Override
+	@Override
     public void unregister(CanalInstance instance) {
         final String destination = instance.getDestination();
         instances.remove(destination);
+    }
+
+	private static class SingletonHolder {
+        private static final MetaCollector SINGLETON = new MetaCollector();
     }
 
     private class MetaMetricsHolder {

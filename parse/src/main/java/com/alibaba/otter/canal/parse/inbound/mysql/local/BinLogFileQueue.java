@@ -16,6 +16,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 import com.alibaba.otter.canal.parse.exception.CanalParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 维护binlog文件列表
@@ -25,8 +27,9 @@ import com.alibaba.otter.canal.parse.exception.CanalParseException;
  */
 public class BinLogFileQueue {
 
-    private String              baseName       = "mysql-bin.";
-    private List<File>          binlogs        = new ArrayList<File>();
+    private static final Logger logger = LoggerFactory.getLogger(BinLogFileQueue.class);
+	private String              baseName       = "mysql-bin.";
+    private List<File>          binlogs        = new ArrayList<>();
     private File                directory;
     private ReentrantLock       lock           = new ReentrantLock();
     private Condition           nextCondition  = lock.newCondition();
@@ -46,13 +49,12 @@ public class BinLogFileQueue {
         }
 
         List<File> files = listBinlogFiles();
-        for (File file : files) {
-            offer(file);
-        }
+        files.forEach(this::offer);
 
         timer.scheduleAtFixedRate(new TimerTask() {
 
-            public void run() {
+            @Override
+			public void run() {
                 try {
                     // File errorFile = new File(BinLogFileQueue.this.directory,
                     // errorFileName);
@@ -62,9 +64,7 @@ public class BinLogFileQueue {
                     // exception = new CanalParseException(text);
                     // }
                     List<File> files = listBinlogFiles();
-                    for (File file : files) {
-                        offer(file);
-                    }
+                    files.forEach(file -> offer(file));
                 } catch (Throwable e) {
                     exception = new CanalParseException(e);
                 }
@@ -104,7 +104,8 @@ public class BinLogFileQueue {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            logger.error(e.getMessage(), e);
+			Thread.currentThread().interrupt();
             return null;
         } finally {
             lock.unlock();
@@ -133,7 +134,8 @@ public class BinLogFileQueue {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            logger.error(e.getMessage(), e);
+			Thread.currentThread().interrupt();
             return null;
         } finally {
             lock.unlock();
@@ -177,7 +179,7 @@ public class BinLogFileQueue {
      * 获取当前所有binlog文件
      */
     public List<File> currentBinlogs() {
-        return new ArrayList<File>(binlogs);
+        return new ArrayList<>(binlogs);
     }
 
     public void destory() {
@@ -188,7 +190,8 @@ public class BinLogFileQueue {
 
             nextCondition.signalAll();// 唤醒线程，通知退出
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            logger.error(e.getMessage(), e);
+			Thread.currentThread().interrupt();
         } finally {
             lock.unlock();
         }
@@ -197,18 +200,18 @@ public class BinLogFileQueue {
     private boolean offer(File file) {
         try {
             lock.lockInterruptibly();
-            if (file != null) {
-                if (!binlogs.contains(file)) {
-                    binlogs.add(file);
-                    nextCondition.signalAll();// 唤醒
-                    return true;
-                }
-            }
+            boolean condition = file != null && !binlogs.contains(file);
+			if (condition) {
+			    binlogs.add(file);
+			    nextCondition.signalAll();// 唤醒
+			    return true;
+			}
 
             nextCondition.signalAll();// 唤醒
             return false;
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            logger.error(e.getMessage(), e);
+			Thread.currentThread().interrupt();
             return false;
         } finally {
             lock.unlock();
@@ -216,23 +219,26 @@ public class BinLogFileQueue {
     }
 
     private List<File> listBinlogFiles() {
-        List<File> files = new ArrayList<File>();
+        List<File> files = new ArrayList<>();
         files.addAll(FileUtils.listFiles(directory, new IOFileFilter() {
 
-            public boolean accept(File file) {
+            @Override
+			public boolean accept(File file) {
                 Pattern pattern = Pattern.compile("\\d+$");
                 Matcher matcher = pattern.matcher(file.getName());
                 return file.getName().startsWith(baseName) && matcher.find();
             }
 
-            public boolean accept(File dir, String name) {
+            @Override
+			public boolean accept(File dir, String name) {
                 return true;
             }
         }, null));
         // 排一下序列
-        Collections.sort(files, new Comparator<File>() {
+        files.sort(new Comparator<File>() {
 
-            public int compare(File o1, File o2) {
+            @Override
+			public int compare(File o1, File o2) {
                 return o1.getName().compareTo(o2.getName());
             }
 

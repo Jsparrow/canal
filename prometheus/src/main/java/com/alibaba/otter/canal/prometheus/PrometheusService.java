@@ -31,15 +31,11 @@ public class PrometheusService implements CanalMetricsService {
         this.clientProfiler = PrometheusClientInstanceProfiler.instance();
     }
 
-    private static class SingletonHolder {
-        private static final PrometheusService SINGLETON = new PrometheusService();
-    }
-
     public static PrometheusService getInstance() {
         return SingletonHolder.SINGLETON;
     }
 
-    @Override
+	@Override
     public void initialize() {
         try {
             logger.info("Start prometheus HTTPServer on port {}.", port);
@@ -64,7 +60,7 @@ public class PrometheusService implements CanalMetricsService {
         running = true;
     }
 
-    @Override
+	@Override
     public void terminate() {
         running = false;
         try {
@@ -81,12 +77,12 @@ public class PrometheusService implements CanalMetricsService {
         }
     }
 
-    @Override
+	@Override
     public boolean isRunning() {
         return running;
     }
 
-    @Override
+	@Override
     public void register(CanalInstance instance) {
         if (instance.isStart()) {
             logger.warn("Cannot register metrics for destination {} that is running.", instance.getDestination());
@@ -100,7 +96,7 @@ public class PrometheusService implements CanalMetricsService {
         logger.info("Register metrics for destination {}.", instance.getDestination());
     }
 
-    @Override
+	@Override
     public void unregister(CanalInstance instance) {
         if (instance.isStart()) {
             logger.warn("Try unregister metrics after destination {} is stopped.", instance.getDestination());
@@ -113,9 +109,13 @@ public class PrometheusService implements CanalMetricsService {
         logger.info("Unregister metrics for destination {}.", instance.getDestination());
     }
 
-    @Override
+	@Override
     public void setServerPort(int port) {
         this.port = port;
+    }
+
+	private static class SingletonHolder {
+        private static final PrometheusService SINGLETON = new PrometheusService();
     }
 
 }

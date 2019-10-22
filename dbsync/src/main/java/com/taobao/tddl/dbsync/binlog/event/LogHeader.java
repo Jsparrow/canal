@@ -66,9 +66,17 @@ import java.util.Map;
  */
 public final class LogHeader {
 
-    protected final int type;
+    private static final String CURRENT_GTID_STRING = "curt_gtid";
 
-    /**
+	private static final String CURRENT_GTID_SN = "curt_gtid_sn";
+
+	private static final String CURRENT_GTID_LAST_COMMIT = "curt_gtid_lct";
+
+	private static final String GTID_SET_STRING = "gtid_str";
+
+	protected final int type;
+
+	/**
      * The offset in the log where this event originally appeared (it is
      * preserved in relay logs, making SHOW SLAVE STATUS able to print
      * coordinates of the event in the master's binlog). Note: when a
@@ -80,7 +88,7 @@ public final class LogHeader {
      */
     protected long      logPos;
 
-    /**
+	/**
      * Timestamp on the master(for debugging and replication of
      * NOW()/TIMESTAMP). It is important for queries and LOAD DATA INFILE. This
      * is set at the event's creation time, except for Query and Load (et al.)
@@ -90,23 +98,23 @@ public final class LogHeader {
      */
     protected long      when;
 
-    /** Number of bytes written by write() function */
+	/** Number of bytes written by write() function */
     protected int       eventLen;
 
-    /**
+	/**
      * The master's server id (is preserved in the relay log; used to prevent
      * from infinite loops in circular replication).
      */
     protected long      serverId;
 
-    /**
+	/**
      * Some 16 flags. See the definitions above for LOG_EVENT_TIME_F,
      * LOG_EVENT_FORCED_ROTATE_F, LOG_EVENT_THREAD_SPECIFIC_F, and
      * LOG_EVENT_SUPPRESS_USE_F for notes.
      */
     protected int       flags;
 
-    /**
+	/**
      * The value is set by caller of FD constructor and
      * Log_event::write_header() for the rest. In the FD case it's propagated
      * into the last byte of post_header_len[] at FD::write(). On the slave side
@@ -114,29 +122,25 @@ public final class LogHeader {
      * event.
      */
     protected int       checksumAlg;
-    /**
+
+	/**
      * Placeholder for event checksum while writing to binlog.
      */
     protected long      crc;        // ha_checksum
 
-    /**
+	/**
      * binlog fileName
      */
     protected String    logFileName;
 
-    protected Map<String, String> gtidMap = new HashMap<>();
+	protected Map<String, String> gtidMap = new HashMap<>();
 
-    private static final String CURRENT_GTID_STRING = "curt_gtid";
-    private static final String CURRENT_GTID_SN = "curt_gtid_sn";
-    private static final String CURRENT_GTID_LAST_COMMIT = "curt_gtid_lct";
-    private static final String GTID_SET_STRING = "gtid_str";
-
-    /* for Start_event_v3 */
+	/* for Start_event_v3 */
     public LogHeader(final int type){
         this.type = type;
     }
 
-    public LogHeader(LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	public LogHeader(LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         when = buffer.getUint32();
         type = buffer.getUint8(); // LogEvent.EVENT_TYPE_OFFSET;
         serverId = buffer.getUint32(); // LogEvent.SERVER_ID_OFFSET;
@@ -229,14 +233,14 @@ public final class LogHeader {
         /* otherwise, go on with reading the header from buf (nothing now) */
     }
 
-    /**
+	/**
      * The different types of log events.
      */
     public final int getType() {
         return type;
     }
 
-    /**
+	/**
      * The position of the next event in the master binary log, in bytes from
      * the beginning of the file. In a binlog that is not a relay log, this is
      * just the position of the next event, in bytes from the beginning of the
@@ -247,7 +251,7 @@ public final class LogHeader {
         return logPos;
     }
 
-    /**
+	/**
      * The total size of this event, in bytes. In other words, this is the sum
      * of the sizes of Common-Header, Post-Header, and Body.
      */
@@ -255,21 +259,21 @@ public final class LogHeader {
         return eventLen;
     }
 
-    /**
+	/**
      * The time when the query started, in seconds since 1970.
      */
     public final long getWhen() {
         return when;
     }
 
-    /**
+	/**
      * Server ID of the server that created the event.
      */
     public final long getServerId() {
         return serverId;
     }
 
-    /**
+	/**
      * Some 16 flags. See the definitions above for LOG_EVENT_TIME_F,
      * LOG_EVENT_FORCED_ROTATE_F, LOG_EVENT_THREAD_SPECIFIC_F, and
      * LOG_EVENT_SUPPRESS_USE_F for notes.
@@ -278,52 +282,53 @@ public final class LogHeader {
         return flags;
     }
 
-    public long getCrc() {
+	public long getCrc() {
         return crc;
     }
 
-    public int getChecksumAlg() {
+	public int getChecksumAlg() {
         return checksumAlg;
     }
 
-    public String getLogFileName() {
+	public String getLogFileName() {
         return logFileName;
     }
 
-    public void setLogFileName(String logFileName) {
+	public void setLogFileName(String logFileName) {
         this.logFileName = logFileName;
     }
 
-    private void processCheckSum(LogBuffer buffer) {
+	private void processCheckSum(LogBuffer buffer) {
         if (checksumAlg != LogEvent.BINLOG_CHECKSUM_ALG_OFF && checksumAlg != LogEvent.BINLOG_CHECKSUM_ALG_UNDEF) {
             crc = buffer.getUint32(eventLen - LogEvent.BINLOG_CHECKSUM_LEN);
         }
     }
 
-    public String getGtidSetStr() {
+	public String getGtidSetStr() {
         return gtidMap.get(GTID_SET_STRING);
     }
 
-    public String getCurrentGtid() {
+	public String getCurrentGtid() {
         return gtidMap.get(CURRENT_GTID_STRING);
     }
 
-    public String getCurrentGtidSn() {
+	public String getCurrentGtidSn() {
         return gtidMap.get(CURRENT_GTID_SN);
     }
 
-    public String getCurrentGtidLastCommit() {
+	public String getCurrentGtidLastCommit() {
         return gtidMap.get(CURRENT_GTID_LAST_COMMIT);
     }
 
-    public void putGtid(GTIDSet gtidSet, GtidLogEvent event) {
-        if (gtidSet != null) {
-            gtidMap.put(GTID_SET_STRING, gtidSet.toString());
-            if (event != null) {
-                gtidMap.put(CURRENT_GTID_STRING, event.getGtidStr());
-                gtidMap.put(CURRENT_GTID_SN, String.valueOf(event.getSequenceNumber()));
-                gtidMap.put(CURRENT_GTID_LAST_COMMIT, String.valueOf(event.getLastCommitted()));
-            }
-        }
+	public void putGtid(GTIDSet gtidSet, GtidLogEvent event) {
+        if (gtidSet == null) {
+			return;
+		}
+		gtidMap.put(GTID_SET_STRING, gtidSet.toString());
+		if (event != null) {
+		    gtidMap.put(CURRENT_GTID_STRING, event.getGtidStr());
+		    gtidMap.put(CURRENT_GTID_SN, String.valueOf(event.getSequenceNumber()));
+		    gtidMap.put(CURRENT_GTID_LAST_COMMIT, String.valueOf(event.getLastCommitted()));
+		}
     }
 }

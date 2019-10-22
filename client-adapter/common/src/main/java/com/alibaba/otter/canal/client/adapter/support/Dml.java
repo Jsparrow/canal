@@ -138,8 +138,9 @@ public class Dml implements Serializable {
 
     @Override
     public String toString() {
-        return "Dml{" + "destination='" + destination + '\'' + ", database='" + database + '\'' + ", table='" + table
-               + '\'' + ", type='" + type + '\'' + ", es=" + es + ", ts=" + ts + ", sql='" + sql + '\'' + ", data="
-               + data + ", old=" + old + '}';
+        return new StringBuilder().append("Dml{").append("destination='").append(destination).append('\'').append(", database='").append(database).append('\'')
+				.append(", table='").append(table).append('\'').append(", type='").append(type).append('\'').append(", es=")
+				.append(es).append(", ts=").append(ts).append(", sql='").append(sql).append('\'').append(", data=")
+				.append(data).append(", old=").append(old).append('}').toString();
     }
 }

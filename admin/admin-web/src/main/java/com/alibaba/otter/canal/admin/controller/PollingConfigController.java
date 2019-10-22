@@ -17,6 +17,8 @@ import com.alibaba.otter.canal.admin.model.CanalConfig;
 import com.alibaba.otter.canal.admin.model.CanalInstanceConfig;
 import com.alibaba.otter.canal.admin.service.PollingConfigService;
 import com.alibaba.otter.canal.protocol.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Canal Instance配置管理控制层
@@ -28,7 +30,9 @@ import com.alibaba.otter.canal.protocol.SecurityUtil;
 @RequestMapping("/api/{env}/config")
 public class PollingConfigController {
 
-    private static final byte[] seeds = "canal is best!".getBytes();
+    private static final Logger logger = LoggerFactory.getLogger(PollingConfigController.class);
+
+	private static final byte[] seeds = "canal is best!".getBytes();
 
     @Value(value = "${canal.adminUser}")
     String                      user;
@@ -48,7 +52,7 @@ public class PollingConfigController {
                                                   @RequestParam String md5, @RequestParam boolean register,
                                                   @RequestParam String cluster, @PathVariable String env) {
         if (!auth(user, passwd)) {
-            throw new RuntimeException("auth :" + user + " is failed");
+            throw new RuntimeException(new StringBuilder().append("auth :").append(user).append(" is failed").toString());
         }
 
         if (StringUtils.isEmpty(md5) && register) {
@@ -68,7 +72,7 @@ public class PollingConfigController {
                                                              @PathVariable String env,
                                                              @PathVariable String destination, @RequestParam String md5) {
         if (!auth(user, passwd)) {
-            throw new RuntimeException("auth :" + user + " is failed");
+            throw new RuntimeException(new StringBuilder().append("auth :").append(user).append(" is failed").toString());
         }
 
         CanalInstanceConfig canalInstanceConfig = pollingConfigService.getInstanceConfig(destination, md5);
@@ -83,7 +87,7 @@ public class PollingConfigController {
                                                         @RequestParam String ip, @RequestParam Integer port,
                                                         @RequestParam String md5, @PathVariable String env) {
         if (!auth(user, passwd)) {
-            throw new RuntimeException("auth :" + user + " is failed");
+            throw new RuntimeException(new StringBuilder().append("auth :").append(user).append(" is failed").toString());
         }
 
         CanalInstanceConfig canalInstanceConfig = pollingConfigService.getInstancesConfig(ip, port, md5);
@@ -105,7 +109,8 @@ public class PollingConfigController {
                 byte[] passForClient = SecurityUtil.scramble411(this.passwd.getBytes(), seeds);
                 return SecurityUtil.scrambleServerAuth(passForClient, SecurityUtil.hexStr2Bytes(passwd), seeds);
             } catch (NoSuchAlgorithmException e) {
-                return false;
+                logger.error(e.getMessage(), e);
+				return false;
             }
         }
 

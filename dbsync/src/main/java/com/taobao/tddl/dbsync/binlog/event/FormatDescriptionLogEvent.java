@@ -75,20 +75,32 @@ public final class FormatDescriptionLogEvent extends StartLogEventV3 {
     public static final int[] checksumVersionSplit                = { 5, 6, 1 };
     public static final long  checksumVersionProduct              = (checksumVersionSplit[0] * 256 + checksumVersionSplit[1])
                                                                     * 256 + checksumVersionSplit[2];
-    /**
+
+	/** MySQL 5.0 format descriptions. */
+    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_5_x   = new FormatDescriptionLogEvent(4);
+
+	/** MySQL 4.0.x (x>=2) format descriptions. */
+    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_4_0_x = new FormatDescriptionLogEvent(3);
+
+	/** MySQL 3.23 format descriptions. */
+    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_3_23  = new FormatDescriptionLogEvent(1);
+
+	/**
      * The size of the fixed header which _all_ events have (for binlogs written
      * by this version, this is equal to LOG_EVENT_HEADER_LEN), except
      * FORMAT_DESCRIPTION_EVENT and ROTATE_EVENT (those have a header of size
      * LOG_EVENT_MINIMAL_HEADER_LEN).
      */
     protected final int       commonHeaderLen;
-    protected int             numberOfEventTypes;
 
-    /** The list of post-headers' lengthes */
+	protected int             numberOfEventTypes;
+
+	/** The list of post-headers' lengthes */
     protected final short[]   postHeaderLen;
-    protected int[]           serverVersionSplit                  = new int[3];
 
-    public FormatDescriptionLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
+	protected int[]           serverVersionSplit                  = new int[3];
+
+	public FormatDescriptionLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
                                                                                                                     throws IOException{
         /* Start_log_event_v3 */
         super(header, buffer, descriptionEvent);
@@ -119,39 +131,17 @@ public final class FormatDescriptionLogEvent extends StartLogEventV3 {
             numberOfEventTypes -= BINLOG_CHECKSUM_ALG_DESC_LEN;
         }
 
-        if (logger.isInfoEnabled()) logger.info("common_header_len= " + commonHeaderLen + ", number_of_event_types= "
-                                                + numberOfEventTypes);
+        if (logger.isInfoEnabled()) {
+			logger.info(new StringBuilder().append("common_header_len= ").append(commonHeaderLen).append(", number_of_event_types= ").append(numberOfEventTypes).toString());
+		}
     }
 
-    /** MySQL 5.0 format descriptions. */
-    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_5_x   = new FormatDescriptionLogEvent(4);
-
-    /** MySQL 4.0.x (x>=2) format descriptions. */
-    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_4_0_x = new FormatDescriptionLogEvent(3);
-
-    /** MySQL 3.23 format descriptions. */
-    public static final FormatDescriptionLogEvent FORMAT_DESCRIPTION_EVENT_3_23  = new FormatDescriptionLogEvent(1);
-
-    public static FormatDescriptionLogEvent getFormatDescription(final int binlogVersion) throws IOException {
-        /* identify binlog format */
-        switch (binlogVersion) {
-            case 4: /* MySQL 5.0 */
-                return FORMAT_DESCRIPTION_EVENT_5_x;
-            case 3:
-                return FORMAT_DESCRIPTION_EVENT_4_0_x;
-            case 1:
-                return FORMAT_DESCRIPTION_EVENT_3_23;
-            default:
-                throw new IOException("Unknown binlog version: " + binlogVersion);
-        }
-    }
-
-    public FormatDescriptionLogEvent(final int binlogVersion, int binlogChecksum){
+	public FormatDescriptionLogEvent(final int binlogVersion, int binlogChecksum){
         this(binlogVersion);
         this.header.checksumAlg = binlogChecksum;
     }
 
-    public FormatDescriptionLogEvent(final int binlogVersion){
+	public FormatDescriptionLogEvent(final int binlogVersion){
         this.binlogVersion = binlogVersion;
 
         postHeaderLen = new short[ENUM_END_EVENT];
@@ -284,19 +274,33 @@ public final class FormatDescriptionLogEvent extends StartLogEventV3 {
         }
     }
 
-    public void calcServerVersionSplit() {
+	public static FormatDescriptionLogEvent getFormatDescription(final int binlogVersion) throws IOException {
+        /* identify binlog format */
+        switch (binlogVersion) {
+            case 4: /* MySQL 5.0 */
+                return FORMAT_DESCRIPTION_EVENT_5_x;
+            case 3:
+                return FORMAT_DESCRIPTION_EVENT_4_0_x;
+            case 1:
+                return FORMAT_DESCRIPTION_EVENT_3_23;
+            default:
+                throw new IOException("Unknown binlog version: " + binlogVersion);
+        }
+    }
+
+	public void calcServerVersionSplit() {
         doServerVersionSplit(serverVersion, serverVersionSplit);
     }
 
-    public long getVersionProduct() {
+	public long getVersionProduct() {
         return versionProduct(serverVersionSplit);
     }
 
-    public boolean isVersionBeforeChecksum() {
+	public boolean isVersionBeforeChecksum() {
         return getVersionProduct() < checksumVersionProduct;
     }
 
-    public static void doServerVersionSplit(String serverVersion, int[] versionSplit) {
+	public static void doServerVersionSplit(String serverVersion, int[] versionSplit) {
         String[] split = serverVersion.split("\\.");
         if (split.length < 3) {
             versionSplit[0] = 0;
@@ -322,15 +326,15 @@ public final class FormatDescriptionLogEvent extends StartLogEventV3 {
         }
     }
 
-    public static long versionProduct(int[] versionSplit) {
+	public static long versionProduct(int[] versionSplit) {
         return ((versionSplit[0] * 256 + versionSplit[1]) * 256 + versionSplit[2]);
     }
 
-    public final int getCommonHeaderLen() {
+	public final int getCommonHeaderLen() {
         return commonHeaderLen;
     }
 
-    public final short[] getPostHeaderLen() {
+	public final short[] getPostHeaderLen() {
         return postHeaderLen;
     }
 

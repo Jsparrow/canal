@@ -28,13 +28,13 @@ public class ESSyncConfig implements AdapterConfig {
     private String    esVersion = "es6";
 
     public void validate() {
-        if (esMapping._index == null) {
+        if (esMapping.index == null) {
             throw new NullPointerException("esMapping._index");
         }
-        if ("es6".equals(esVersion) && esMapping._type == null) {
+        if ("es6".equals(esVersion) && esMapping.type == null) {
             throw new NullPointerException("esMapping._type");
         }
-        if (esMapping._id == null && esMapping.getPk() == null) {
+        if (esMapping.id == null && esMapping.getPk() == null) {
             throw new NullPointerException("esMapping._id or esMapping.pk");
         }
         if (esMapping.sql == null) {
@@ -42,7 +42,8 @@ public class ESSyncConfig implements AdapterConfig {
         }
     }
 
-    public String getDataSourceKey() {
+    @Override
+	public String getDataSourceKey() {
         return dataSourceKey;
     }
 
@@ -82,7 +83,8 @@ public class ESSyncConfig implements AdapterConfig {
         this.esMapping = esMapping;
     }
 
-    public ESMapping getMapping() {
+    @Override
+	public ESMapping getMapping() {
         return esMapping;
     }
 
@@ -96,9 +98,9 @@ public class ESSyncConfig implements AdapterConfig {
 
     public static class ESMapping implements AdapterMapping {
 
-        private String                       _index;
-        private String                       _type;
-        private String                       _id;
+        private String                       index;
+        private String                       type;
+        private String                       id;
         private boolean                      upsert          = false;
         private String                       pk;
         private Map<String, RelationMapping> relations       = new LinkedHashMap<>();
@@ -115,27 +117,27 @@ public class ESSyncConfig implements AdapterConfig {
         private SchemaItem                   schemaItem;                             // sql解析结果模型
 
         public String get_index() {
-            return _index;
+            return index;
         }
 
         public void set_index(String _index) {
-            this._index = _index;
+            this.index = _index;
         }
 
         public String get_type() {
-            return _type;
+            return type;
         }
 
         public void set_type(String _type) {
-            this._type = _type;
+            this.type = _type;
         }
 
         public String get_id() {
-            return _id;
+            return id;
         }
 
         public void set_id(String _id) {
-            this._id = _id;
+            this.id = _id;
         }
 
         public boolean isUpsert() {
@@ -194,7 +196,8 @@ public class ESSyncConfig implements AdapterConfig {
             this.commitBatch = commitBatch;
         }
 
-        public String getEtlCondition() {
+        @Override
+		public String getEtlCondition() {
             return etlCondition;
         }
 

@@ -13,10 +13,12 @@ public class QueryCommandPacket extends CommandPacket {
         setCommand((byte) 0x03);
     }
 
-    public void fromBytes(byte[] data) throws IOException {
+    @Override
+	public void fromBytes(byte[] data) throws IOException {
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         out.write(getCommand());
         out.write(getQueryString().getBytes("UTF-8"));// 链接建立时默认指定编码为UTF-8

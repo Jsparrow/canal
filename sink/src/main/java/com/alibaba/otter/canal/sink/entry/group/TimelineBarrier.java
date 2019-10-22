@@ -32,7 +32,7 @@ public class TimelineBarrier implements GroupBarrier<Event> {
     protected ReentrantLock       lock           = new ReentrantLock();
     protected Condition           condition      = lock.newCondition();
     protected volatile long       threshold;
-    protected BlockingQueue<Long> lastTimestamps = new PriorityBlockingQueue<Long>(); // 当前通道最后一次single的时间戳
+    protected BlockingQueue<Long> lastTimestamps = new PriorityBlockingQueue<>(); // 当前通道最后一次single的时间戳
 
     public TimelineBarrier(int groupSize){
         this.groupSize = groupSize;
@@ -44,7 +44,8 @@ public class TimelineBarrier implements GroupBarrier<Event> {
      * 
      * @throws InterruptedException
      */
-    public void await(Event event) throws InterruptedException {
+    @Override
+	public void await(Event event) throws InterruptedException {
         long timestamp = getTimestamp(event);
         try {
             lock.lockInterruptibly();
@@ -63,7 +64,8 @@ public class TimelineBarrier implements GroupBarrier<Event> {
      * @throws InterruptedException
      * @throws TimeoutException
      */
-    public void await(Event event, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
+    @Override
+	public void await(Event event, long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
         long timestamp = getTimestamp(event);
         try {
             lock.lockInterruptibly();
@@ -76,14 +78,16 @@ public class TimelineBarrier implements GroupBarrier<Event> {
         }
     }
 
-    public void clear(Event event) {
+    @Override
+	public void clear(Event event) {
         // 出现中断有两种可能：
         // 1.出现主备切换，需要剔除到Timeline中的时间占位(这样合并时就会小于groupSize，不满足调度条件，直到主备切换完成后才能重新开启合并处理)
         // 2.出现关闭操作，退出即可
         lastTimestamps.remove(getTimestamp(event));
     }
 
-    public void interrupt() {
+    @Override
+	public void interrupt() {
         // do nothing，没有需要清理的上下文状态
     }
 

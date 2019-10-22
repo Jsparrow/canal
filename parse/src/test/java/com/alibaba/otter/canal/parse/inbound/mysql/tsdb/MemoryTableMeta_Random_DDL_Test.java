@@ -30,17 +30,17 @@ public class MemoryTableMeta_Random_DDL_Test {
         File dummyFile = new File(url.getFile());
         int number = 39;
         for (int i = 1; i <= number; i++) {
-            File sourceFile = new File(dummyFile.getParent() + "/ddl/table", "test_" + i + ".sql");
+            File sourceFile = new File(dummyFile.getParent() + "/ddl/table", new StringBuilder().append("test_").append(i).append(".sql").toString());
             String sourceSql = StringUtils.join(IOUtils.readLines(new FileInputStream(sourceFile)), "\n");
             MemoryTableMeta source = new MemoryTableMeta();
             source.apply(null, "test", sourceSql, null);
 
-            File targetFile = new File(dummyFile.getParent() + "/ddl/table", "mysql_" + i + ".sql");
+            File targetFile = new File(dummyFile.getParent() + "/ddl/table", new StringBuilder().append("mysql_").append(i).append(".sql").toString());
             String targetSql = StringUtils.join(IOUtils.readLines(new FileInputStream(targetFile)), "\n");
             MemoryTableMeta target = new MemoryTableMeta();
             target.apply(null, "test", targetSql, null);
 
-            compareTableMeta(i, source, target);
+            compareTableMeta(source, target);
         }
     }
 
@@ -51,36 +51,34 @@ public class MemoryTableMeta_Random_DDL_Test {
         int number = 80;
         for (int i = 1; i <= number; i++) {
             try {
-                File sourceFile = new File(dummyFile.getParent() + "/ddl/alter", "test_" + i + ".sql");
+                File sourceFile = new File(dummyFile.getParent() + "/ddl/alter", new StringBuilder().append("test_").append(i).append(".sql").toString());
                 String sourceSql = StringUtils.join(IOUtils.readLines(new FileInputStream(sourceFile)), "\n");
                 MemoryTableMeta source = new MemoryTableMeta();
                 source.apply(null, "test", sourceSql, null);
 
-                File targetFile = new File(dummyFile.getParent() + "/ddl/alter", "mysql_" + i + ".sql");
+                File targetFile = new File(dummyFile.getParent() + "/ddl/alter", new StringBuilder().append("mysql_").append(i).append(".sql").toString());
                 String targetSql = StringUtils.join(IOUtils.readLines(new FileInputStream(targetFile)), "\n");
                 MemoryTableMeta target = new MemoryTableMeta();
                 target.apply(null, "test", targetSql, null);
 
-                compareTableMeta(i, source, target);
+                compareTableMeta(source, target);
             } catch (Throwable e) {
-                Assert.fail("case : " + i + " failed by : " + e.getMessage());
+                Assert.fail(new StringBuilder().append("case : ").append(i).append(" failed by : ").append(e.getMessage()).toString());
             }
         }
     }
 
-    private void compareTableMeta(int num, MemoryTableMeta source, MemoryTableMeta target) {
+    private void compareTableMeta(MemoryTableMeta source, MemoryTableMeta target) {
         List<String> tableNames = Lists.newArrayList();
-        for (Schema schema : source.getRepository().getSchemas()) {
-            tableNames.addAll(schema.showTables());
-        }
+        source.getRepository().getSchemas().forEach(schema -> tableNames.addAll(schema.showTables()));
 
-        for (String table : tableNames) {
+        tableNames.forEach(table -> {
             TableMeta sourceMeta = source.find("test", table);
             TableMeta targetMeta = target.find("test", table);
             boolean result = DatabaseTableMeta.compareTableMeta(sourceMeta, targetMeta);
             if (!result) {
-                Assert.fail(sourceMeta.toString() + " vs " + targetMeta.toString());
+                Assert.fail(new StringBuilder().append(sourceMeta.toString()).append(" vs ").append(targetMeta.toString()).toString());
             }
-        }
+        });
     }
 }

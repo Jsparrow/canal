@@ -50,28 +50,28 @@ public final class FileLogFetcher extends LogFetcher {
     /**
      * Open binlog file in local disk to fetch.
      */
-    public void open(File file) throws FileNotFoundException, IOException {
+    public void open(File file) throws IOException {
         open(file, 0L);
     }
 
     /**
      * Open binlog file in local disk to fetch.
      */
-    public void open(String filePath) throws FileNotFoundException, IOException {
+    public void open(String filePath) throws IOException {
         open(new File(filePath), 0L);
     }
 
     /**
      * Open binlog file in local disk to fetch.
      */
-    public void open(String filePath, final long filePosition) throws FileNotFoundException, IOException {
+    public void open(String filePath, final long filePosition) throws IOException {
         open(new File(filePath), filePosition);
     }
 
     /**
      * Open binlog file in local disk to fetch.
      */
-    public void open(File file, final long filePosition) throws FileNotFoundException, IOException {
+    public void open(File file, final long filePosition) throws IOException {
         fin = new FileInputStream(file);
 
         ensureCapacity(BIN_LOG_HEADER_SIZE);
@@ -89,17 +89,17 @@ public final class FileLogFetcher extends LogFetcher {
         origin = 0;
         position = 0;
 
-        if (filePosition > BIN_LOG_HEADER_SIZE) {
-            final int maxFormatDescriptionEventLen = FormatDescriptionLogEvent.LOG_EVENT_MINIMAL_HEADER_LEN
-                                                     + FormatDescriptionLogEvent.ST_COMMON_HEADER_LEN_OFFSET
-                                                     + LogEvent.ENUM_END_EVENT + LogEvent.BINLOG_CHECKSUM_ALG_DESC_LEN
-                                                     + LogEvent.CHECKSUM_CRC32_SIGNATURE_LEN;
-
-            ensureCapacity(maxFormatDescriptionEventLen);
-            limit = fin.read(buffer, 0, maxFormatDescriptionEventLen);
-            limit = (int) getUint32(LogEvent.EVENT_LEN_OFFSET);
-            fin.getChannel().position(filePosition);
-        }
+        if (filePosition <= BIN_LOG_HEADER_SIZE) {
+			return;
+		}
+		final int maxFormatDescriptionEventLen = FormatDescriptionLogEvent.LOG_EVENT_MINIMAL_HEADER_LEN
+		                                         + FormatDescriptionLogEvent.ST_COMMON_HEADER_LEN_OFFSET
+		                                         + LogEvent.ENUM_END_EVENT + LogEvent.BINLOG_CHECKSUM_ALG_DESC_LEN
+		                                         + LogEvent.CHECKSUM_CRC32_SIGNATURE_LEN;
+		ensureCapacity(maxFormatDescriptionEventLen);
+		limit = fin.read(buffer, 0, maxFormatDescriptionEventLen);
+		limit = (int) getUint32(LogEvent.EVENT_LEN_OFFSET);
+		fin.getChannel().position(filePosition);
     }
 
     /**
@@ -107,7 +107,8 @@ public final class FileLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#fetch()
      */
-    public boolean fetch() throws IOException {
+    @Override
+	public boolean fetch() throws IOException {
         if (limit == 0) {
             final int len = fin.read(buffer, 0, buffer.length);
             if (len >= 0) {
@@ -167,7 +168,8 @@ public final class FileLogFetcher extends LogFetcher {
      * 
      * @see com.taobao.tddl.dbsync.binlog.LogFetcher#close()
      */
-    public void close() throws IOException {
+    @Override
+	public void close() throws IOException {
         if (fin != null) {
             fin.close();
         }

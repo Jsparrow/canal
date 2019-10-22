@@ -8,16 +8,20 @@ import com.alibaba.otter.canal.protocol.CanalEntry.Entry;
 import com.alibaba.otter.canal.protocol.CanalEntry.Header;
 import com.alibaba.otter.canal.protocol.position.LogIdentity;
 import com.alibaba.otter.canal.store.model.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MemoryEventStoreBase {
 
-    private static final String MYSQL_ADDRESS = "127.0.0.1";
+    private static final Logger logger = LoggerFactory.getLogger(MemoryEventStoreBase.class);
+	private static final String MYSQL_ADDRESS = "127.0.0.1";
 
     protected void sleep(Long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            Assert.fail();
+            logger.error(e.getMessage(), e);
+			Assert.fail();
         }
     }
 

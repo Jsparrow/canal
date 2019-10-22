@@ -295,7 +295,25 @@ public abstract class LogEvent {
     public static final int    MYSQL_TYPE_STRING                        = 254;
     public static final int    MYSQL_TYPE_GEOMETRY                      = 255;
 
-    public static String getTypeName(final int type) {
+	protected static final Log logger = LogFactory.getLog(LogEvent.class);
+
+	protected final LogHeader  header;
+
+	/**
+     * mysql半同步semi标识
+     * 
+     * <pre>
+     * 0不需要semi ack 给mysql
+     * 1需要semi ack给mysql
+     * </pre>
+     */
+    protected int              semival;
+
+	protected LogEvent(LogHeader header){
+        this.header = header;
+    }
+
+	public static String getTypeName(final int type) {
         switch (type) {
             case START_EVENT_V3:
                 return "Start_v3";
@@ -374,40 +392,22 @@ public abstract class LogEvent {
         }
     }
 
-    protected static final Log logger = LogFactory.getLog(LogEvent.class);
-
-    protected final LogHeader  header;
-
-    /**
-     * mysql半同步semi标识
-     * 
-     * <pre>
-     * 0不需要semi ack 给mysql
-     * 1需要semi ack给mysql
-     * </pre>
-     */
-    protected int              semival;
-
-    public int getSemival() {
+	public int getSemival() {
         return semival;
     }
 
-    public void setSemival(int semival) {
+	public void setSemival(int semival) {
         this.semival = semival;
     }
 
-    protected LogEvent(LogHeader header){
-        this.header = header;
-    }
-
-    /**
+	/**
      * Return event header.
      */
     public final LogHeader getHeader() {
         return header;
     }
 
-    /**
+	/**
      * The total size of this event, in bytes. In other words, this is the sum
      * of the sizes of Common-Header, Post-Header, and Body.
      */
@@ -415,14 +415,14 @@ public abstract class LogEvent {
         return header.getEventLen();
     }
 
-    /**
+	/**
      * Server ID of the server that created the event.
      */
     public final long getServerId() {
         return header.getServerId();
     }
 
-    /**
+	/**
      * The position of the next event in the master binary log, in bytes from
      * the beginning of the file. In a binlog that is not a relay log, this is
      * just the position of the next event, in bytes from the beginning of the
@@ -433,7 +433,7 @@ public abstract class LogEvent {
         return header.getLogPos();
     }
 
-    /**
+	/**
      * The time when the query started, in seconds since 1970.
      */
     public final long getWhen() {

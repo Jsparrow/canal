@@ -18,6 +18,22 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
 public final class UserVarLogEvent extends LogEvent {
 
     /**
+     * The following is for user defined functions
+     * 
+     * @see mysql-5.1.60//include/mysql_com.h
+     */
+    public static final int    STRING_RESULT          = 0;
+	public static final int    REAL_RESULT            = 1;
+	public static final int    INT_RESULT             = 2;
+	public static final int    ROW_RESULT             = 3;
+	public static final int    DECIMAL_RESULT         = 4;
+	/* User_var event data */
+    public static final int    UV_VAL_LEN_SIZE        = 4;
+	public static final int    UV_VAL_IS_NULL         = 1;
+	public static final int    UV_VAL_TYPE_SIZE       = 1;
+	public static final int    UV_NAME_LEN_SIZE       = 4;
+	public static final int    UV_CHARSET_NUMBER_SIZE = 4;
+	/**
      * Fixed data part: Empty
      * <p>
      * Variable data part:
@@ -39,30 +55,12 @@ public final class UserVarLogEvent extends LogEvent {
      * Source : http://forge.mysql.com/wiki/MySQL_Internals_Binary_Log
      */
     private final String       name;
-    private final Serializable value;
-    private final int          type;
-    private final int          charsetNumber;
-    private final boolean      isNull;
+	private final Serializable value;
+	private final int          type;
+	private final int          charsetNumber;
+	private final boolean      isNull;
 
-    /**
-     * The following is for user defined functions
-     * 
-     * @see mysql-5.1.60//include/mysql_com.h
-     */
-    public static final int    STRING_RESULT          = 0;
-    public static final int    REAL_RESULT            = 1;
-    public static final int    INT_RESULT             = 2;
-    public static final int    ROW_RESULT             = 3;
-    public static final int    DECIMAL_RESULT         = 4;
-
-    /* User_var event data */
-    public static final int    UV_VAL_LEN_SIZE        = 4;
-    public static final int    UV_VAL_IS_NULL         = 1;
-    public static final int    UV_VAL_TYPE_SIZE       = 1;
-    public static final int    UV_NAME_LEN_SIZE       = 4;
-    public static final int    UV_CHARSET_NUMBER_SIZE = 4;
-
-    public UserVarLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
+	public UserVarLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent)
                                                                                                           throws IOException{
         super(header);
 
@@ -90,9 +88,13 @@ public final class UserVarLogEvent extends LogEvent {
                     value = Double.valueOf(buffer.getDouble64()); // float8get
                     break;
                 case INT_RESULT:
-                    if (valueLen == 8) value = Long.valueOf(buffer.getLong64()); // !uint8korr
-                    else if (valueLen == 4) value = Long.valueOf(buffer.getUint32());
-                    else throw new IOException("Error INT_RESULT length: " + valueLen);
+                    if (valueLen == 8) {
+						value = Long.valueOf(buffer.getLong64()); // !uint8korr
+					} else if (valueLen == 4) {
+						value = Long.valueOf(buffer.getUint32());
+					} else {
+						throw new IOException("Error INT_RESULT length: " + valueLen);
+					}
                     break;
                 case DECIMAL_RESULT:
                     final int precision = buffer.getInt8();
@@ -114,14 +116,14 @@ public final class UserVarLogEvent extends LogEvent {
         }
     }
 
-    public final String getQuery() {
+	public final String getQuery() {
         if (value == null) {
-            return "SET @" + name + " := NULL";
+            return new StringBuilder().append("SET @").append(name).append(" := NULL").toString();
         } else if (type == STRING_RESULT) {
             // TODO: do escaping !?
-            return "SET @" + name + " := \'" + value + '\'';
+            return new StringBuilder().append("SET @").append(name).append(" := \'").append(value).append('\'').toString();
         } else {
-            return "SET @" + name + " := " + String.valueOf(value);
+            return new StringBuilder().append("SET @").append(name).append(" := ").append(String.valueOf(value)).toString();
         }
     }
 }

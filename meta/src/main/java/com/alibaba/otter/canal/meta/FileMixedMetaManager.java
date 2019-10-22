@@ -40,7 +40,7 @@ import com.google.common.collect.MigrateMap;
  * @author jianghang 2013-4-15 下午05:55:57
  * @version 1.0.4
  */
-public class FileMixedMetaManager extends MemoryMetaManager implements CanalMetaManager {
+public class FileMixedMetaManager extends MemoryMetaManager {
 
     private static final Logger      logger       = LoggerFactory.getLogger(FileMixedMetaManager.class);
     private static final Charset     charset      = Charset.forName("UTF-8");
@@ -54,7 +54,8 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
     private long                     period       = 1000;                                               // 单位ms
     private Set<ClientIdentity>      updateCursorTasks;
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         Assert.notNull(dataDir);
         if (!dataDir.exists()) {
@@ -66,12 +67,13 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
         }
 
         if (!dataDir.canRead() || !dataDir.canWrite()) {
-            throw new CanalMetaManagerException("dir[" + dataDir.getPath() + "] can not read/write");
+            throw new CanalMetaManagerException(new StringBuilder().append("dir[").append(dataDir.getPath()).append("] can not read/write").toString());
         }
 
         dataFileCaches = MigrateMap.makeComputingMap(new Function<String, File>() {
 
-            public File apply(String destination) {
+            @Override
+			public File apply(String destination) {
                 return getDataFile(destination);
             }
         });
@@ -79,14 +81,16 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
         executor = Executors.newScheduledThreadPool(1);
         destinations = MigrateMap.makeComputingMap(new Function<String, List<ClientIdentity>>() {
 
-            public List<ClientIdentity> apply(String destination) {
+            @Override
+			public List<ClientIdentity> apply(String destination) {
                 return loadClientIdentity(destination);
             }
         });
 
         cursors = MigrateMap.makeComputingMap(new Function<ClientIdentity, Position>() {
 
-            public Position apply(ClientIdentity clientIdentity) {
+            @Override
+			public Position apply(ClientIdentity clientIdentity) {
                 Position position = loadCursor(clientIdentity.getDestination(), clientIdentity);
                 if (position == null) {
                     return nullCursor; // 返回一个空对象标识，避免出现异常
@@ -96,40 +100,38 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
             }
         });
 
-        updateCursorTasks = Collections.synchronizedSet(new HashSet<ClientIdentity>());
+        updateCursorTasks = Collections.synchronizedSet(new HashSet<>());
 
         // 启动定时工作任务
-        executor.scheduleAtFixedRate(new Runnable() {
-
-            public void run() {
-                List<ClientIdentity> tasks = new ArrayList<ClientIdentity>(updateCursorTasks);
-                for (ClientIdentity clientIdentity : tasks) {
-                    MDC.put("destination", String.valueOf(clientIdentity.getDestination()));
-                    try {
-                        // 定时将内存中的最新值刷到file中，多次变更只刷一次
-                        if (logger.isInfoEnabled()) {
-                            LogPosition cursor = (LogPosition) getCursor(clientIdentity);
-                            logger.info("clientId:{} cursor:[{},{},{},{},{}] address[{}]", new Object[] {
-                                    clientIdentity.getClientId(), cursor.getPostion().getJournalName(),
-                                    cursor.getPostion().getPosition(), cursor.getPostion().getTimestamp(),
-                                    cursor.getPostion().getServerId(), cursor.getPostion().getGtid(),
-                                    cursor.getIdentity().getSourceAddress().toString() });
-                        }
-                        flushDataToFile(clientIdentity.getDestination());
-                        updateCursorTasks.remove(clientIdentity);
-                    } catch (Throwable e) {
-                        // ignore
-                        logger.error("period update" + clientIdentity.toString() + " curosr failed!", e);
-                    }
-                }
-            }
-        },
+        executor.scheduleAtFixedRate(() -> {
+		    List<ClientIdentity> tasks = new ArrayList<>(updateCursorTasks);
+		    for (ClientIdentity clientIdentity : tasks) {
+		        MDC.put("destination", String.valueOf(clientIdentity.getDestination()));
+		        try {
+		            // 定时将内存中的最新值刷到file中，多次变更只刷一次
+		            if (logger.isInfoEnabled()) {
+		                LogPosition cursor = (LogPosition) getCursor(clientIdentity);
+		                logger.info("clientId:{} cursor:[{},{},{},{},{}] address[{}]", new Object[] {
+		                        clientIdentity.getClientId(), cursor.getPostion().getJournalName(),
+		                        cursor.getPostion().getPosition(), cursor.getPostion().getTimestamp(),
+		                        cursor.getPostion().getServerId(), cursor.getPostion().getGtid(),
+		                        cursor.getIdentity().getSourceAddress().toString() });
+		            }
+		            flushDataToFile(clientIdentity.getDestination());
+		            updateCursorTasks.remove(clientIdentity);
+		        } catch (Throwable e) {
+		            // ignore
+		            logger.error(new StringBuilder().append("period update").append(clientIdentity.toString()).append(" curosr failed!").toString(), e);
+		        }
+		    }
+		},
             period,
             period,
             TimeUnit.MILLISECONDS);
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
 
         flushDataToFile();// 刷新数据
@@ -138,36 +140,30 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
         batches.clear();
     }
 
-    public void subscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void subscribe(final ClientIdentity clientIdentity) {
         super.subscribe(clientIdentity);
 
         // 订阅信息频率发生比较低，不需要做定时merge处理
-        executor.submit(new Runnable() {
-
-            public void run() {
-                flushDataToFile(clientIdentity.getDestination());
-            }
-        });
+        executor.submit(() -> flushDataToFile(clientIdentity.getDestination()));
     }
 
-    public void unsubscribe(final ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public void unsubscribe(final ClientIdentity clientIdentity) {
         super.unsubscribe(clientIdentity);
 
         // 订阅信息频率发生比较低，不需要做定时merge处理
-        executor.submit(new Runnable() {
-
-            public void run() {
-                flushDataToFile(clientIdentity.getDestination());
-            }
-        });
+        executor.submit(() -> flushDataToFile(clientIdentity.getDestination()));
     }
 
-    public void updateCursor(ClientIdentity clientIdentity, Position position) throws CanalMetaManagerException {
+    @Override
+	public void updateCursor(ClientIdentity clientIdentity, Position position) {
         updateCursorTasks.add(clientIdentity);// 添加到任务队列中进行触发
         super.updateCursor(clientIdentity, position);
     }
 
-    public Position getCursor(ClientIdentity clientIdentity) throws CanalMetaManagerException {
+    @Override
+	public Position getCursor(ClientIdentity clientIdentity) {
         Position position = super.getCursor(clientIdentity);
         if (position == nullCursor) {
             return null;
@@ -205,9 +201,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
     }
 
     private void flushDataToFile() {
-        for (String destination : destinations.keySet()) {
-            flushDataToFile(destination);
-        }
+        destinations.keySet().forEach(this::flushDataToFile);
     }
 
     private void flushDataToFile(String destination) {
@@ -216,33 +210,33 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
 
     private void flushDataToFile(String destination, File dataFile) {
         FileMetaInstanceData data = new FileMetaInstanceData();
-        if (destinations.containsKey(destination)) {
-            synchronized (destination.intern()) { // 基于destination控制一下并发更新
-                data.setDestination(destination);
+        if (!destinations.containsKey(destination)) {
+			return;
+		}
+		synchronized (destination.intern()) { // 基于destination控制一下并发更新
+		    data.setDestination(destination);
 
-                List<FileMetaClientIdentityData> clientDatas = Lists.newArrayList();
-                List<ClientIdentity> clientIdentitys = destinations.get(destination);
-                for (ClientIdentity clientIdentity : clientIdentitys) {
-                    FileMetaClientIdentityData clientData = new FileMetaClientIdentityData();
-                    clientData.setClientIdentity(clientIdentity);
-                    Position position = cursors.get(clientIdentity);
-                    if (position != null && position != nullCursor) {
-                        clientData.setCursor((LogPosition) position);
-                    }
+		    List<FileMetaClientIdentityData> clientDatas = Lists.newArrayList();
+		    List<ClientIdentity> clientIdentitys = destinations.get(destination);
+		    clientIdentitys.forEach(clientIdentity -> {
+		        FileMetaClientIdentityData clientData = new FileMetaClientIdentityData();
+		        clientData.setClientIdentity(clientIdentity);
+		        Position position = cursors.get(clientIdentity);
+		        if (position != null && position != nullCursor) {
+		            clientData.setCursor((LogPosition) position);
+		        }
 
-                    clientDatas.add(clientData);
-                }
+		        clientDatas.add(clientData);
+		    });
 
-                data.setClientDatas(clientDatas);
-            }
-
-            String json = JsonUtils.marshalToString(data);
-            try {
-                FileUtils.writeStringToFile(dataFile, json);
-            } catch (IOException e) {
-                throw new CanalMetaManagerException(e);
-            }
-        }
+		    data.setClientDatas(clientDatas);
+		}
+		String json = JsonUtils.marshalToString(data);
+		try {
+		    FileUtils.writeStringToFile(dataFile, json);
+		} catch (IOException e) {
+		    throw new CanalMetaManagerException(e);
+		}
     }
 
     private List<ClientIdentity> loadClientIdentity(String destination) {
@@ -258,11 +252,7 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
             return result;
         }
 
-        for (FileMetaClientIdentityData clientData : clientDatas) {
-            if (clientData.getClientIdentity().getDestination().equals(destination)) {
-                result.add(clientData.getClientIdentity());
-            }
-        }
+        clientDatas.stream().filter(clientData -> clientData.getClientIdentity().getDestination().equals(destination)).forEach(clientData -> result.add(clientData.getClientIdentity()));
 
         return result;
     }
@@ -278,16 +268,22 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
             return null;
         }
 
-        for (FileMetaClientIdentityData clientData : clientDatas) {
-            if (clientData.getClientIdentity() != null && clientData.getClientIdentity().equals(clientIdentity)) {
-                return clientData.getCursor();
-            }
-        }
-
-        return null;
+        return clientDatas.stream().filter(clientData -> clientData.getClientIdentity() != null && clientData.getClientIdentity().equals(clientIdentity)).findFirst().map(FileMetaClientIdentityData::getCursor).orElse(null);
     }
 
-    /**
+    public void setDataDir(String dataDir) {
+        this.dataDir = new File(dataDir);
+    }
+
+	public void setDataDirByFile(File dataDir) {
+        this.dataDir = dataDir;
+    }
+
+	public void setPeriod(long period) {
+        this.period = period;
+    }
+
+	/**
      * 描述一个clientIdentity对应的数据对象
      * 
      * @author jianghang 2013-4-15 下午06:19:40
@@ -362,18 +358,6 @@ public class FileMixedMetaManager extends MemoryMetaManager implements CanalMeta
             this.clientDatas = clientDatas;
         }
 
-    }
-
-    public void setDataDir(String dataDir) {
-        this.dataDir = new File(dataDir);
-    }
-
-    public void setDataDirByFile(File dataDir) {
-        this.dataDir = dataDir;
-    }
-
-    public void setPeriod(long period) {
-        this.period = period;
     }
 
 }

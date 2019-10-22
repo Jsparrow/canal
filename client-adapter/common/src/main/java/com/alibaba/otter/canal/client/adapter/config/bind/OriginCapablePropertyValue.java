@@ -39,7 +39,7 @@ class OriginCapablePropertyValue extends PropertyValue {
     public String toString() {
         String name = (this.origin != null ? this.origin.getName() : this.getName());
         String source = (this.origin.getSource() != null ? this.origin.getSource().getName() : "unknown");
-        return "'" + name + "' from '" + source + "'";
+        return new StringBuilder().append("'").append(name).append("' from '").append(source).append("'").toString();
     }
 
     public static PropertyOrigin getOrigin(PropertyValue propertyValue) {

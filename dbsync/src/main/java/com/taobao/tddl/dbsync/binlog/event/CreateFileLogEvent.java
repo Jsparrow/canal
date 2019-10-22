@@ -10,17 +10,15 @@ import com.taobao.tddl.dbsync.binlog.LogBuffer;
  */
 public final class CreateFileLogEvent extends LoadLogEvent {
 
-    protected LogBuffer     blockBuf;
-    protected int           blockLen;
-    protected long          fileId;
-
-    protected boolean       initedFromOld;
-
     /* CF = "Create File" */
     public static final int CF_FILE_ID_OFFSET = 0;
-    public static final int CF_DATA_OFFSET    = FormatDescriptionLogEvent.CREATE_FILE_HEADER_LEN;
+	public static final int CF_DATA_OFFSET    = FormatDescriptionLogEvent.CREATE_FILE_HEADER_LEN;
+	protected LogBuffer     blockBuf;
+	protected int           blockLen;
+	protected long          fileId;
+	protected boolean       initedFromOld;
 
-    public CreateFileLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	public CreateFileLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         super(header, buffer, descriptionEvent);
 
         final int headerLen = descriptionEvent.commonHeaderLen;
@@ -50,15 +48,15 @@ public final class CreateFileLogEvent extends LoadLogEvent {
         }
     }
 
-    public final long getFileId() {
+	public final long getFileId() {
         return fileId;
     }
 
-    public final LogBuffer getBuffer() {
+	public final LogBuffer getBuffer() {
         return blockBuf;
     }
 
-    public final byte[] getData() {
+	public final byte[] getData() {
         return blockBuf.getData();
     }
 }

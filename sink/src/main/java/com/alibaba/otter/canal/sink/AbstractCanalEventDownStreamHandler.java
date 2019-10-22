@@ -10,15 +10,18 @@ import com.alibaba.otter.canal.common.AbstractCanalLifeCycle;
  */
 public class AbstractCanalEventDownStreamHandler<T> extends AbstractCanalLifeCycle implements CanalEventDownStreamHandler<T> {
 
-    public T before(T events) {
+    @Override
+	public T before(T events) {
         return events;
     }
 
-    public T retry(T events) {
+    @Override
+	public T retry(T events) {
         return events;
     }
 
-    public T after(T events) {
+    @Override
+	public T after(T events) {
         return events;
     }
 

@@ -9,19 +9,19 @@ import java.net.SocketAddress;
  */
 public interface SocketChannel {
 
-    public void write(byte[]... buf) throws IOException;
+    void write(byte[]... buf) throws IOException;
 
-    public byte[] read(int readSize) throws IOException;
+    byte[] read(int readSize) throws IOException;
 
-    public byte[] read(int readSize, int timeout) throws IOException;
+    byte[] read(int readSize, int timeout) throws IOException;
 
-    public void read(byte[] data, int off, int len, int timeout) throws IOException;
+    void read(byte[] data, int off, int len, int timeout) throws IOException;
 
-    public boolean isConnected();
+    boolean isConnected();
 
-    public SocketAddress getRemoteSocketAddress();
+    SocketAddress getRemoteSocketAddress();
 
-    public SocketAddress getLocalSocketAddress();
+    SocketAddress getLocalSocketAddress();
 
-    public void close();
+    void close();
 }

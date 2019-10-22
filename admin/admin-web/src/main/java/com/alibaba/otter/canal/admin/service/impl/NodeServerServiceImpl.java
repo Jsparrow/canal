@@ -24,6 +24,8 @@ import com.alibaba.otter.canal.admin.model.NodeServer;
 import com.alibaba.otter.canal.admin.model.Pager;
 import com.alibaba.otter.canal.admin.service.NodeServerService;
 import com.alibaba.otter.canal.protocol.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 节点信息业务层
@@ -34,7 +36,10 @@ import com.alibaba.otter.canal.protocol.SecurityUtil;
 @Service
 public class NodeServerServiceImpl implements NodeServerService {
 
-    public void save(NodeServer nodeServer) {
+    private static final Logger logger = LoggerFactory.getLogger(NodeServerServiceImpl.class);
+
+	@Override
+	public void save(NodeServer nodeServer) {
         int cnt = NodeServer.find.query()
             .where()
             .eq("ip", nodeServer.getIp())
@@ -46,25 +51,30 @@ public class NodeServerServiceImpl implements NodeServerService {
 
         nodeServer.save();
 
-        if (nodeServer.getClusterId() == null) { // 单机模式
-            CanalConfig canalConfig = new CanalConfig();
-            canalConfig.setServerId(nodeServer.getId());
-            String configTmp = TemplateConfigLoader.loadCanalConfig();
-            canalConfig.setContent(configTmp);
-            try {
-                String contentMd5 = SecurityUtil.md5String(canalConfig.getContent());
-                canalConfig.setContentMd5(contentMd5);
-            } catch (NoSuchAlgorithmException e) {
-            }
-            canalConfig.save();
-        }
+        // 单机模式
+		if (nodeServer.getClusterId() != null) {
+			return;
+		}
+		CanalConfig canalConfig = new CanalConfig();
+		canalConfig.setServerId(nodeServer.getId());
+		String configTmp = TemplateConfigLoader.loadCanalConfig();
+		canalConfig.setContent(configTmp);
+		try {
+		    String contentMd5 = SecurityUtil.md5String(canalConfig.getContent());
+		    canalConfig.setContentMd5(contentMd5);
+		} catch (NoSuchAlgorithmException e) {
+			logger.error(e.getMessage(), e);
+		}
+		canalConfig.save();
     }
 
-    public NodeServer detail(Long id) {
+    @Override
+	public NodeServer detail(Long id) {
         return NodeServer.find.byId(id);
     }
 
-    public void update(NodeServer nodeServer) {
+    @Override
+	public void update(NodeServer nodeServer) {
         int cnt = NodeServer.find.query()
             .where()
             .eq("ip", nodeServer.getIp())
@@ -78,23 +88,23 @@ public class NodeServerServiceImpl implements NodeServerService {
         nodeServer.update("name", "ip", "adminPort", "tcpPort", "metricPort", "clusterId");
     }
 
-    public void delete(Long id) {
+    @Override
+	public void delete(Long id) {
         NodeServer nodeServer = NodeServer.find.byId(id);
-        if (nodeServer != null) {
-            // 判断是否存在实例
-            int cnt = CanalInstanceConfig.find.query().where().eq("serverId", nodeServer.getId()).findCount();
-            if (cnt > 0) {
-                throw new ServiceException("当前Server下存在Instance配置, 无法删除");
-            }
-
-            // 同时删除配置
-            CanalConfig canalConfig = CanalConfig.find.query().where().eq("serverId", id).findOne();
-            if (canalConfig != null) {
-                canalConfig.delete();
-            }
-
-            nodeServer.delete();
-        }
+        if (nodeServer == null) {
+			return;
+		}
+		// 判断是否存在实例
+		int cnt = CanalInstanceConfig.find.query().where().eq("serverId", nodeServer.getId()).findCount();
+		if (cnt > 0) {
+		    throw new ServiceException("当前Server下存在Instance配置, 无法删除");
+		}
+		// 同时删除配置
+		CanalConfig canalConfig = CanalConfig.find.query().where().eq("serverId", id).findOne();
+		if (canalConfig != null) {
+		    canalConfig.delete();
+		}
+		nodeServer.delete();
     }
 
     private Query<NodeServer> getBaseQuery(NodeServer nodeServer) {
@@ -103,7 +113,7 @@ public class NodeServerServiceImpl implements NodeServerService {
 
         if (nodeServer != null) {
             if (StringUtils.isNotEmpty(nodeServer.getName())) {
-                query.where().like("name", "%" + nodeServer.getName() + "%");
+                query.where().like("name", new StringBuilder().append("%").append(nodeServer.getName()).append("%").toString());
             }
             if (StringUtils.isNotEmpty(nodeServer.getIp())) {
                 query.where().eq("ip", nodeServer.getIp());
@@ -120,13 +130,15 @@ public class NodeServerServiceImpl implements NodeServerService {
         return query;
     }
 
-    public List<NodeServer> findAll(NodeServer nodeServer) {
+    @Override
+	public List<NodeServer> findAll(NodeServer nodeServer) {
         Query<NodeServer> query = getBaseQuery(nodeServer);
         query.order().asc("id");
         return query.findList();
     }
 
-    public Pager<NodeServer> findList(NodeServer nodeServer, Pager<NodeServer> pager) {
+    @Override
+	public Pager<NodeServer> findList(NodeServer nodeServer, Pager<NodeServer> pager) {
 
         Query<NodeServer> query = getBaseQuery(nodeServer);
         Query<NodeServer> queryCnt = query.copy();
@@ -158,21 +170,25 @@ public class NodeServerServiceImpl implements NodeServerService {
             try {
                 f.get(3, TimeUnit.SECONDS);
             } catch (InterruptedException | ExecutionException e) {
+				logger.error(e.getMessage(), e);
                 // ignore
             } catch (TimeoutException e){
-                break;
+                logger.error(e.getMessage(), e);
+				break;
             }
         }
 
         return pager;
     }
 
-    public int remoteNodeStatus(String ip, Integer port) {
+    @Override
+	public int remoteNodeStatus(String ip, Integer port) {
         boolean result = SimpleAdminConnectors.execute(ip, port, AdminConnector::check);
         return result ? 1 : 0;
     }
 
-    public String remoteCanalLog(Long id) {
+    @Override
+	public String remoteCanalLog(Long id) {
         NodeServer nodeServer = NodeServer.find.byId(id);
         if (nodeServer == null) {
             return "";
@@ -182,7 +198,8 @@ public class NodeServerServiceImpl implements NodeServerService {
             adminConnector -> adminConnector.canalLog(100));
     }
 
-    public boolean remoteOperation(Long id, String option) {
+    @Override
+	public boolean remoteOperation(Long id, String option) {
         NodeServer nodeServer = NodeServer.find.byId(id);
         if (nodeServer == null) {
             return false;

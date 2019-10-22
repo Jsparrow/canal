@@ -19,6 +19,8 @@ import com.alibaba.otter.canal.client.adapter.es.core.config.SchemaItem.ColumnIt
 import com.alibaba.otter.canal.client.adapter.es.core.config.SchemaItem.FieldItem;
 import com.alibaba.otter.canal.client.adapter.es.core.config.SchemaItem.RelationFieldsPair;
 import com.alibaba.otter.canal.client.adapter.es.core.config.SchemaItem.TableItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ES同步指定sql格式解析
@@ -28,7 +30,9 @@ import com.alibaba.otter.canal.client.adapter.es.core.config.SchemaItem.TableIte
  */
 public class SqlParser {
 
-    /**
+    private static final Logger logger = LoggerFactory.getLogger(SqlParser.class);
+
+	/**
      * 解析sql
      *
      * @param sql sql
@@ -57,7 +61,8 @@ public class SqlParser {
             }
             return schemaItem;
         } catch (Exception e) {
-            throw new ParserException();
+            logger.error(e.getMessage(), e);
+			throw new ParserException();
         }
     }
 
@@ -110,9 +115,7 @@ public class SqlParser {
         } else if (expr instanceof SQLMethodInvokeExpr) {
             SQLMethodInvokeExpr methodInvokeExpr = (SQLMethodInvokeExpr) expr;
             fieldItem.setMethod(true);
-            for (SQLExpr sqlExpr : methodInvokeExpr.getArguments()) {
-                visitColumn(sqlExpr, fieldItem);
-            }
+            methodInvokeExpr.getArguments().forEach(sqlExpr -> visitColumn(sqlExpr, fieldItem));
         } else if (expr instanceof SQLBinaryOpExpr) {
             SQLBinaryOpExpr sqlBinaryOpExpr = (SQLBinaryOpExpr) expr;
             fieldItem.setBinaryOp(true);

@@ -5,7 +5,8 @@ import com.alibaba.otter.canal.sink.CanalEventSink;
 
 public abstract class AbstractCanalEventSinkTest<T> extends AbstractCanalLifeCycle implements CanalEventSink<T> {
 
-    public void interrupt() {
+    @Override
+	public void interrupt() {
         // do nothing
     }
 }

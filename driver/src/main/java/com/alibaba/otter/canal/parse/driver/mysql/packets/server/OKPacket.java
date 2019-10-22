@@ -35,7 +35,8 @@ public class OKPacket extends PacketWithHeaderPacket {
      * 
      * @throws IOException
      */
-    public void fromBytes(byte[] data) throws IOException {
+    @Override
+	public void fromBytes(byte[] data) throws IOException {
         int index = 0;
         // 1. read field count
         this.fieldCount = data[0];
@@ -57,7 +58,8 @@ public class OKPacket extends PacketWithHeaderPacket {
         // end read
     }
 
-    public byte[] toBytes() throws IOException {
+    @Override
+	public byte[] toBytes() throws IOException {
         return null;
     }
 
@@ -109,10 +111,10 @@ public class OKPacket extends PacketWithHeaderPacket {
         this.message = message;
     }
 
-    public String toString() {
-        return "OKPacket [affectedRows=" + Arrays.toString(affectedRows) + ", fieldCount=" + fieldCount + ", insertId="
-               + Arrays.toString(insertId) + ", message=" + message + ", serverStatus=" + serverStatus
-               + ", warningCount=" + warningCount + "]";
+    @Override
+	public String toString() {
+        return new StringBuilder().append("OKPacket [affectedRows=").append(Arrays.toString(affectedRows)).append(", fieldCount=").append(fieldCount).append(", insertId=").append(Arrays.toString(insertId))
+				.append(", message=").append(message).append(", serverStatus=").append(serverStatus).append(", warningCount=").append(warningCount).append("]").toString();
     }
 
 }

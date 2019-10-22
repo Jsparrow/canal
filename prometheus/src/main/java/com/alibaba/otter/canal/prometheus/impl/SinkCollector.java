@@ -29,31 +29,25 @@ public class SinkCollector extends Collector implements InstanceRegistry {
     private static final long                              NANO_PER_MILLI       = 1000 * 1000L;
     private static final String                            SINK_BLOCKING_TIME   = "canal_instance_sink_blocking_time";
     private static final String                            SINK_BLOCK_TIME_HELP = "Total sink blocking time in milliseconds";
-    private final ConcurrentMap<String, SinkMetricsHolder> instances            = new ConcurrentHashMap<String, SinkMetricsHolder>();
+    private final ConcurrentMap<String, SinkMetricsHolder> instances            = new ConcurrentHashMap<>();
 
     private SinkCollector() {}
-
-    private static class SingletonHolder {
-        private static final SinkCollector SINGLETON = new SinkCollector();
-    }
 
     public static SinkCollector instance() {
         return SingletonHolder.SINGLETON;
     }
 
-    @Override
+	@Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
         CounterMetricFamily blockingCounter = new CounterMetricFamily(SINK_BLOCKING_TIME,
                 SINK_BLOCK_TIME_HELP, DEST_LABELS_LIST);
-        for (SinkMetricsHolder smh : instances.values()) {
-            blockingCounter.addMetric(smh.destLabelValues, (smh.eventsSinkBlockingTime.doubleValue() / NANO_PER_MILLI));
-        }
+        instances.values().forEach(smh -> blockingCounter.addMetric(smh.destLabelValues, (smh.eventsSinkBlockingTime.doubleValue() / NANO_PER_MILLI)));
         mfs.add(blockingCounter);
         return mfs;
     }
 
-    @Override
+	@Override
     public void register(CanalInstance instance) {
         final String destination = instance.getDestination();
         SinkMetricsHolder holder = new SinkMetricsHolder();
@@ -71,10 +65,14 @@ public class SinkCollector extends Collector implements InstanceRegistry {
         }
     }
 
-    @Override
+	@Override
     public void unregister(CanalInstance instance) {
         final String destination = instance.getDestination();
         instances.remove(destination);
+    }
+
+	private static class SingletonHolder {
+        private static final SinkCollector SINGLETON = new SinkCollector();
     }
 
     private class SinkMetricsHolder {

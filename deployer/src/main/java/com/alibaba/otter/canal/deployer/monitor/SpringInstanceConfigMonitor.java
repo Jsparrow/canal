@@ -31,7 +31,7 @@ import com.google.common.collect.MigrateMap;
  * @author jianghang 2013-2-6 下午06:23:55
  * @version 1.0.1
  */
-public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implements InstanceConfigMonitor, CanalLifeCycle {
+public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implements InstanceConfigMonitor {
 
     private static final Logger              logger               = LoggerFactory.getLogger(SpringInstanceConfigMonitor.class);
     private String                           rootConf;
@@ -41,7 +41,8 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
     private Map<String, InstanceAction>      actions              = new MapMaker().makeMap();
     private Map<String, InstanceConfigFiles> lastFiles            = MigrateMap.makeComputingMap(new Function<String, InstanceConfigFiles>() {
 
-                                                                      public InstanceConfigFiles apply(String destination) {
+                                                                      @Override
+																	public InstanceConfigFiles apply(String destination) {
                                                                           return new InstanceConfigFiles(destination);
                                                                       }
                                                                   });
@@ -54,34 +55,33 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
         return actions;
     }
 
-    public void start() {
+    @Override
+	public void start() {
         super.start();
         Assert.notNull(rootConf, "root conf dir is null!");
 
-        executor.scheduleWithFixedDelay(new Runnable() {
-
-            public void run() {
-                try {
-                    scan();
-                    if (isFirst) {
-                        isFirst = false;
-                    }
-                } catch (Throwable e) {
-                    logger.error("scan failed", e);
-                }
-            }
-
-        }, 0, scanIntervalInSecond, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(() -> {
+		    try {
+		        scan();
+		        if (isFirst) {
+		            isFirst = false;
+		        }
+		    } catch (Throwable e) {
+		        logger.error("scan failed", e);
+		    }
+		}, 0, scanIntervalInSecond, TimeUnit.SECONDS);
     }
 
-    public void stop() {
+    @Override
+	public void stop() {
         super.stop();
         executor.shutdownNow();
         actions.clear();
         lastFiles.clear();
     }
 
-    public void register(String destination, InstanceAction action) {
+    @Override
+	public void register(String destination, InstanceAction action) {
         if (action != null) {
             actions.put(destination, action);
         } else {
@@ -89,7 +89,8 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
         }
     }
 
-    public void unregister(String destination) {
+    @Override
+	public void unregister(String destination) {
         actions.remove(destination);
     }
 
@@ -103,34 +104,25 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
             return;
         }
 
-        File[] instanceDirs = rootdir.listFiles(new FileFilter() {
-
-            public boolean accept(File pathname) {
-                String filename = pathname.getName();
-                return pathname.isDirectory() && !"spring".equalsIgnoreCase(filename);
-            }
-        });
+        File[] instanceDirs = rootdir.listFiles((File pathname) -> {
+		    String filename = pathname.getName();
+		    return pathname.isDirectory() && !"spring".equalsIgnoreCase(filename);
+		});
 
         // 扫描目录的新增
-        Set<String> currentInstanceNames = new HashSet<String>();
+        Set<String> currentInstanceNames = new HashSet<>();
 
         // 判断目录内文件的变化
         for (File instanceDir : instanceDirs) {
             String destination = instanceDir.getName();
             currentInstanceNames.add(destination);
-            File[] instanceConfigs = instanceDir.listFiles(new FilenameFilter() {
-
-                public boolean accept(File dir, String name) {
-                    // return !StringUtils.endsWithIgnoreCase(name, ".dat");
-                    // 限制一下，只针对instance.properties文件,避免因为.svn或者其他生成的临时文件导致出现reload
-                    return StringUtils.equalsIgnoreCase(name, "instance.properties");
-                }
-
-            });
+            // return !StringUtils.endsWithIgnoreCase(name, ".dat");
+			// 限制一下，只针对instance.properties文件,避免因为.svn或者其他生成的临时文件导致出现reload
+			File[] instanceConfigs = instanceDir.listFiles((File dir, String name) -> StringUtils.equalsIgnoreCase(name, "instance.properties"));
 
             if (!actions.containsKey(destination) && instanceConfigs.length > 0) {
                 // 存在合法的instance.properties，并且第一次添加时，进行启动操作
-                notifyStart(instanceDir, destination, instanceConfigs);
+                notifyStart(destination, instanceConfigs);
             } else if (actions.containsKey(destination)) {
                 // 历史已经启动过
                 if (instanceConfigs.length == 0) { // 如果不存在合法的instance.properties
@@ -150,7 +142,7 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
 
                     if (hasChanged || CollectionUtils.isEmpty(lastFile.getInstanceFiles())) {
                         // 更新内容
-                        List<FileInfo> newFileInfo = new ArrayList<FileInfo>();
+                        List<FileInfo> newFileInfo = new ArrayList<>();
                         for (File instanceConfig : instanceConfigs) {
                             newFileInfo.add(new FileInfo(instanceConfig.getName(), instanceConfig.lastModified()));
                         }
@@ -163,25 +155,19 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
         }
 
         // 判断目录是否删除
-        Set<String> deleteInstanceNames = new HashSet<String>();
-        for (String destination : actions.keySet()) {
-            if (!currentInstanceNames.contains(destination)) {
-                deleteInstanceNames.add(destination);
-            }
-        }
-        for (String deleteInstanceName : deleteInstanceNames) {
-            notifyStop(deleteInstanceName);
-        }
+        Set<String> deleteInstanceNames = new HashSet<>();
+        actions.keySet().stream().filter(destination -> !currentInstanceNames.contains(destination)).forEach(deleteInstanceNames::add);
+        deleteInstanceNames.forEach(this::notifyStop);
     }
 
-    private void notifyStart(File instanceDir, String destination, File[] instanceConfigs) {
+    private void notifyStart(String destination, File[] instanceConfigs) {
         try {
             defaultAction.start(destination);
             actions.put(destination, defaultAction);
 
             // 启动成功后记录配置文件信息
             InstanceConfigFiles lastFile = lastFiles.get(destination);
-            List<FileInfo> newFileInfo = new ArrayList<FileInfo>();
+            List<FileInfo> newFileInfo = new ArrayList<>();
             for (File instanceConfig : instanceConfigs) {
                 newFileInfo.add(new FileInfo(instanceConfig.getName(), instanceConfig.lastModified()));
             }
@@ -243,10 +229,10 @@ public class SpringInstanceConfigMonitor extends AbstractCanalLifeCycle implemen
 
         private String         destination;                              // instance
                                                                           // name
-        private List<FileInfo> springFile    = new ArrayList<FileInfo>(); // spring的instance
+        private List<FileInfo> springFile    = new ArrayList<>(); // spring的instance
                                                                           // xml
         private FileInfo       rootFile;                                 // canal.properties
-        private List<FileInfo> instanceFiles = new ArrayList<FileInfo>(); // instance对应的配置
+        private List<FileInfo> instanceFiles = new ArrayList<>(); // instance对应的配置
 
         public InstanceConfigFiles(String destination){
             this.destination = destination;

@@ -11,31 +11,31 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AdapterConfigHolder {
 
-    private volatile long adapterConfigTimestamp = 0;
-
-    private final Map<String, ConfigItem> adapterConfigs = new ConcurrentHashMap<>();
-
     private static AdapterConfigHolder adapterConfigHolder;
 
-    private AdapterConfigHolder() {
+	private volatile long adapterConfigTimestamp = 0;
+
+	private final Map<String, ConfigItem> adapterConfigs = new ConcurrentHashMap<>();
+
+	private AdapterConfigHolder() {
     }
 
-    public synchronized static AdapterConfigHolder getInstance() {
+	public static synchronized AdapterConfigHolder getInstance() {
         if (adapterConfigHolder == null) {
             adapterConfigHolder = new AdapterConfigHolder();
         }
         return adapterConfigHolder;
     }
 
-    public void setAdapterConfigTimestamp(long configTimestamp) {
+	public void setAdapterConfigTimestamp(long configTimestamp) {
         this.adapterConfigTimestamp = configTimestamp;
     }
 
-    public long getAdapterConfigTimestamp() {
+	public long getAdapterConfigTimestamp() {
         return adapterConfigTimestamp;
     }
 
-    public Map<String, ConfigItem> getAdapterConfigs() {
+	public Map<String, ConfigItem> getAdapterConfigs() {
         return this.adapterConfigs;
     }
 }

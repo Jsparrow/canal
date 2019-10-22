@@ -24,12 +24,13 @@ public class AviaterELFilter implements CanalEventFilter<CanalEntry.Entry> {
         this.expression = expression;
     }
 
-    public boolean filter(CanalEntry.Entry entry) throws CanalFilterException {
+    @Override
+	public boolean filter(CanalEntry.Entry entry) {
         if (StringUtils.isEmpty(expression)) {
             return true;
         }
 
-        Map<String, Object> env = new HashMap<String, Object>();
+        Map<String, Object> env = new HashMap<>();
         env.put(ROOT_KEY, entry);
         return (Boolean) AviatorEvaluator.execute(expression, env);
     }

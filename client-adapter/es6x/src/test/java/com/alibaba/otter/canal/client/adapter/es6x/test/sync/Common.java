@@ -12,10 +12,14 @@ import com.alibaba.otter.canal.client.adapter.es6x.ES6xAdapter;
 import com.alibaba.otter.canal.client.adapter.es6x.test.TestConstant;
 import com.alibaba.otter.canal.client.adapter.support.DatasourceConfig;
 import com.alibaba.otter.canal.client.adapter.support.OuterAdapterConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Common {
 
-    public static ES6xAdapter init() {
+    private static final Logger logger = LoggerFactory.getLogger(Common.class);
+
+	public static ES6xAdapter init() {
         DatasourceConfig.DATA_SOURCES.put("defaultDS", TestConstant.dataSource);
 
         OuterAdapterConfig outerAdapterConfig = new OuterAdapterConfig();
@@ -44,15 +48,17 @@ public class Common {
                 try {
                     conn.rollback();
                 } catch (SQLException e1) {
+					logger.error(e1.getMessage(), e1);
                     // ignore
                 }
             }
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } finally {
             if (stmt != null) {
                 try {
                     stmt.close();
                 } catch (SQLException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }
@@ -60,6 +66,7 @@ public class Common {
                 try {
                     conn.close();
                 } catch (SQLException e) {
+					logger.error(e.getMessage(), e);
                     // ignore
                 }
             }

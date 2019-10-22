@@ -30,21 +30,22 @@ public class AviaterSimpleFilter implements CanalEventFilter<String> {
 
     public AviaterSimpleFilter(String filterExpression){
         if (StringUtils.isEmpty(filterExpression)) {
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         } else {
             String[] ss = filterExpression.toLowerCase().split(SPLIT);
             list = Arrays.asList(ss);
         }
     }
 
-    public boolean filter(String filtered) throws CanalFilterException {
+    @Override
+	public boolean filter(String filtered) {
         if (list.isEmpty()) {
             return true;
         }
         if (StringUtils.isEmpty(filtered)) {
             return true;
         }
-        Map<String, Object> env = new HashMap<String, Object>();
+        Map<String, Object> env = new HashMap<>();
         env.put("list", list);
         env.put("target", filtered.toLowerCase());
         return (Boolean) exp.execute(env);

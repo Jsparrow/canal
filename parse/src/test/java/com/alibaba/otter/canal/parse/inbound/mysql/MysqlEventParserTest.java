@@ -20,10 +20,13 @@ import com.alibaba.otter.canal.protocol.position.EntryPosition;
 import com.alibaba.otter.canal.protocol.position.LogIdentity;
 import com.alibaba.otter.canal.protocol.position.LogPosition;
 import com.alibaba.otter.canal.sink.exception.CanalSinkException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Ignore
 public class MysqlEventParserTest {
 
-    private static final String DETECTING_SQL = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
+    private static final Logger logger = LoggerFactory.getLogger(MysqlEventParserTest.class);
+	private static final String DETECTING_SQL = "insert into retl.xdual values(1,now()) on duplicate key update x=now()";
     private static final String MYSQL_ADDRESS = "127.0.0.1";
     private static final String USERNAME      = "canal";
     private static final String PASSWORD      = "canal";
@@ -45,8 +48,7 @@ public class MysqlEventParserTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
             @Override
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     if (entry.getEntryType() != EntryType.HEARTBEAT) {
                         entryCount.incrementAndGet();
@@ -77,8 +79,8 @@ public class MysqlEventParserTest {
             }
 
             @Override
-            public void persistLogPosition(String destination, LogPosition logPosition) throws CanalParseException {
-                System.out.println(logPosition);
+            public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
         });
 
@@ -113,8 +115,7 @@ public class MysqlEventParserTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
             @Override
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     if (entry.getEntryType() != EntryType.HEARTBEAT) {
                         entryCount.incrementAndGet();
@@ -141,11 +142,13 @@ public class MysqlEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
-            public LogPosition getLatestIndexBy(String destination) {
+            @Override
+			public LogPosition getLatestIndexBy(String destination) {
                 return null;
             }
         });
@@ -181,8 +184,7 @@ public class MysqlEventParserTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
             @Override
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     if (entry.getEntryType() != EntryType.HEARTBEAT) {
 
@@ -210,11 +212,13 @@ public class MysqlEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
-            public LogPosition getLatestIndexBy(String destination) {
+            @Override
+			public LogPosition getLatestIndexBy(String destination) {
                 LogPosition masterLogPosition = new LogPosition();
                 masterLogPosition.setIdentity(new LogIdentity(new InetSocketAddress("127.0.0.1", 3306), 1234L));
                 masterLogPosition.setPostion(new EntryPosition(1322803601000L));
@@ -256,8 +260,7 @@ public class MysqlEventParserTest {
         controller.setEventSink(new AbstractCanalEventSinkTest<List<Entry>>() {
 
             @Override
-            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination)
-                                                                                                        throws CanalSinkException {
+            public boolean sink(List<Entry> entrys, InetSocketAddress remoteAddress, String destination) {
                 for (Entry entry : entrys) {
                     if (entry.getEntryType() != EntryType.HEARTBEAT) {
                         entryCount.incrementAndGet();
@@ -286,8 +289,9 @@ public class MysqlEventParserTest {
 
         controller.setLogPositionManager(new AbstractLogPositionManager() {
 
-            public void persistLogPosition(String destination, LogPosition logPosition) {
-                System.out.println(logPosition);
+            @Override
+			public void persistLogPosition(String destination, LogPosition logPosition) {
+                logger.info(String.valueOf(logPosition));
             }
 
             @Override

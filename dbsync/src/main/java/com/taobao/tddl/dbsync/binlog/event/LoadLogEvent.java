@@ -155,51 +155,46 @@ import com.taobao.tddl.dbsync.binlog.LogEvent;
  */
 public class LoadLogEvent extends LogEvent {
 
-    private String          table;
-    private String          db;
-    private String          fname;
-    private int             skipLines;
-    private int             numFields;
-    private String[]        fields;
-
-    /* sql_ex_info */
-    private String          fieldTerm;
-    private String          lineTerm;
-    private String          lineStart;
-    private String          enclosed;
-    private String          escaped;
-    private int             optFlags;
-    private int             emptyFlags;
-
-    private long            execTime;
-
     /* Load event post-header */
     public static final int L_THREAD_ID_OFFSET  = 0;
-    public static final int L_EXEC_TIME_OFFSET  = 4;
-    public static final int L_SKIP_LINES_OFFSET = 8;
-    public static final int L_TBL_LEN_OFFSET    = 12;
-    public static final int L_DB_LEN_OFFSET     = 13;
-    public static final int L_NUM_FIELDS_OFFSET = 14;
-    public static final int L_SQL_EX_OFFSET     = 18;
-    public static final int L_DATA_OFFSET       = FormatDescriptionLogEvent.LOAD_HEADER_LEN;
-
-    /*
+	public static final int L_EXEC_TIME_OFFSET  = 4;
+	public static final int L_SKIP_LINES_OFFSET = 8;
+	public static final int L_TBL_LEN_OFFSET    = 12;
+	public static final int L_DB_LEN_OFFSET     = 13;
+	public static final int L_NUM_FIELDS_OFFSET = 14;
+	public static final int L_SQL_EX_OFFSET     = 18;
+	public static final int L_DATA_OFFSET       = FormatDescriptionLogEvent.LOAD_HEADER_LEN;
+	/*
      * These are flags and structs to handle all the LOAD DATA INFILE options
      * (LINES TERMINATED etc). DUMPFILE_FLAG is probably useless (DUMPFILE is a
      * clause of SELECT, not of LOAD DATA).
      */
     public static final int DUMPFILE_FLAG       = 0x1;
-    public static final int OPT_ENCLOSED_FLAG   = 0x2;
-    public static final int REPLACE_FLAG        = 0x4;
-    public static final int IGNORE_FLAG         = 0x8;
+	public static final int OPT_ENCLOSED_FLAG   = 0x2;
+	public static final int REPLACE_FLAG        = 0x4;
+	public static final int IGNORE_FLAG         = 0x8;
+	public static final int FIELD_TERM_EMPTY    = 0x1;
+	public static final int ENCLOSED_EMPTY      = 0x2;
+	public static final int LINE_TERM_EMPTY     = 0x4;
+	public static final int LINE_START_EMPTY    = 0x8;
+	public static final int ESCAPED_EMPTY       = 0x10;
+	private String          table;
+	private String          db;
+	private String          fname;
+	private int             skipLines;
+	private int             numFields;
+	private String[]        fields;
+	/* sql_ex_info */
+    private String          fieldTerm;
+	private String          lineTerm;
+	private String          lineStart;
+	private String          enclosed;
+	private String          escaped;
+	private int             optFlags;
+	private int             emptyFlags;
+	private long            execTime;
 
-    public static final int FIELD_TERM_EMPTY    = 0x1;
-    public static final int ENCLOSED_EMPTY      = 0x2;
-    public static final int LINE_TERM_EMPTY     = 0x4;
-    public static final int LINE_START_EMPTY    = 0x8;
-    public static final int ESCAPED_EMPTY       = 0x10;
-
-    public LoadLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
+	public LoadLogEvent(LogHeader header, LogBuffer buffer, FormatDescriptionLogEvent descriptionEvent){
         super(header);
 
         final int loadHeaderLen = FormatDescriptionLogEvent.LOAD_HEADER_LEN;
@@ -213,7 +208,7 @@ public class LoadLogEvent extends LogEvent {
             descriptionEvent);
     }
 
-    /**
+	/**
      * @see mysql-5.1.60/sql/log_event.cc - Load_log_event::copy_log_event
      */
     protected final void copyLogEvent(LogBuffer buffer, final int bodyOffset, FormatDescriptionLogEvent descriptionEvent) {
@@ -256,11 +251,21 @@ public class LoadLogEvent extends LogEvent {
             optFlags = buffer.getUint8();
             emptyFlags = buffer.getUint8();
 
-            if ((emptyFlags & FIELD_TERM_EMPTY) != 0) fieldTerm = null;
-            if ((emptyFlags & ENCLOSED_EMPTY) != 0) enclosed = null;
-            if ((emptyFlags & LINE_TERM_EMPTY) != 0) lineTerm = null;
-            if ((emptyFlags & LINE_START_EMPTY) != 0) lineStart = null;
-            if ((emptyFlags & ESCAPED_EMPTY) != 0) escaped = null;
+            if ((emptyFlags & FIELD_TERM_EMPTY) != 0) {
+				fieldTerm = null;
+			}
+            if ((emptyFlags & ENCLOSED_EMPTY) != 0) {
+				enclosed = null;
+			}
+            if ((emptyFlags & LINE_TERM_EMPTY) != 0) {
+				lineTerm = null;
+			}
+            if ((emptyFlags & LINE_START_EMPTY) != 0) {
+				lineStart = null;
+			}
+            if ((emptyFlags & ESCAPED_EMPTY) != 0) {
+				escaped = null;
+			}
         }
 
         final int fieldLenPos = buffer.position();
@@ -278,61 +283,62 @@ public class LoadLogEvent extends LogEvent {
         final int from = buffer.position();
         final int end = from + buffer.limit();
         int found = from;
-        for (; (found < end) && buffer.getInt8(found) != '\0'; found++)
-            /* empty loop */;
+        for (; (found < end) && buffer.getInt8(found) != '\0'; found++) {
+			/* empty loop */
+		}
         fname = buffer.getString(found);
         buffer.forward(1); // The + 1 is for \0 terminating fname
     }
 
-    public final String getTable() {
+	public final String getTable() {
         return table;
     }
 
-    public final String getDb() {
+	public final String getDb() {
         return db;
     }
 
-    public final String getFname() {
+	public final String getFname() {
         return fname;
     }
 
-    public final int getSkipLines() {
+	public final int getSkipLines() {
         return skipLines;
     }
 
-    public final String[] getFields() {
+	public final String[] getFields() {
         return fields;
     }
 
-    public final String getFieldTerm() {
+	public final String getFieldTerm() {
         return fieldTerm;
     }
 
-    public final String getLineTerm() {
+	public final String getLineTerm() {
         return lineTerm;
     }
 
-    public final String getLineStart() {
+	public final String getLineStart() {
         return lineStart;
     }
 
-    public final String getEnclosed() {
+	public final String getEnclosed() {
         return enclosed;
     }
 
-    public final String getEscaped() {
+	public final String getEscaped() {
         return escaped;
     }
 
-    public final int getOptFlags() {
+	public final int getOptFlags() {
         return optFlags;
     }
 
-    public final int getEmptyFlags() {
+	public final int getEmptyFlags() {
         return emptyFlags;
     }
 
-    public final long getExecTime() {
+	public final long getExecTime() {
         return execTime;
     }
 }

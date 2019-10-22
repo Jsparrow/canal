@@ -63,7 +63,7 @@ public class HbaseConfigMonitor {
             super.onFileCreate(file);
             try {
                 // 加载新增的配置文件
-                String configContent = MappingConfigsLoader.loadConfig(adapterName + File.separator + file.getName());
+                String configContent = MappingConfigsLoader.loadConfig(new StringBuilder().append(adapterName).append(File.separator).append(file.getName()).toString());
                 MappingConfig config = YmlConfigBinder
                     .bindYmlToObj(null, configContent, MappingConfig.class, null, envProperties);
                 if (config == null) {
@@ -86,7 +86,7 @@ public class HbaseConfigMonitor {
                 if (hbaseAdapter.getHbaseMapping().containsKey(file.getName())) {
                     // 加载配置文件
                     String configContent = MappingConfigsLoader
-                        .loadConfig(adapterName + File.separator + file.getName());
+                        .loadConfig(new StringBuilder().append(adapterName).append(File.separator).append(file.getName()).toString());
                     if (configContent == null) {
                         onFileDelete(file);
                         return;
@@ -125,8 +125,8 @@ public class HbaseConfigMonitor {
         private void addConfigToCache(File file, MappingConfig config) {
             hbaseAdapter.getHbaseMapping().put(file.getName(), config);
             Map<String, MappingConfig> configMap = hbaseAdapter.getMappingConfigCache()
-                .computeIfAbsent(StringUtils.trimToEmpty(config.getDestination()) + "."
-                                 + config.getHbaseMapping().getDatabase() + "." + config.getHbaseMapping().getTable(),
+                .computeIfAbsent(new StringBuilder().append(StringUtils.trimToEmpty(config.getDestination())).append(".").append(config.getHbaseMapping().getDatabase()).append(".").append(config.getHbaseMapping().getTable())
+						.toString(),
                     k1 -> new HashMap<>());
             configMap.put(file.getName(), config);
         }
@@ -134,11 +134,7 @@ public class HbaseConfigMonitor {
         private void deleteConfigFromCache(File file) {
 
             hbaseAdapter.getHbaseMapping().remove(file.getName());
-            for (Map<String, MappingConfig> configMap : hbaseAdapter.getMappingConfigCache().values()) {
-                if (configMap != null) {
-                    configMap.remove(file.getName());
-                }
-            }
+            hbaseAdapter.getMappingConfigCache().values().stream().filter(configMap -> configMap != null).forEach(configMap -> configMap.remove(file.getName()));
 
         }
     }
